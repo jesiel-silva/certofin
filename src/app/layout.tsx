@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ThemeProviderWrapper } from "@/components/ui/theme-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className="light" suppressHydrationWarning>
       <body className="min-h-screen antialiased">
-        {children}
+        <ThemeProviderWrapper>
+          {children}
+        </ThemeProviderWrapper>
       </body>
     </html>
   );

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { ThemeProviderWrapper } from "@/components/ui/theme-provider";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 
@@ -13,14 +12,12 @@ export default function ProtectedLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <ThemeProviderWrapper>
-      <div className="min-h-screen bg-[var(--background)]">
-        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        <div className="lg:pl-64">
-          <Header onMenuClick={() => setSidebarOpen(true)} />
-          <main className="p-4 lg:p-6">{children}</main>
-        </div>
+    <div className="min-h-screen bg-[var(--background)]">
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <div className="lg:pl-64">
+        <Header onMenuClick={() => setSidebarOpen(true)} />
+        <main className="p-4 lg:p-6">{children}</main>
       </div>
-    </ThemeProviderWrapper>
+    </div>
   );
 }
