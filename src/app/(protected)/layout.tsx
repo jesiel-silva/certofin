@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ThemeProvider } from "next-themes";
+import { ThemeProviderWrapper } from "@/components/ui/theme-provider";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 
@@ -13,12 +13,7 @@ export default function ProtectedLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-    >
+    <ThemeProviderWrapper>
       <div className="min-h-screen bg-[var(--background)]">
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <div className="lg:pl-64">
@@ -26,6 +21,6 @@ export default function ProtectedLayout({
           <main className="p-4 lg:p-6">{children}</main>
         </div>
       </div>
-    </ThemeProvider>
+    </ThemeProviderWrapper>
   );
 }
