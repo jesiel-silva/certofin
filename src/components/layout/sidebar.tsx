@@ -23,13 +23,14 @@ const navItems = [
   },
   {
     href: "/transactions",
-    label: "Lançamentos",
+    label: "Meus Lançamentos",
     icon: ArrowRightLeft,
   },
   {
     href: "/transactions/new",
     label: "Novo Lançamento",
     icon: Plus,
+    highlight: true,
   },
 ];
 
@@ -64,7 +65,9 @@ export function Sidebar({ open, onClose }: SidebarProps) {
 
       <nav className="flex-1 space-y-1 p-4">
         {navItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive = item.href === "/transactions"
+            ? pathname === "/transactions" || pathname.startsWith("/transactions/")
+            : pathname === item.href;
           return (
             <Link
               key={item.href}
@@ -72,9 +75,11 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               onClick={onClose}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                isActive
-                  ? "bg-[var(--primary)] text-[var(--primary-foreground)]"
-                  : "text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:text-[var(--foreground)]"
+                item.highlight
+                  ? "bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--primary)]/90"
+                  : isActive
+                    ? "bg-[var(--accent)] text-[var(--foreground)]"
+                    : "text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:text-[var(--foreground)]"
               )}
             >
               <item.icon className="h-4 w-4" />

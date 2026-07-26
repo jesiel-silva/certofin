@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 import {
-  Briefcase,
   BarChart3,
   Shield,
   Smartphone,
@@ -210,7 +209,7 @@ export default function HomePage() {
               <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h3 className="text-xl font-bold text-slate-900 dark:text-slate-50">Seu Resumo Financeiro</h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Dados demonstrativos em tempo real</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Visualização do app</p>
                 </div>
                 <div className="flex items-center gap-2 rounded-xl bg-slate-50 dark:bg-slate-900 p-1.5 border border-slate-200/50 dark:border-slate-800/50">
                   <Calendar className="h-4 w-4 text-[var(--primary)]" />
@@ -218,166 +217,90 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* KPI Cards inside Mockup */}
+              {/* KPI Cards - Skeleton style */}
               <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-4">
-                <div className="rounded-2xl border border-slate-200/60 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/30 p-5 transition-all hover:shadow-md hover:border-emerald-500/30">
+                <div className="rounded-2xl border border-slate-200/60 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/30 p-5">
                   <div className="mb-3 flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Faturamento</span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Entradas</span>
                     <div className="rounded-lg bg-emerald-500/10 p-2 text-emerald-600 dark:text-emerald-400">
                       <TrendingUp className="h-4 w-4" />
                     </div>
                   </div>
-                  <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400">R$ 12.450,00</p>
-                  <p className="mt-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400/80 flex items-center gap-1">
-                    <span>▲ +14%</span> <span className="text-slate-400">vs mês anterior</span>
-                  </p>
+                  <div className="h-8 w-28 rounded-lg bg-slate-200 dark:bg-slate-800 animate-pulse" />
                 </div>
 
-                <div className="rounded-2xl border border-slate-200/60 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/30 p-5 transition-all hover:shadow-md hover:border-rose-500/30">
+                <div className="rounded-2xl border border-slate-200/60 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/30 p-5">
                   <div className="mb-3 flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Despesas</span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Saídas</span>
                     <div className="rounded-lg bg-rose-500/10 p-2 text-rose-600 dark:text-rose-400">
                       <TrendingDown className="h-4 w-4" />
                     </div>
                   </div>
-                  <p className="text-2xl font-black text-rose-600 dark:text-rose-400">R$ 5.120,00</p>
-                  <p className="mt-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400/80 flex items-center gap-1">
-                    <span>▼ -8%</span> <span className="text-slate-400">menos saídas</span>
-                  </p>
+                  <div className="h-8 w-28 rounded-lg bg-slate-200 dark:bg-slate-800 animate-pulse" />
                 </div>
 
-                <div className="rounded-2xl border border-slate-200/60 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/30 p-5 transition-all hover:shadow-md hover:border-[#009B9E]/30">
+                <div className="rounded-2xl border border-slate-200/60 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/30 p-5">
                   <div className="mb-3 flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Sobrou</span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Saldo</span>
                     <div className="rounded-lg bg-[#009B9E]/10 p-2 text-[#009B9E]">
                       <PieChart className="h-4 w-4" />
                     </div>
                   </div>
-                  <p className="text-2xl font-black text-[#009B9E]">R$ 7.330,00</p>
-                  <p className="mt-1.5 text-xs font-semibold text-[#009B9E] flex items-center gap-1">
-                    <span>▲ +22%</span> <span className="text-slate-400">lucro líquido</span>
-                  </p>
+                  <div className="h-8 w-28 rounded-lg bg-slate-200 dark:bg-slate-800 animate-pulse" />
                 </div>
 
-                <div className="rounded-2xl border border-slate-200/60 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/30 p-5 transition-all hover:shadow-md hover:border-amber-500/30">
+                <div className="rounded-2xl border border-slate-200/60 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/30 p-5">
                   <div className="mb-3 flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Contas a Pagar</span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500">A Pagar</span>
                     <div className="rounded-lg bg-amber-500/10 p-2 text-amber-600 dark:text-amber-400">
                       <Wallet className="h-4 w-4" />
                     </div>
                   </div>
-                  <p className="text-2xl font-black text-amber-600 dark:text-amber-400">R$ 1.950,00</p>
-                  <p className="mt-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400/80 flex items-center gap-1">
-                    <span>2 abertas</span> <span className="text-slate-400">vencendo logo</span>
-                  </p>
+                  <div className="h-8 w-28 rounded-lg bg-slate-200 dark:bg-slate-800 animate-pulse" />
                 </div>
               </div>
 
-              {/* Graphical Layout Row inside Mockup */}
+              {/* Chart placeholder */}
               <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-                {/* Visual Chart Graphic */}
                 <div className="rounded-2xl border border-slate-200/60 dark:border-slate-800/60 p-6 lg:col-span-2">
-                  <h4 className="mb-6 text-sm font-bold text-slate-800 dark:text-slate-200">Faturamento vs Despesas (Semana)</h4>
+                  <h4 className="mb-6 text-sm font-bold text-slate-800 dark:text-slate-200">Gráficos mensais</h4>
                   <div className="flex h-48 items-end gap-3 pb-2 pt-4">
-                    {[
-                      { fat: 60, des: 30 },
-                      { fat: 75, des: 25 },
-                      { fat: 50, des: 40 },
-                      { fat: 90, des: 20 },
-                      { fat: 65, des: 35 },
-                      { fat: 85, des: 15 },
-                      { fat: 70, des: 28 },
-                    ].map((bar, i) => (
-                      <div key={i} className="flex h-full flex-1 flex-col justify-end gap-1.5">
-                        <div className="relative w-full rounded-md bg-[#009B9E]/20" style={{ height: `${bar.fat}%` }}>
-                          <div className="absolute bottom-0 w-full rounded-md bg-[#009B9E] transition-all hover:opacity-85" style={{ height: '100%' }} />
-                        </div>
-                        <div className="relative w-full rounded-md bg-rose-500/20" style={{ height: `${bar.des}%` }}>
-                          <div className="absolute bottom-0 w-full rounded-md bg-rose-500 transition-all hover:opacity-85" style={{ height: '100%' }} />
+                    {[40, 55, 35, 70, 50, 65, 45, 80, 60, 75, 55, 85].map((h, i) => (
+                      <div key={i} className="flex h-full flex-1 flex-col justify-end">
+                        <div className="relative w-full rounded-md bg-[#009B9E]/20" style={{ height: `${h}%` }}>
+                          <div className="absolute bottom-0 w-full rounded-md bg-[#009B9E]/40 transition-all hover:bg-[#009B9E]/60" style={{ height: '100%' }} />
                         </div>
                       </div>
                     ))}
                   </div>
                   <div className="mt-4 flex justify-between text-xs font-semibold text-slate-400">
-                    <span>Seg</span>
-                    <span>Ter</span>
-                    <span>Qua</span>
-                    <span>Qui</span>
-                    <span>Sex</span>
-                    <span>Sáb</span>
-                    <span>Dom</span>
+                    <span>Jan</span><span>Mar</span><span>Mai</span><span>Jul</span><span>Set</span><span>Nov</span>
                   </div>
                 </div>
 
-                {/* Pie/Ring Graphic */}
                 <div className="rounded-2xl border border-slate-200/60 dark:border-slate-800/60 p-6 flex flex-col justify-between">
-                  <h4 className="mb-4 text-sm font-bold text-slate-800 dark:text-slate-200">Divisão de Lançamentos</h4>
+                  <h4 className="mb-4 text-sm font-bold text-slate-800 dark:text-slate-200">Pessoal vs Negócio</h4>
                   <div className="flex flex-1 items-center justify-center py-4">
                     <div className="relative h-32 w-32">
                       <svg className="h-full w-full -rotate-90" viewBox="0 0 36 36">
-                        <circle
-                          cx="18"
-                          cy="18"
-                          r="15.915"
-                          fill="none"
-                          stroke="var(--border)"
-                          strokeWidth="3.5"
-                          className="stroke-slate-100 dark:stroke-slate-900"
-                        />
-                        <circle
-                          cx="18"
-                          cy="18"
-                          r="15.915"
-                          fill="none"
-                          stroke="#009B9E"
-                          strokeWidth="3.5"
-                          strokeDasharray="68, 100"
-                        />
+                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--border)" strokeWidth="3.5" className="stroke-slate-100 dark:stroke-slate-900" />
+                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="#009B9E" strokeWidth="3.5" strokeDasharray="50, 100" />
+                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="#054388" strokeWidth="3.5" strokeDasharray="50, 100" strokeDashoffset="-50" />
                       </svg>
-                      <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <span className="text-2xl font-black text-slate-800 dark:text-slate-100">68%</span>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Negócios</span>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-sm font-bold text-slate-400">50/50</span>
                       </div>
                     </div>
                   </div>
                   <div className="flex justify-center gap-4 text-xs font-bold">
                     <div className="flex items-center gap-2">
                       <div className="h-3 w-3 rounded-full bg-[#009B9E]" />
-                      <span className="text-slate-500">Negócio</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="h-3 w-3 rounded-full bg-slate-200 dark:bg-slate-800" />
                       <span className="text-slate-500">Pessoal</span>
                     </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Sub-panels inside Mockup */}
-              <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="rounded-2xl border border-[#054388]/15 bg-[#054388]/5 p-5 flex items-center justify-between">
-                  <div>
-                    <span className="text-xs font-bold uppercase tracking-wider text-[#054388]">Lucro Operacional</span>
-                    <p className="text-2xl font-black text-slate-800 dark:text-slate-100 mt-1">R$ 5.800,00</p>
-                    <div className="mt-3 h-2 w-48 overflow-hidden rounded-full bg-[#054388]/10">
-                      <div className="h-full w-[82%] rounded-full bg-[#054388]" />
+                    <div className="flex items-center gap-2">
+                      <div className="h-3 w-3 rounded-full bg-[#054388]" />
+                      <span className="text-slate-500">Negócio</span>
                     </div>
-                  </div>
-                  <div className="rounded-xl bg-[#054388]/10 p-3 text-[#054388]">
-                    <Briefcase className="h-6 w-6" />
-                  </div>
-                </div>
-
-                <div className="rounded-2xl border border-[#009B9E]/15 bg-[#009B9E]/5 p-5 flex items-center justify-between">
-                  <div>
-                    <span className="text-xs font-bold uppercase tracking-wider text-[#009B9E]">Sobra pra Você</span>
-                    <p className="text-2xl font-black text-slate-800 dark:text-slate-100 mt-1">R$ 1.530,00</p>
-                    <div className="mt-3 h-2 w-48 overflow-hidden rounded-full bg-[#009B9E]/10">
-                      <div className="h-full w-[48%] rounded-full bg-[#009B9E]" />
-                    </div>
-                  </div>
-                  <div className="rounded-xl bg-[#009B9E]/10 p-3 text-[#009B9E]">
-                    <Wallet className="h-6 w-6" />
                   </div>
                 </div>
               </div>

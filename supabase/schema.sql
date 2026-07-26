@@ -170,7 +170,7 @@ BEGIN
   INSERT INTO public.categories (user_id, name, icon, color, scope, type, is_default) VALUES
     (NEW.id, 'Aluguel', 'home', '#f59e0b', 'personal', 'expense', true),
     (NEW.id, 'Luz', 'zap', '#d97706', 'personal', 'expense', true),
-    (NEW.id, 'Ága', 'droplets', '#b45309', 'personal', 'expense', true),
+    (NEW.id, 'Água', 'droplets', '#b45309', 'personal', 'expense', true),
     (NEW.id, 'Supermercado', 'shopping-basket', '#92400e', 'personal', 'expense', true),
     (NEW.id, 'Internet', 'wifi', '#78350f', 'personal', 'expense', true),
     (NEW.id, 'Lazer', 'gamepad-2', '#451a03', 'personal', 'expense', true),

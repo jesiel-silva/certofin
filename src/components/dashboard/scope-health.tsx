@@ -29,7 +29,7 @@ export function ScopeHealth({
             <Briefcase className="h-4 w-4 text-[var(--business)]" />
           </div>
           <CardTitle className="text-sm font-medium">
-            Saúde do Negócio
+            Saúde do Negócio (Pago)
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -73,7 +73,7 @@ export function ScopeHealth({
             <Home className="h-4 w-4 text-[var(--personal)]" />
           </div>
           <CardTitle className="text-sm font-medium">
-            Saúde Pessoal
+            Saúde Pessoal (Pago)
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">

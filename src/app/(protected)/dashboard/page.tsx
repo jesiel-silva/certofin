@@ -6,6 +6,7 @@ import { KpiCards } from "@/components/dashboard/kpi-cards";
 import { ScopeHealth } from "@/components/dashboard/scope-health";
 import { ExpenseChart } from "@/components/dashboard/expense-chart";
 import { MonthlyChart } from "@/components/dashboard/monthly-chart";
+import { WelcomeCard } from "@/components/dashboard/welcome-card";
 import {
   getCurrentMonth,
   getNextMonth,
@@ -13,6 +14,9 @@ import {
   formatMonthYear,
 } from "@/lib/utils";
 import { Select } from "@/components/ui/select";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
 import type {
   Transaction,
   Category,
@@ -27,6 +31,7 @@ export default function DashboardPage() {
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchAllData();
@@ -50,16 +55,28 @@ export default function DashboardPage() {
       supabase.from("categories").select("*"),
     ]);
 
-    setAllTransactions((txResult.data as Transaction[]) || []);
+    if (txResult.error) {
+      console.error("Erro ao buscar transações:", txResult.error);
+      setError("Erro ao carregar dados. Tente recarregar a página.");
+      setLoading(false);
+      return;
+    }
+
+    const txData = ((txResult.data as Transaction[]) || []).map((t) => ({
+      ...t,
+      amount: Number(t.amount),
+    }));
+
+    setAllTransactions(txData);
     setCategories((catResult.data as Category[]) || []);
     setLoading(false);
   };
 
   const filterTransactions = () => {
     const { start, end } = getMonthRange(currentMonth);
-    const filtered = allTransactions.filter(
-      (t) => t.transaction_date >= start && t.transaction_date <= end
-    );
+    const filtered = allTransactions
+      .filter((t) => t.transaction_date >= start && t.transaction_date <= end)
+      .map((t) => ({ ...t, amount: Number(t.amount) }));
     setTransactions(filtered);
   };
 
@@ -76,19 +93,19 @@ export default function DashboardPage() {
       .filter((t) => t.type === "income")
       .reduce((sum, t) => sum + t.amount, 0);
     const expense = txns
-      .filter((t) => t.type === "expense")
+      .filter((t) => t.type === "expense" && t.status === "paid")
       .reduce((sum, t) => sum + t.amount, 0);
     const bizIncome = txns
       .filter((t) => t.type === "income" && t.scope === "business")
       .reduce((sum, t) => sum + t.amount, 0);
     const bizExpense = txns
-      .filter((t) => t.type === "expense" && t.scope === "business")
+      .filter((t) => t.type === "expense" && t.scope === "business" && t.status === "paid")
       .reduce((sum, t) => sum + t.amount, 0);
     const perIncome = txns
       .filter((t) => t.type === "income" && t.scope === "personal")
       .reduce((sum, t) => sum + t.amount, 0);
     const perExpense = txns
-      .filter((t) => t.type === "expense" && t.scope === "personal")
+      .filter((t) => t.type === "expense" && t.scope === "personal" && t.status === "paid")
       .reduce((sum, t) => sum + t.amount, 0);
 
     return {
@@ -103,21 +120,18 @@ export default function DashboardPage() {
     };
   };
 
-  const calcPendingNextMonth = (): number => {
-    const { start, end } = getMonthRange(getNextMonth());
-    return allTransactions
-      .filter(
-        (t) =>
-          t.transaction_date >= start &&
-          t.transaction_date <= end &&
-          t.type === "expense" &&
-          t.status === "pending"
-      )
-      .reduce((sum, t) => sum + t.amount, 0);
+  const calcPendingAmount = (): { total: number; count: number } => {
+    const pending = allTransactions.filter(
+      (t) => t.type === "expense" && t.status === "pending"
+    );
+    return {
+      total: pending.reduce((sum, t) => sum + t.amount, 0),
+      count: pending.length,
+    };
   };
 
   const calcExpenseByCategory = (): CategorySummary[] => {
-    const expenses = transactions.filter((t) => t.type === "expense");
+    const expenses = transactions.filter((t) => t.type === "expense" && t.status === "paid");
     const totalExpenses = expenses.reduce((sum, t) => sum + t.amount, 0);
 
     const categoryMap = new Map<
@@ -168,19 +182,19 @@ export default function DashboardPage() {
           .filter((t) => t.type === "income")
           .reduce((sum, t) => sum + t.amount, 0);
         const expense = txns
-          .filter((t) => t.type === "expense")
+          .filter((t) => t.type === "expense" && t.status === "paid")
           .reduce((sum, t) => sum + t.amount, 0);
         const bizIncome = txns
           .filter((t) => t.type === "income" && t.scope === "business")
           .reduce((sum, t) => sum + t.amount, 0);
         const bizExpense = txns
-          .filter((t) => t.type === "expense" && t.scope === "business")
+          .filter((t) => t.type === "expense" && t.scope === "business" && t.status === "paid")
           .reduce((sum, t) => sum + t.amount, 0);
         const perIncome = txns
           .filter((t) => t.type === "income" && t.scope === "personal")
           .reduce((sum, t) => sum + t.amount, 0);
         const perExpense = txns
-          .filter((t) => t.type === "expense" && t.scope === "personal")
+          .filter((t) => t.type === "expense" && t.scope === "personal" && t.status === "paid")
           .reduce((sum, t) => sum + t.amount, 0);
 
         return {
@@ -197,7 +211,7 @@ export default function DashboardPage() {
   };
 
   const summary = calcMonthSummary(transactions);
-  const pendingNextMonth = calcPendingNextMonth();
+  const pending = calcPendingAmount();
   const expensesByCategory = calcExpenseByCategory();
   const monthlyHistory = calcMonthlyHistory();
 
@@ -220,6 +234,21 @@ export default function DashboardPage() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="text-center">
+          <p className="text-sm text-[var(--destructive)]">{error}</p>
+          <button onClick={fetchAllData} className="mt-2 text-sm text-[var(--primary)] underline">
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const isEmpty = transactions.length === 0;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -229,32 +258,57 @@ export default function DashboardPage() {
             Visão geral das suas finanças
           </p>
         </div>
-        <Select
-          value={currentMonth}
-          onChange={(e) => setCurrentMonth(e.target.value)}
-          options={monthOptions}
-          className="w-auto"
-        />
+        <div className="flex items-center gap-2">
+          {!isEmpty && (
+            <>
+              <Link href="/transactions/new?type=income">
+                <Button size="sm" variant="outline" className="gap-2 border-[var(--income)]/30 text-[var(--income)] hover:bg-[var(--income)]/5">
+                  <ArrowDownLeft className="h-4 w-4" />
+                  Receita
+                </Button>
+              </Link>
+              <Link href="/transactions/new?type=expense">
+                <Button size="sm" variant="outline" className="gap-2 border-[var(--expense)]/30 text-[var(--expense)] hover:bg-[var(--expense)]/5">
+                  <ArrowUpRight className="h-4 w-4" />
+                  Despesa
+                </Button>
+              </Link>
+            </>
+          )}
+          <Select
+            value={currentMonth}
+            onChange={(e) => setCurrentMonth(e.target.value)}
+            options={monthOptions}
+            className="w-auto"
+          />
+        </div>
       </div>
 
-      <KpiCards
-        totalIncome={summary.total_income}
-        totalExpense={summary.total_expense}
-        balance={summary.balance}
-        pendingNextMonth={pendingNextMonth}
-      />
+      {isEmpty ? (
+        <WelcomeCard />
+      ) : (
+        <>
+          <KpiCards
+            totalIncome={summary.total_income}
+            totalExpense={summary.total_expense}
+            balance={summary.balance}
+            pendingAmount={pending.total}
+            pendingCount={pending.count}
+          />
 
-      <ScopeHealth
-        businessIncome={summary.business_income}
-        businessExpense={summary.business_expense}
-        personalIncome={summary.personal_income}
-        personalExpense={summary.personal_expense}
-      />
+          <ScopeHealth
+            businessIncome={summary.business_income}
+            businessExpense={summary.business_expense}
+            personalIncome={summary.personal_income}
+            personalExpense={summary.personal_expense}
+          />
 
-      <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-        <ExpenseChart data={expensesByCategory} title="Despesas por Categoria" />
-        <MonthlyChart data={monthlyHistory} />
-      </div>
+          <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
+            <ExpenseChart data={expensesByCategory} title="Despesas por Categoria" />
+            <MonthlyChart data={monthlyHistory} />
+          </div>
+        </>
+      )}
     </div>
   );
 }

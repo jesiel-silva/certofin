@@ -18,6 +18,7 @@ import {
   ChevronRight,
   Trash2,
   Pencil,
+  Receipt,
 } from "lucide-react";
 import { formatCurrency, formatDate, getCurrentMonth } from "@/lib/utils";
 import type { TransactionWithCategory } from "@/lib/types";
@@ -41,6 +42,7 @@ export function TransactionList() {
   const [loading, setLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchTransactions();
@@ -48,6 +50,7 @@ export function TransactionList() {
 
   const fetchTransactions = async () => {
     setLoading(true);
+    setError("");
     const [year, month] = monthFilter.split("-");
     const startDate = `${year}-${month}-01`;
     const lastDay = new Date(parseInt(year), parseInt(month), 0).getDate();
@@ -71,8 +74,20 @@ export function TransactionList() {
     const to = from + ITEMS_PER_PAGE - 1;
     query = query.range(from, to);
 
-    const { data, count } = await query;
-    setTransactions((data as TransactionWithCategory[]) || []);
+    const { data, count, error: queryError } = await query;
+
+    if (queryError) {
+      console.error("Erro ao buscar lançamentos:", queryError);
+      setError("Erro ao carregar lançamentos. Tente recarregar.");
+      setLoading(false);
+      return;
+    }
+
+    const txData = ((data as TransactionWithCategory[]) || []).map((t) => ({
+      ...t,
+      amount: Number(t.amount),
+    }));
+    setTransactions(txData);
     setTotal(count || 0);
     setLoading(false);
   };
@@ -89,7 +104,10 @@ export function TransactionList() {
   const handleDelete = async () => {
     if (!deleteId) return;
     setDeleting(true);
-    await supabase.from("transactions").delete().eq("id", deleteId);
+    const { error } = await supabase.from("transactions").delete().eq("id", deleteId);
+    if (error) {
+      console.error("Erro ao excluir:", error);
+    }
     setDeleting(false);
     setDeleteId(null);
     fetchTransactions();
@@ -126,20 +144,21 @@ export function TransactionList() {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="mb-4 space-y-3">
-          <div className="flex items-center gap-2">
-            <Search className="h-4 w-4 text-[var(--muted-foreground)]" />
-            <Input
+        <div className="mb-6 space-y-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted-foreground)] z-10" />
+            <input
+              type="text"
               placeholder="Buscar por descrição..."
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
                 setPage(1);
               }}
-              className="flex-1"
+              className="flex h-10 w-full rounded-lg border border-[var(--input)] bg-[var(--background)] pl-10 pr-3 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2"
             />
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             <Select
               value={scopeFilter}
               onChange={(e) => {
@@ -147,11 +166,10 @@ export function TransactionList() {
                 setPage(1);
               }}
               options={[
-                { value: "all", label: "Todos os Escopos" },
+                { value: "all", label: "Escopo" },
                 { value: "business", label: "Negócio" },
                 { value: "personal", label: "Pessoal" },
               ]}
-              className="w-auto"
             />
             <Select
               value={typeFilter}
@@ -160,11 +178,10 @@ export function TransactionList() {
                 setPage(1);
               }}
               options={[
-                { value: "all", label: "Todos os Tipos" },
+                { value: "all", label: "Tipo" },
                 { value: "income", label: "Receita" },
                 { value: "expense", label: "Despesa" },
               ]}
-              className="w-auto"
             />
             <Select
               value={statusFilter}
@@ -173,11 +190,10 @@ export function TransactionList() {
                 setPage(1);
               }}
               options={[
-                { value: "all", label: "Todos os Status" },
+                { value: "all", label: "Status" },
                 { value: "paid", label: "Pago" },
                 { value: "pending", label: "Pendente" },
               ]}
-              className="w-auto"
             />
             <Select
               value={monthFilter}
@@ -186,7 +202,6 @@ export function TransactionList() {
                 setPage(1);
               }}
               options={monthOptions}
-              className="w-auto"
             />
           </div>
         </div>
@@ -195,9 +210,38 @@ export function TransactionList() {
           <div className="py-12 text-center text-[var(--muted-foreground)]">
             Carregando...
           </div>
+        ) : error ? (
+          <div className="py-12 text-center">
+            <p className="text-sm text-[var(--destructive)]">{error}</p>
+            <button onClick={fetchTransactions} className="mt-2 text-sm text-[var(--primary)] underline">
+              Tentar novamente
+            </button>
+          </div>
         ) : transactions.length === 0 ? (
-          <div className="py-12 text-center text-[var(--muted-foreground)]">
-            Nenhum lançamento encontrado.
+          <div className="py-12 text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--accent)]">
+              <Receipt className="h-8 w-8 text-[var(--muted-foreground)]" />
+            </div>
+            <p className="text-lg font-medium text-[var(--foreground)]">
+              Nenhum lançamento este mês
+            </p>
+            <p className="mt-1 text-sm text-[var(--muted-foreground)] mb-4">
+              Comece adicionando sua primeira receita ou despesa
+            </p>
+            <div className="flex justify-center gap-3">
+              <Link href="/transactions/new?type=income">
+                <Button variant="outline" className="gap-2 border-[var(--income)]/30 text-[var(--income)] hover:bg-[var(--income)]/5">
+                  <ArrowDownLeft className="h-4 w-4" />
+                  + Receita
+                </Button>
+              </Link>
+              <Link href="/transactions/new?type=expense">
+                <Button variant="outline" className="gap-2 border-[var(--expense)]/30 text-[var(--expense)] hover:bg-[var(--expense)]/5">
+                  <ArrowUpRight className="h-4 w-4" />
+                  + Despesa
+                </Button>
+              </Link>
+            </div>
           </div>
         ) : (
           <>

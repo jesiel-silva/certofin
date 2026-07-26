@@ -60,7 +60,7 @@ export default function SignupPage() {
       return;
     }
 
-    router.push("/login?message=Conta criada! Confirme seu e-mail.");
+    router.push("/login?verified=true");
   };
 
   return (
@@ -133,20 +133,12 @@ export default function SignupPage() {
           {/* Social proof */}
           <div className="mt-12 rounded-2xl bg-white/10 p-4 backdrop-blur">
             <div className="flex items-center gap-3">
-              <div className="flex -space-x-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-xs font-bold text-white">
-                  JS
-                </div>
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/30 text-xs font-bold text-white">
-                  MR
-                </div>
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/40 text-xs font-bold text-white">
-                  AP
-                </div>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-xs font-bold text-white">
+                <Shield className="h-4 w-4 text-white" />
               </div>
               <p className="text-sm text-white/80">
-                <span className="font-semibold text-white">+500 pessoas</span>{" "}
-                já estão organizando suas finanças
+                <span className="font-semibold text-white">Seus dados seguros</span>{" "}
+                com criptografia de ponta
               </p>
             </div>
           </div>

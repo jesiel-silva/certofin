@@ -5,9 +5,18 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CurrencyInput } from "@/components/ui/currency-input";
 import { Select } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Save, Trash2, Lock } from "lucide-react";
+import {
+  ArrowLeft,
+  Save,
+  Trash2,
+  Lock,
+  ArrowDownLeft,
+  ArrowUpRight,
+  Info,
+} from "lucide-react";
 import type { Category, Transaction } from "@/lib/types";
 import Link from "next/link";
 import { cn, formatCurrency } from "@/lib/utils";
@@ -18,11 +27,13 @@ import { usePlanLimits } from "@/lib/hooks/use-plan-limits";
 interface TransactionFormProps {
   initialData?: Transaction;
   mode?: "create" | "edit";
+  initialType?: "income" | "expense" | null;
 }
 
 export function TransactionForm({
   initialData,
   mode = "create",
+  initialType,
 }: TransactionFormProps) {
   const router = useRouter();
   const supabase = createClient();
@@ -35,13 +46,13 @@ export function TransactionForm({
     refresh: refreshPlan,
   } = usePlanLimits();
 
-  const [type, setType] = useState<string>(initialData?.type || "expense");
+  const [type, setType] = useState<string>(initialData?.type || initialType || "expense");
   const [scope, setScope] = useState<string>(initialData?.scope || "personal");
   const [description, setDescription] = useState(
     initialData?.description || ""
   );
   const [amount, setAmount] = useState(
-    initialData?.amount?.toString() || ""
+    initialData?.amount ? initialData.amount.toFixed(2) : ""
   );
   const [categoryId, setCategoryId] = useState(
     initialData?.category_id || ""
@@ -66,6 +77,7 @@ export function TransactionForm({
 
   useEffect(() => {
     const fetchCategories = async () => {
+      const user = (await supabase.auth.getUser()).data.user;
       const { data } = await supabase
         .from("categories")
         .select("*")
@@ -106,23 +118,35 @@ export function TransactionForm({
     baseData: Omit<Transaction, "id" | "created_at" | "updated_at">,
     total: number
   ) => {
+    const { data: parent, error: parentError } = await supabase
+      .from("transactions")
+      .insert({ ...baseData, installment_current: 1, installment_total: total })
+      .select()
+      .single();
+
+    if (parentError || !parent) return { error: parentError };
+
     const installments = [];
     const baseDate = new Date(baseData.transaction_date);
 
-    for (let i = 0; i < total; i++) {
+    for (let i = 1; i < total; i++) {
       const installmentDate = new Date(baseDate);
       installmentDate.setMonth(installmentDate.getMonth() + i);
 
       installments.push({
         ...baseData,
+        parent_transaction_id: parent.id,
         installment_current: i + 1,
         installment_total: total,
         transaction_date: installmentDate.toISOString().split("T")[0],
-        status: i === 0 ? baseData.status : "pending",
+        status: "pending",
       });
     }
 
-    return supabase.from("transactions").insert(installments);
+    if (installments.length > 0) {
+      return supabase.from("transactions").insert(installments);
+    }
+    return { error: null };
   };
 
   const generateRecurrences = async (
@@ -130,10 +154,18 @@ export function TransactionForm({
     freq: string,
     count: number = 12
   ) => {
+    const { data: parent, error: parentError } = await supabase
+      .from("transactions")
+      .insert({ ...baseData, frequency: freq })
+      .select()
+      .single();
+
+    if (parentError || !parent) return { error: parentError };
+
     const recurrences = [];
     const baseDate = new Date(baseData.transaction_date);
 
-    for (let i = 0; i < count; i++) {
+    for (let i = 1; i < count; i++) {
       const recurrenceDate = new Date(baseDate);
 
       if (freq === "monthly") {
@@ -146,14 +178,27 @@ export function TransactionForm({
 
       recurrences.push({
         ...baseData,
+        parent_transaction_id: parent.id,
         frequency: freq,
         transaction_date: recurrenceDate.toISOString().split("T")[0],
-        status: i === 0 ? baseData.status : "pending",
-        parent_transaction_id: i > 0 ? null : undefined,
+        status: "pending",
       });
     }
 
-    return supabase.from("transactions").insert(recurrences);
+    if (recurrences.length > 0) {
+      return supabase.from("transactions").insert(recurrences);
+    }
+    return { error: null };
+  };
+
+  const getTransactionCount = (): number => {
+    if (frequency === "installment" && installmentTotal) {
+      return parseInt(installmentTotal);
+    }
+    if (frequency === "monthly" || frequency === "weekly" || frequency === "yearly") {
+      return 12;
+    }
+    return 1;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -166,10 +211,15 @@ export function TransactionForm({
     }
 
     // Verificar limite de transações
-    if (mode === "create" && !canCreateTransaction) {
-      setUpgradeFeature("transaction_limit");
-      setShowUpgradeModal(true);
-      return;
+    if (mode === "create") {
+      const txCount = getTransactionCount();
+      if (txCount > transactionsRemaining) {
+        setError(
+          `Essa ação vai criar ${txCount} lançamentos, mas você só tem ${transactionsRemaining} restantes no plano grátis. Selecione "Único" ou faça upgrade para o Pro.`
+        );
+        setLoading(false);
+        return;
+      }
     }
 
     setLoading(true);
@@ -192,9 +242,18 @@ export function TransactionForm({
     };
 
     if (mode === "edit" && initialData) {
+      const updateData: Record<string, unknown> = { ...baseData };
+
+      if (initialData.scope === "personal" && scope === "business" && !canUseBusinessScope) {
+        setUpgradeFeature("business_scope");
+        setShowUpgradeModal(true);
+        setLoading(false);
+        return;
+      }
+
       const { error } = await supabase
         .from("transactions")
-        .update(baseData)
+        .update(updateData)
         .eq("id", initialData.id);
 
       if (error) {
@@ -245,7 +304,13 @@ export function TransactionForm({
   const handleDelete = async () => {
     if (!initialData) return;
     setDeleting(true);
-    await supabase.from("transactions").delete().eq("id", initialData.id);
+    const { error } = await supabase.from("transactions").delete().eq("id", initialData.id);
+    if (error) {
+      console.error("Erro ao excluir:", error);
+      setError("Erro ao excluir: " + error.message);
+      setDeleting(false);
+      return;
+    }
     setDeleting(false);
     setShowDelete(false);
     router.push("/transactions");
@@ -273,9 +338,18 @@ export function TransactionForm({
               >
                 <ArrowLeft className="h-5 w-5" />
               </Link>
-              <CardTitle>
-                {mode === "edit" ? "Editar Lançamento" : "Novo Lançamento"}
-              </CardTitle>
+              <div>
+                <CardTitle>
+                  {mode === "edit" ? "Editar Lançamento" : "Novo Lançamento"}
+                </CardTitle>
+                {mode === "create" && (
+                  <p className="text-sm text-[var(--muted-foreground)] mt-0.5">
+                    {type === "income"
+                      ? "Registre uma entrada de dinheiro"
+                      : "Registre uma saída de dinheiro"}
+                  </p>
+                )}
+              </div>
             </div>
             {mode === "edit" && (
               <Button
@@ -343,13 +417,17 @@ export function TransactionForm({
                       setCategoryId("");
                     }}
                     className={cn(
-                      "flex-1 rounded-lg border-2 px-3 py-2.5 text-sm font-medium transition-all",
+                      "flex-1 rounded-lg border-2 px-3 py-3 text-sm font-medium transition-all",
                       type === "income"
                         ? "border-[var(--income)] bg-[var(--income)]/10 text-[var(--income)]"
                         : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--income)]/50"
                     )}
                   >
-                    Receita
+                    <div className="flex flex-col items-center gap-1">
+                      <ArrowDownLeft className="h-5 w-5" />
+                      <span>Receita</span>
+                      <span className="text-[10px] opacity-70">Entrada de R$</span>
+                    </div>
                   </button>
                   <button
                     type="button"
@@ -358,13 +436,17 @@ export function TransactionForm({
                       setCategoryId("");
                     }}
                     className={cn(
-                      "flex-1 rounded-lg border-2 px-3 py-2.5 text-sm font-medium transition-all",
+                      "flex-1 rounded-lg border-2 px-3 py-3 text-sm font-medium transition-all",
                       type === "expense"
                         ? "border-[var(--expense)] bg-[var(--expense)]/10 text-[var(--expense)]"
                         : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--expense)]/50"
                     )}
                   >
-                    Despesa
+                    <div className="flex flex-col items-center gap-1">
+                      <ArrowUpRight className="h-5 w-5" />
+                      <span>Despesa</span>
+                      <span className="text-[10px] opacity-70">Saída de R$</span>
+                    </div>
                   </button>
                 </div>
               </div>
@@ -377,31 +459,34 @@ export function TransactionForm({
                     type="button"
                     onClick={() => handleScopeChange("personal")}
                     className={cn(
-                      "flex-1 rounded-lg border-2 px-3 py-2.5 text-sm font-medium transition-all",
+                      "flex-1 rounded-lg border-2 px-3 py-3 text-sm font-medium transition-all",
                       scope === "personal"
                         ? "border-[var(--personal)] bg-[var(--personal)]/10 text-[var(--personal)]"
                         : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--personal)]/50"
                     )}
                   >
-                    Pessoal
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-base">🏠</span>
+                      <span>Pessoal</span>
+                      <span className="text-[10px] opacity-70">Casa, lazer</span>
+                    </div>
                   </button>
                   <button
                     type="button"
                     onClick={() => handleScopeChange("business")}
                     className={cn(
-                      "flex-1 relative rounded-lg border-2 px-3 py-2.5 text-sm font-medium transition-all",
+                      "flex-1 relative rounded-lg border-2 px-3 py-3 text-sm font-medium transition-all",
                       scope === "business"
                         ? "border-[var(--business)] bg-[var(--business)]/10 text-[var(--business)]"
                         : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--business)]/50",
                       !canUseBusinessScope && "opacity-60"
                     )}
                   >
-                    <span className="flex items-center justify-center gap-1">
-                      Negócio
-                      {!canUseBusinessScope && (
-                        <Lock className="h-3 w-3" />
-                      )}
-                    </span>
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-base">💼</span>
+                      <span>Negócio</span>
+                      <span className="text-[10px] opacity-70">Empresa, MEI</span>
+                    </div>
                     {!canUseBusinessScope && (
                       <span className="absolute -top-2 left-1/2 -translate-x-1/2 rounded bg-[var(--primary)] px-1 py-0.5 text-[10px] text-white">
                         Pro
@@ -414,21 +499,22 @@ export function TransactionForm({
 
             <Input
               label="Descrição"
-              placeholder="Ex: Pagamento cliente, Conta de luz..."
+              placeholder={
+                type === "income"
+                  ? "Ex: Salário, Freelance, Venda..."
+                  : "Ex: Conta de luz, Aluguel, Mercado..."
+              }
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
             />
 
             <div className="grid grid-cols-2 gap-4">
-              <Input
+              <CurrencyInput
                 label="Valor (R$)"
-                type="number"
-                step="0.01"
-                min="0.01"
                 placeholder="0,00"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={setAmount}
                 required
               />
               <Input
@@ -453,11 +539,11 @@ export function TransactionForm({
               </label>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {[
-                  { value: "one_time", label: "Único" },
-                  { value: "monthly", label: "Mensal" },
-                  { value: "weekly", label: "Semanal" },
-                  { value: "yearly", label: "Anual" },
-                  { value: "installment", label: "Parcelado" },
+                  { value: "one_time", label: "Único", desc: "Uma única vez" },
+                  { value: "monthly", label: "Recorrente", desc: "Repete todo mês (cria 12)" },
+                  { value: "weekly", label: "Semanal", desc: "Repete toda semana (cria 12)" },
+                  { value: "yearly", label: "Anual", desc: "Repete todo ano (cria 12)" },
+                  { value: "installment", label: "Parcelado", desc: "Dividido em parcelas" },
                 ].map((option) => (
                   <button
                     key={option.value}
@@ -476,12 +562,10 @@ export function TransactionForm({
                         "opacity-50 cursor-not-allowed"
                     )}
                   >
-                    <span className="flex items-center justify-center gap-1">
-                      {option.label}
-                      {option.value === "installment" && !canUseInstallment && (
-                        <Lock className="h-3 w-3" />
-                      )}
-                    </span>
+                    <div className="flex flex-col items-center">
+                      <span>{option.label}</span>
+                      <span className="text-[10px] opacity-70">{option.desc}</span>
+                    </div>
                   </button>
                 ))}
               </div>
@@ -518,9 +602,14 @@ export function TransactionForm({
             {(frequency === "monthly" ||
               frequency === "weekly" ||
               frequency === "yearly") && (
-              <div className="rounded-lg bg-[var(--accent)] p-3 text-sm text-[var(--muted-foreground)]">
-                Serão geradas automaticamente 12 previsões a partir da data
-                informada.
+              <div className="rounded-lg border border-[var(--warning)]/30 bg-[var(--warning)]/5 p-3 text-sm text-[var(--warning)]">
+                <p className="font-medium mb-1">Atenção: Isso vai criar 12 lançamentos</p>
+                <p className="text-xs opacity-80">
+                  Serão geradas 12 previsões automáticas a partir da data informada.
+                  {transactionsRemaining < 12 && (
+                    <> <strong>Você só tem {transactionsRemaining} lançamentos restantes.</strong> Selecione "Único" para usar apenas 1.</>
+                  )}
+                </p>
               </div>
             )}
 
