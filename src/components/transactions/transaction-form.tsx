@@ -1,0 +1,608 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowLeft, Save, Trash2, Lock } from "lucide-react";
+import type { Category, Transaction } from "@/lib/types";
+import Link from "next/link";
+import { cn, formatCurrency } from "@/lib/utils";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { UpgradeModal } from "@/components/ui/upgrade-modal";
+import { usePlanLimits } from "@/lib/hooks/use-plan-limits";
+
+interface TransactionFormProps {
+  initialData?: Transaction;
+  mode?: "create" | "edit";
+}
+
+export function TransactionForm({
+  initialData,
+  mode = "create",
+}: TransactionFormProps) {
+  const router = useRouter();
+  const supabase = createClient();
+  const {
+    canCreateTransaction,
+    canUseBusinessScope,
+    canUseInstallment,
+    transactionsRemaining,
+    isLoading: planLoading,
+    refresh: refreshPlan,
+  } = usePlanLimits();
+
+  const [type, setType] = useState<string>(initialData?.type || "expense");
+  const [scope, setScope] = useState<string>(initialData?.scope || "personal");
+  const [description, setDescription] = useState(
+    initialData?.description || ""
+  );
+  const [amount, setAmount] = useState(
+    initialData?.amount?.toString() || ""
+  );
+  const [categoryId, setCategoryId] = useState(
+    initialData?.category_id || ""
+  );
+  const [transactionDate, setTransactionDate] = useState(
+    initialData?.transaction_date || new Date().toISOString().split("T")[0]
+  );
+  const [frequency, setFrequency] = useState(
+    initialData?.frequency || "one_time"
+  );
+  const [installmentTotal, setInstallmentTotal] = useState(
+    initialData?.installment_total?.toString() || ""
+  );
+  const [notes, setNotes] = useState(initialData?.notes || "");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [showDelete, setShowDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeFeature, setUpgradeFeature] = useState<string>("");
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const { data } = await supabase
+        .from("categories")
+        .select("*")
+        .eq("scope", scope)
+        .eq("type", type)
+        .order("name");
+      if (data) setCategories(data);
+    };
+    fetchCategories();
+  }, [supabase, scope, type]);
+
+  const categoryOptions = [
+    { value: "", label: "Sem categoria" },
+    ...categories.map((c) => ({ value: c.id, label: c.name })),
+  ];
+
+  const handleScopeChange = (newScope: string) => {
+    if (newScope === "business" && !canUseBusinessScope) {
+      setUpgradeFeature("business_scope");
+      setShowUpgradeModal(true);
+      return;
+    }
+    setScope(newScope);
+    setCategoryId("");
+  };
+
+  const handleFrequencyChange = (newFrequency: string) => {
+    if (newFrequency === "installment" && !canUseInstallment) {
+      setUpgradeFeature("installment");
+      setShowUpgradeModal(true);
+      return;
+    }
+    setFrequency(newFrequency as typeof frequency);
+    setInstallmentTotal("");
+  };
+
+  const generateInstallments = async (
+    baseData: Omit<Transaction, "id" | "created_at" | "updated_at">,
+    total: number
+  ) => {
+    const installments = [];
+    const baseDate = new Date(baseData.transaction_date);
+
+    for (let i = 0; i < total; i++) {
+      const installmentDate = new Date(baseDate);
+      installmentDate.setMonth(installmentDate.getMonth() + i);
+
+      installments.push({
+        ...baseData,
+        installment_current: i + 1,
+        installment_total: total,
+        transaction_date: installmentDate.toISOString().split("T")[0],
+        status: i === 0 ? baseData.status : "pending",
+      });
+    }
+
+    return supabase.from("transactions").insert(installments);
+  };
+
+  const generateRecurrences = async (
+    baseData: Omit<Transaction, "id" | "created_at" | "updated_at">,
+    freq: string,
+    count: number = 12
+  ) => {
+    const recurrences = [];
+    const baseDate = new Date(baseData.transaction_date);
+
+    for (let i = 0; i < count; i++) {
+      const recurrenceDate = new Date(baseDate);
+
+      if (freq === "monthly") {
+        recurrenceDate.setMonth(recurrenceDate.getMonth() + i);
+      } else if (freq === "weekly") {
+        recurrenceDate.setDate(recurrenceDate.getDate() + i * 7);
+      } else if (freq === "yearly") {
+        recurrenceDate.setFullYear(recurrenceDate.getFullYear() + i);
+      }
+
+      recurrences.push({
+        ...baseData,
+        frequency: freq,
+        transaction_date: recurrenceDate.toISOString().split("T")[0],
+        status: i === 0 ? baseData.status : "pending",
+        parent_transaction_id: i > 0 ? null : undefined,
+      });
+    }
+
+    return supabase.from("transactions").insert(recurrences);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    if (!amount || parseFloat(amount) <= 0) {
+      setError("Informe um valor válido");
+      return;
+    }
+
+    // Verificar limite de transações
+    if (mode === "create" && !canCreateTransaction) {
+      setUpgradeFeature("transaction_limit");
+      setShowUpgradeModal(true);
+      return;
+    }
+
+    setLoading(true);
+
+    const baseData = {
+      user_id: (await supabase.auth.getUser()).data.user!.id,
+      description,
+      amount: parseFloat(amount),
+      type: type as "income" | "expense",
+      scope: scope as "business" | "personal",
+      frequency: frequency as Transaction["frequency"],
+      category_id: categoryId || null,
+      transaction_date: transactionDate,
+      status: (initialData?.status || "pending") as "pending" | "paid",
+      notes,
+      installment_current: null,
+      installment_total: null,
+      parent_transaction_id: null,
+      due_date: null,
+    };
+
+    if (mode === "edit" && initialData) {
+      const { error } = await supabase
+        .from("transactions")
+        .update(baseData)
+        .eq("id", initialData.id);
+
+      if (error) {
+        setError(error.message);
+        setLoading(false);
+        return;
+      }
+
+      router.push("/transactions");
+      return;
+    }
+
+    if (frequency === "installment" && installmentTotal) {
+      const total = parseInt(installmentTotal);
+      const { error } = await generateInstallments(baseData, total);
+      if (error) {
+        setError(error.message);
+        setLoading(false);
+        return;
+      }
+    } else if (frequency !== "one_time" && frequency !== "installment") {
+      const { error } = await generateRecurrences(baseData, frequency);
+      if (error) {
+        setError(error.message);
+        setLoading(false);
+        return;
+      }
+    } else {
+      const { error } = await supabase.from("transactions").insert(baseData);
+      if (error) {
+        // Se o erro for de limite do plano, mostrar modal
+        if (error.message.includes("limite") || error.message.includes("plano")) {
+          setUpgradeFeature("transaction_limit");
+          setShowUpgradeModal(true);
+          setLoading(false);
+          return;
+        }
+        setError(error.message);
+        setLoading(false);
+        return;
+      }
+    }
+
+    await refreshPlan();
+    router.push("/transactions");
+  };
+
+  const handleDelete = async () => {
+    if (!initialData) return;
+    setDeleting(true);
+    await supabase.from("transactions").delete().eq("id", initialData.id);
+    setDeleting(false);
+    setShowDelete(false);
+    router.push("/transactions");
+  };
+
+  if (planLoading) {
+    return (
+      <Card className="w-full max-w-2xl">
+        <CardContent className="flex items-center justify-center py-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--primary)] border-t-transparent" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <>
+      <Card className="w-full max-w-2xl">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Link
+                href="/transactions"
+                className="rounded-lg p-1 hover:bg-[var(--accent)]"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Link>
+              <CardTitle>
+                {mode === "edit" ? "Editar Lançamento" : "Novo Lançamento"}
+              </CardTitle>
+            </div>
+            {mode === "edit" && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowDelete(true)}
+                className="text-[var(--muted-foreground)] hover:text-[var(--destructive)] hover:bg-[var(--destructive)]/10"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="rounded-lg bg-[var(--destructive)]/10 p-3 text-sm text-[var(--destructive)]">
+                {error}
+              </div>
+            )}
+
+            {/* Aviso de limite de transações */}
+            {mode === "create" && transactionsRemaining >= 0 && (
+              <div
+                className={cn(
+                  "rounded-lg p-3 text-sm",
+                  transactionsRemaining <= 5
+                    ? "bg-[var(--warning)]/10 text-[var(--warning)]"
+                    : "bg-[var(--accent)] text-[var(--muted-foreground)]"
+                )}
+              >
+                {transactionsRemaining === 0 ? (
+                  <p>
+                    Você atingiu o limite de 30 lançamentos do mês.{" "}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUpgradeFeature("transaction_limit");
+                        setShowUpgradeModal(true);
+                      }}
+                      className="font-medium underline"
+                    >
+                      Faça upgrade para o Pro
+                    </button>
+                  </p>
+                ) : (
+                  <p>
+                    Você tem <strong>{transactionsRemaining}</strong> lançamentos
+                    restantes este mês no plano grátis.
+                  </p>
+                )}
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-[var(--foreground)]">
+                  Tipo
+                </label>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setType("income");
+                      setCategoryId("");
+                    }}
+                    className={cn(
+                      "flex-1 rounded-lg border-2 px-3 py-2.5 text-sm font-medium transition-all",
+                      type === "income"
+                        ? "border-[var(--income)] bg-[var(--income)]/10 text-[var(--income)]"
+                        : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--income)]/50"
+                    )}
+                  >
+                    Receita
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setType("expense");
+                      setCategoryId("");
+                    }}
+                    className={cn(
+                      "flex-1 rounded-lg border-2 px-3 py-2.5 text-sm font-medium transition-all",
+                      type === "expense"
+                        ? "border-[var(--expense)] bg-[var(--expense)]/10 text-[var(--expense)]"
+                        : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--expense)]/50"
+                    )}
+                  >
+                    Despesa
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-[var(--foreground)]">
+                  Escopo
+                </label>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleScopeChange("personal")}
+                    className={cn(
+                      "flex-1 rounded-lg border-2 px-3 py-2.5 text-sm font-medium transition-all",
+                      scope === "personal"
+                        ? "border-[var(--personal)] bg-[var(--personal)]/10 text-[var(--personal)]"
+                        : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--personal)]/50"
+                    )}
+                  >
+                    Pessoal
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleScopeChange("business")}
+                    className={cn(
+                      "flex-1 relative rounded-lg border-2 px-3 py-2.5 text-sm font-medium transition-all",
+                      scope === "business"
+                        ? "border-[var(--business)] bg-[var(--business)]/10 text-[var(--business)]"
+                        : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--business)]/50",
+                      !canUseBusinessScope && "opacity-60"
+                    )}
+                  >
+                    <span className="flex items-center justify-center gap-1">
+                      Negócio
+                      {!canUseBusinessScope && (
+                        <Lock className="h-3 w-3" />
+                      )}
+                    </span>
+                    {!canUseBusinessScope && (
+                      <span className="absolute -top-2 left-1/2 -translate-x-1/2 rounded bg-[var(--primary)] px-1 py-0.5 text-[10px] text-white">
+                        Pro
+                      </span>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <Input
+              label="Descrição"
+              placeholder="Ex: Pagamento cliente, Conta de luz..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            />
+
+            <div className="grid grid-cols-2 gap-4">
+              <Input
+                label="Valor (R$)"
+                type="number"
+                step="0.01"
+                min="0.01"
+                placeholder="0,00"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                required
+              />
+              <Input
+                label="Data"
+                type="date"
+                value={transactionDate}
+                onChange={(e) => setTransactionDate(e.target.value)}
+                required
+              />
+            </div>
+
+            <Select
+              label="Categoria"
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              options={categoryOptions}
+            />
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-[var(--foreground)]">
+                Frequência
+              </label>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                {[
+                  { value: "one_time", label: "Único" },
+                  { value: "monthly", label: "Mensal" },
+                  { value: "weekly", label: "Semanal" },
+                  { value: "yearly", label: "Anual" },
+                  { value: "installment", label: "Parcelado" },
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => handleFrequencyChange(option.value)}
+                    disabled={
+                      option.value === "installment" && !canUseInstallment
+                    }
+                    className={cn(
+                      "rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all",
+                      frequency === option.value
+                        ? "border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]"
+                        : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--primary)]/50",
+                      option.value === "installment" &&
+                        !canUseInstallment &&
+                        "opacity-50 cursor-not-allowed"
+                    )}
+                  >
+                    <span className="flex items-center justify-center gap-1">
+                      {option.label}
+                      {option.value === "installment" && !canUseInstallment && (
+                        <Lock className="h-3 w-3" />
+                      )}
+                    </span>
+                  </button>
+                ))}
+              </div>
+              {frequency === "installment" && !canUseInstallment && (
+                <p className="mt-1 text-xs text-[var(--muted-foreground)]">
+                  Parcelado disponível no{" "}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setUpgradeFeature("installment");
+                      setShowUpgradeModal(true);
+                    }}
+                    className="font-medium text-[var(--primary)] underline"
+                  >
+                    Plano Pro
+                  </button>
+                </p>
+              )}
+            </div>
+
+            {frequency === "installment" && (
+              <Input
+                label="Número de parcelas"
+                type="number"
+                min="2"
+                max="60"
+                placeholder="Ex: 12"
+                value={installmentTotal}
+                onChange={(e) => setInstallmentTotal(e.target.value)}
+                required
+              />
+            )}
+
+            {(frequency === "monthly" ||
+              frequency === "weekly" ||
+              frequency === "yearly") && (
+              <div className="rounded-lg bg-[var(--accent)] p-3 text-sm text-[var(--muted-foreground)]">
+                Serão geradas automaticamente 12 previsões a partir da data
+                informada.
+              </div>
+            )}
+
+            {frequency === "installment" && installmentTotal && amount && (
+              <div className="rounded-lg border border-[var(--border)] bg-[var(--accent)]/50 p-3">
+                <p className="mb-1 text-sm font-medium text-[var(--foreground)]">
+                  Preview das parcelas:
+                </p>
+                <div className="flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
+                  <span>
+                    <strong>{installmentTotal}x</strong> de{" "}
+                    <strong className="text-[var(--foreground)]">
+                      {formatCurrency(
+                        parseFloat(amount) / parseInt(installmentTotal)
+                      )}
+                    </strong>
+                  </span>
+                </div>
+                <p className="mt-1 text-xs text-[var(--muted-foreground)]">
+                  Rótulos: 1/{installmentTotal} até {installmentTotal}/
+                  {installmentTotal}
+                </p>
+              </div>
+            )}
+
+            {frequency === "installment" && installmentTotal && !amount && (
+              <div className="rounded-lg bg-[var(--accent)] p-3 text-sm text-[var(--muted-foreground)]">
+                Serão criadas{" "}
+                <strong>{installmentTotal} parcelas</strong> com rótulos de{" "}
+                <strong>1/{installmentTotal}</strong> a{" "}
+                <strong>
+                  {installmentTotal}/{installmentTotal}
+                </strong>
+                .
+              </div>
+            )}
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-[var(--foreground)]">
+                Observações (opcional)
+              </label>
+              <textarea
+                className="flex min-h-[80px] w-full rounded-lg border border-[var(--input)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2"
+                placeholder="Alguma observação..."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+              />
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <Link href="/transactions" className="flex-1">
+                <Button type="button" variant="outline" className="w-full">
+                  Cancelar
+                </Button>
+              </Link>
+              <Button type="submit" className="flex-1 gap-2" disabled={loading}>
+                <Save className="h-4 w-4" />
+                {loading
+                  ? "Salvando..."
+                  : mode === "edit"
+                    ? "Salvar Alterações"
+                    : "Criar Lançamento"}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+        <ConfirmDialog
+          open={showDelete}
+          onClose={() => setShowDelete(false)}
+          onConfirm={handleDelete}
+          title="Excluir lançamento"
+          description="Tem certeza que deseja excluir este lançamento? Esta ação não pode ser desfeita."
+          confirmLabel="Excluir"
+          loading={deleting}
+        />
+      </Card>
+
+      <UpgradeModal
+        open={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        feature={upgradeFeature}
+      />
+    </>
+  );
+}

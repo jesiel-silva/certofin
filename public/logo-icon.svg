@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <!-- Gradient for the left wing (outer bend) -->
+    <linearGradient id="left-wing-grad" x1="15" y1="45" x2="35" y2="65" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0073BC" />
+      <stop offset="100%" stop-color="#054388" />
+    </linearGradient>
+
+    <!-- Gradient for the bottom-left fold/shadow -->
+    <linearGradient id="bottom-fold-grad" x1="20" y1="70" x2="45" y2="55" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#031F44" />
+      <stop offset="100%" stop-color="#005A9C" />
+    </linearGradient>
+
+    <!-- Gradient for the main rising arrow -->
+    <linearGradient id="arrow-grad" x1="30" y1="80" x2="90" y2="20" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#054388" />
+      <stop offset="35%" stop-color="#0073BC" />
+      <stop offset="70%" stop-color="#00A0E3" />
+      <stop offset="100%" stop-color="#009B9E" />
+    </linearGradient>
+  </defs>
+
+  <!-- Left Wing / Outer Chevron (Medium Blue) -->
+  <path d="M 12 55 L 26 69 L 38 57 L 24 43 Z" fill="url(#left-wing-grad)" />
+
+  <!-- Bottom Fold / Underlay Shadow (Dark Blue) -->
+  <path d="M 26 69 L 41 84 L 53 72 L 38 57 Z" fill="url(#bottom-fold-grad)" />
+
+  <!-- Main Rising Arrow (Blue-to-Teal Gradient) -->
+  <path d="M 33 76 L 73 36 L 68 31 L 90 22 L 90 44 L 85 39 L 45 79 Z" fill="url(#arrow-grad)" />
+</svg>
