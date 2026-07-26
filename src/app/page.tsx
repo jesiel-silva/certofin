@@ -138,6 +138,31 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,155,158,0.06),transparent_50%),radial-gradient(ellipse_at_bottom,rgba(5,67,136,0.06),transparent_50%)] pointer-events-none" />
         <div className="absolute top-20 left-1/4 h-[350px] w-[350px] rounded-full bg-[#009B9E]/10 blur-[100px] animate-pulse pointer-events-none" />
         <div className="absolute bottom-20 right-1/4 h-[350px] w-[350px] rounded-full bg-[#054388]/8 blur-[120px] animate-pulse pointer-events-none" />
+
+        {/* Logo Watermark */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-[500px] w-[500px] opacity-[0.04]">
+            <defs>
+              <linearGradient id="wm-left-wing" x1="15" y1="45" x2="35" y2="65" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#0073BC" />
+                <stop offset="100%" stopColor="#054388" />
+              </linearGradient>
+              <linearGradient id="wm-bottom-fold" x1="20" y1="70" x2="45" y2="55" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#031F44" />
+                <stop offset="100%" stopColor="#005A9C" />
+              </linearGradient>
+              <linearGradient id="wm-arrow" x1="30" y1="80" x2="90" y2="20" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#054388" />
+                <stop offset="35%" stopColor="#0073BC" />
+                <stop offset="70%" stopColor="#00A0E3" />
+                <stop offset="100%" stopColor="#009B9E" />
+              </linearGradient>
+            </defs>
+            <path d="M 12 55 L 26 69 L 38 57 L 24 43 Z" fill="url(#wm-left-wing)" />
+            <path d="M 26 69 L 41 84 L 53 72 L 38 57 Z" fill="url(#wm-bottom-fold)" />
+            <path d="M 33 76 L 73 36 L 68 31 L 90 22 L 90 44 L 85 39 L 45 79 Z" fill="url(#wm-arrow)" />
+          </svg>
+        </div>
         
         <div className="relative mx-auto max-w-6xl px-6 text-center">
           <div className="mx-auto max-w-4xl">
