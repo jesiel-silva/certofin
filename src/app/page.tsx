@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
+import { ForceLightTheme } from "@/components/ui/force-light-theme";
 import {
   BarChart3,
   Shield,
@@ -85,6 +86,7 @@ const stats = [
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-200 via-gray-100 to-gray-50 antialiased transition-colors duration-300">
+      <ForceLightTheme />
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/70 dark:bg-[#0a0a0a]/70 backdrop-blur-md transition-all">
         <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
