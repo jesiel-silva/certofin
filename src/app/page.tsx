@@ -140,8 +140,8 @@ export default function HomePage() {
         <div className="absolute bottom-20 right-1/4 h-[350px] w-[350px] rounded-full bg-[#054388]/8 blur-[120px] animate-pulse pointer-events-none" />
 
         {/* Logo Watermark */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0">
-          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-[500px] w-[500px] opacity-[0.04]">
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none" style={{ zIndex: 0 }}>
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-[600px] w-[600px]" style={{ opacity: 0.08 }}>
             <defs>
               <linearGradient id="wm-left-wing" x1="15" y1="45" x2="35" y2="65" gradientUnits="userSpaceOnUse">
                 <stop offset="0%" stopColor="#0073BC" />
@@ -164,7 +164,7 @@ export default function HomePage() {
           </svg>
         </div>
         
-        <div className="relative mx-auto max-w-6xl px-6 text-center z-10">
+        <div className="relative mx-auto max-w-6xl px-6 text-center" style={{ zIndex: 10 }}>
           <div className="mx-auto max-w-4xl">
             <div className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-slate-200/80 dark:border-slate-800/80 bg-white/60 dark:bg-slate-900/60 px-4 py-2 text-xs font-semibold text-[var(--muted-foreground)] backdrop-blur shadow-sm">
               <CheckCircle className="h-4 w-4 text-[var(--primary)]" />
