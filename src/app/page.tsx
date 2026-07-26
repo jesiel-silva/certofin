@@ -140,8 +140,9 @@ export default function HomePage() {
         <div className="absolute bottom-20 right-1/4 h-[350px] w-[350px] rounded-full bg-[#054388]/8 blur-[120px] animate-pulse pointer-events-none" />
 
         {/* Logo Watermark */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none" style={{ zIndex: 0 }}>
-          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-[600px] w-[600px]" style={{ opacity: 0.08 }}>
+        <div className="absolute inset-0 pointer-events-none select-none" style={{ zIndex: 0 }}>
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-[10%] flex items-center justify-center">
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-[600px] w-[600px]" style={{ opacity: 0.08 }}>
             <defs>
               <linearGradient id="wm-left-wing" x1="15" y1="45" x2="35" y2="65" gradientUnits="userSpaceOnUse">
                 <stop offset="0%" stopColor="#0073BC" />
@@ -162,6 +163,7 @@ export default function HomePage() {
             <path d="M 26 69 L 41 84 L 53 72 L 38 57 Z" fill="url(#wm-bottom-fold)" />
             <path d="M 33 76 L 73 36 L 68 31 L 90 22 L 90 44 L 85 39 L 45 79 Z" fill="url(#wm-arrow)" />
           </svg>
+          </div>
         </div>
         
         <div className="relative mx-auto max-w-6xl px-6 text-center" style={{ zIndex: 10 }}>
