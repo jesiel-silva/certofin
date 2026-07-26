@@ -84,7 +84,7 @@ const stats = [
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gray-50 antialiased transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-b from-gray-100 via-gray-50 to-white antialiased transition-colors duration-300">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/70 dark:bg-[#0a0a0a]/70 backdrop-blur-md transition-all">
         <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
