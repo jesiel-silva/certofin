@@ -85,7 +85,7 @@ const stats = [
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-200 via-gray-100 to-gray-50 antialiased transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-b from-blue-100 via-blue-50 to-white antialiased transition-colors duration-300">
       <ForceLightTheme />
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/70 dark:bg-[#0a0a0a]/70 backdrop-blur-md transition-all">
@@ -628,7 +628,7 @@ export default function HomePage() {
           <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <Link href="/" className="flex items-center">
-                <Logo size="sm" />
+<Logo size="md" />
               </Link>
               <p className="mt-6 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                 A ferramenta mais simples e inteligente para separar as contas pessoais e corporativas de empreendedores individuais.

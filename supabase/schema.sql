@@ -151,20 +151,41 @@ BEGIN
   INSERT INTO public.categories (user_id, name, icon, color, scope, type, is_default) VALUES
     (NEW.id, 'Serviços Prestados', 'briefcase', '#22c55e', 'business', 'income', true),
     (NEW.id, 'Vendas', 'shopping-cart', '#16a34a', 'business', 'income', true),
-    (NEW.id, 'Comissões', 'percent', '#15803d', 'business', 'income', true);
+    (NEW.id, 'Comissões', 'percent', '#15803d', 'business', 'income', true),
+    (NEW.id, 'Freelance', 'laptop', '#10b981', 'business', 'income', true),
+    (NEW.id, 'Consultoria', 'users', '#059669', 'business', 'income', true),
+    (NEW.id, 'Aluguel de Equipamentos', 'package', '#047857', 'business', 'income', true),
+    (NEW.id, 'Royalties e Licenças', 'file-text', '#065f46', 'business', 'income', true),
+    (NEW.id, 'Reembolsos', 'rotate-ccw', '#34d399', 'business', 'income', true);
 
   -- Categorias de Negócio - Despesa
   INSERT INTO public.categories (user_id, name, icon, color, scope, type, is_default) VALUES
     (NEW.id, 'Combustível', 'fuel', '#ef4444', 'business', 'expense', true),
     (NEW.id, 'Manutenção', 'wrench', '#dc2626', 'business', 'expense', true),
     (NEW.id, 'Insumos', 'package', '#b91c1c', 'business', 'expense', true),
-    (NEW.id, 'Taxas e Taxas', 'credit-card', '#991b1b', 'business', 'expense', true);
+    (NEW.id, 'Taxas e Tarifas', 'credit-card', '#991b1b', 'business', 'expense', true),
+    (NEW.id, 'Aluguel de Espaço', 'building', '#f87171', 'business', 'expense', true),
+    (NEW.id, 'Software e Sistemas', 'monitor', '#fca5a5', 'business', 'expense', true),
+    (NEW.id, 'Marketing e Publicidade', 'megaphone', '#dc2626', 'business', 'expense', true),
+    (NEW.id, 'Impostos e Taxas Governamentais', 'landmark', '#b91c1c', 'business', 'expense', true),
+    (NEW.id, 'Frete e Entrega', 'truck', '#ef4444', 'business', 'expense', true),
+    (NEW.id, 'Telefonia e Internet', 'phone', '#f87171', 'business', 'expense', true),
+    (NEW.id, 'Material de Escritório', 'pen-tool', '#dc2626', 'business', 'expense', true),
+    (NEW.id, 'Capacitação e Cursos', 'graduation-cap', '#b91c1c', 'business', 'expense', true),
+    (NEW.id, 'Profissionais e Terceirizados', 'users', '#991b1b', 'business', 'expense', true),
+    (NEW.id, 'Seguros', 'shield', '#ef4444', 'business', 'expense', true);
 
   -- Categorias de Pessoal - Receita
   INSERT INTO public.categories (user_id, name, icon, color, scope, type, is_default) VALUES
     (NEW.id, 'Salário', 'wallet', '#3b82f6', 'personal', 'income', true),
-    (NEW.id, 'Pro-Labore', 'hand-coins', '#2563eb', 'personal', 'income', true),
-    (NEW.id, 'Rendimentos', 'trending-up', '#1d4ed8', 'personal', 'income', true);
+    (NEW.id, 'Pró-Labore', 'hand-coins', '#2563eb', 'personal', 'income', true),
+    (NEW.id, 'Rendimentos', 'trending-up', '#1d4ed8', 'personal', 'income', true),
+    (NEW.id, 'Freelance Extra', 'laptop', '#60a5fa', 'personal', 'income', true),
+    (NEW.id, 'Presente / Doação', 'gift', '#93c5fd', 'personal', 'income', true),
+    (NEW.id, 'Dividendos e Investimentos', 'bar-chart', '#3b82f6', 'personal', 'income', true),
+    (NEW.id, 'Aluguel (Renda)', 'home', '#2563eb', 'personal', 'income', true),
+    (NEW.id, 'Venda de Item Pessoal', 'tag', '#1d4ed8', 'personal', 'income', true),
+    (NEW.id, 'Restituição / Reembolso', 'rotate-ccw', '#60a5fa', 'personal', 'income', true);
 
   -- Categorias de Pessoal - Despesa
   INSERT INTO public.categories (user_id, name, icon, color, scope, type, is_default) VALUES
@@ -174,7 +195,20 @@ BEGIN
     (NEW.id, 'Supermercado', 'shopping-basket', '#92400e', 'personal', 'expense', true),
     (NEW.id, 'Internet', 'wifi', '#78350f', 'personal', 'expense', true),
     (NEW.id, 'Lazer', 'gamepad-2', '#451a03', 'personal', 'expense', true),
-    (NEW.id, 'Transporte', 'car', '#fbbf24', 'personal', 'expense', true);
+    (NEW.id, 'Transporte', 'car', '#fbbf24', 'personal', 'expense', true),
+    (NEW.id, 'Saúde e Farmácia', 'heart-pulse', '#f97316', 'personal', 'expense', true),
+    (NEW.id, 'Educação', 'graduation-cap', '#ea580c', 'personal', 'expense', true),
+    (NEW.id, 'Vestuário', 'shirt', '#c2410c', 'personal', 'expense', true),
+    (NEW.id, 'Academia e Esportes', 'dumbbell', '#f97316', 'personal', 'expense', true),
+    (NEW.id, 'Assinaturas e Apps', 'credit-card', '#ea580c', 'personal', 'expense', true),
+    (NEW.id, 'Pet', 'paw-print', '#c2410c', 'personal', 'expense', true),
+    (NEW.id, 'Presentes', 'gift', '#f97316', 'personal', 'expense', true),
+    (NEW.id, 'Viagens', 'plane', '#ea580c', 'personal', 'expense', true),
+    (NEW.id, 'Eletroeletrônicos', 'smartphone', '#c2410c', 'personal', 'expense', true),
+    (NEW.id, 'Manutenção Residencial', 'home', '#f97316', 'personal', 'expense', true),
+    (NEW.id, 'Documentos e Impostos Pessoais', 'file-text', '#ea580c', 'personal', 'expense', true),
+    (NEW.id, 'Previdência e Investimentos', 'piggy-bank', '#c2410c', 'personal', 'expense', true),
+    (NEW.id, 'Outros', 'more-horizontal', '#92400e', 'personal', 'expense', false);
 
   RETURN NEW;
 END;

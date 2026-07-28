@@ -13,7 +13,7 @@ interface UpgradeModalProps {
 export function UpgradeModal({ open, onClose, feature }: UpgradeModalProps) {
   const handleUpgrade = () => {
     // TODO: Implementar fluxo de checkout
-    window.location.href = "/planos";
+    window.location.href = "/personal/planos";
   };
 
   const getFeatureMessage = () => {

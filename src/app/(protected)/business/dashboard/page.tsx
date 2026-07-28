@@ -3,11 +3,11 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export default function TransactionsRedirect() {
+export default function BusinessDashboardPage() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace("/personal/transactions");
+    router.replace("/personal/dashboard");
   }, [router]);
 
   return (

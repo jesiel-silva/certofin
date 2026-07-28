@@ -40,7 +40,9 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/update-password");
 
   const isProtectedPage = request.nextUrl.pathname.startsWith("/dashboard") ||
-    request.nextUrl.pathname.startsWith("/transactions");
+    request.nextUrl.pathname.startsWith("/transactions") ||
+    request.nextUrl.pathname.startsWith("/personal") ||
+    request.nextUrl.pathname.startsWith("/business");
 
   if (!user && isProtectedPage) {
     const url = request.nextUrl.clone();
@@ -50,7 +52,7 @@ export async function updateSession(request: NextRequest) {
 
   if (user && isAuthPage) {
     const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
+    url.pathname = "/personal/dashboard";
     return NextResponse.redirect(url);
   }
 

@@ -1,113 +1,118 @@
 "use client";
 
-import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   TrendingUp,
   TrendingDown,
   Wallet,
-  CalendarClock,
-  Plus,
+  DollarSign,
+  BarChart3,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 
 interface KpiCardsProps {
-  totalIncome: number;
-  totalExpense: number;
-  balance: number;
-  pendingAmount: number;
-  pendingCount: number;
+  personalIncome: number;
+  personalExpense: number;
+  businessIncome: number;
+  businessExpense: number;
+  businessProfit: number;
+  isEmpty: boolean;
 }
 
 export function KpiCards({
-  totalIncome,
-  totalExpense,
-  balance,
-  pendingAmount,
-  pendingCount,
+  personalIncome,
+  personalExpense,
+  businessIncome,
+  businessExpense,
+  businessProfit,
+  isEmpty,
 }: KpiCardsProps) {
+  const personalNet = personalIncome - personalExpense;
+  const businessNet = businessIncome - businessExpense;
+
   const cards = [
     {
-      title: "Entradas do Mês",
-      value: totalIncome,
+      title: "Receita Pessoal",
+      value: personalNet,
       icon: TrendingUp,
-      color: "text-[var(--income)]",
-      bg: "bg-[var(--income)]/10",
-      hint: "Adicione seu salário, freelance, vendas...",
-      hintLink: "/transactions/new?type=income",
-      hintLabel: "+ Adicionar receita",
-      isEmpty: totalIncome === 0,
+      color: personalNet >= 0 ? "text-emerald-600" : "text-rose-600",
+      bg: personalNet >= 0 ? "bg-emerald-500/10" : "bg-rose-500/10",
+      subtitle: `${formatCurrency(personalIncome)} - ${formatCurrency(personalExpense)}`,
     },
     {
-      title: "Saídas Pagas",
-      value: totalExpense,
+      title: "Gastos Pessoal",
+      value: personalExpense,
       icon: TrendingDown,
-      color: "text-[var(--expense)]",
-      bg: "bg-[var(--expense)]/10",
-      hint: "Registre contas, aluguel, mercado...",
-      hintLink: "/transactions/new?type=expense",
-      hintLabel: "+ Adicionar despesa",
-      isEmpty: totalExpense === 0,
+      color: "text-rose-600",
+      bg: "bg-rose-500/10",
+      subtitle: null,
     },
     {
-      title: "Saldo Geral",
-      value: balance,
-      icon: Wallet,
-      color:
-        balance >= 0 ? "text-[var(--income)]" : "text-[var(--expense)]",
-      bg: balance >= 0 ? "bg-[var(--income)]/10" : "bg-[var(--expense)]/10",
-      hint: "Adicione lançamentos para ver seu saldo",
-      hintLink: "/transactions/new?type=income",
-      hintLabel: "+ Começar",
-      isEmpty: totalIncome === 0 && totalExpense === 0,
+      title: "Receita Negócio",
+      value: businessNet,
+      icon: TrendingUp,
+      color: businessNet >= 0 ? "text-blue-600" : "text-rose-600",
+      bg: businessNet >= 0 ? "bg-blue-500/10" : "bg-rose-500/10",
+      subtitle: `${formatCurrency(businessIncome)} - ${formatCurrency(businessExpense)}`,
     },
     {
-      title: "A Pagar (Pendente)",
-      value: pendingAmount,
-      count: pendingCount,
-      icon: CalendarClock,
-      color: "text-[var(--warning)]",
-      bg: "bg-[var(--warning)]/10",
-      hint: "Nenhuma conta pendente",
-      hintLink: null,
-      hintLabel: "",
-      isEmpty: pendingAmount === 0,
+      title: "Gastos Negócio",
+      value: businessExpense,
+      icon: TrendingDown,
+      color: "text-orange-600",
+      bg: "bg-orange-500/10",
+      subtitle: null,
+    },
+    {
+      title: "Lucro da Empresa",
+      value: businessProfit,
+      icon: DollarSign,
+      color: businessProfit >= 0 ? "text-emerald-600" : "text-rose-600",
+      bg: businessProfit >= 0 ? "bg-emerald-500/10" : "bg-rose-500/10",
+      subtitle: null,
     },
   ];
 
+  if (isEmpty) {
+    return (
+      <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--card)] p-8 text-center">
+        <Wallet className="mx-auto h-10 w-10 text-[var(--muted-foreground)]/40" />
+        <p className="mt-3 text-sm font-medium text-[var(--muted-foreground)]">
+          Nenhum lançamento este mês
+        </p>
+        <p className="mt-1 text-xs text-[var(--muted-foreground)]/70">
+          Comece adicionando uma receita ou despesa
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
       {cards.map((card) => (
         <Card key={card.title}>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-[var(--muted-foreground)]">
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">
               {card.title}
             </CardTitle>
             <div className={cn("rounded-lg p-2", card.bg)}>
-              <card.icon className={cn("h-4 w-4", card.color)} />
+              <card.icon className={cn("h-5 w-5", card.color)} />
             </div>
           </CardHeader>
           <CardContent>
             <p className={cn("text-2xl font-bold", card.color)}>
               {formatCurrency(card.value)}
             </p>
-            {card.count !== undefined && card.count > 0 && (
-              <p className="mt-1 text-sm font-medium text-[var(--muted-foreground)]">
-                {card.count} {card.count === 1 ? "conta" : "contas"} {card.count === 1 ? "pendente" : "pendentes"}
+            {card.subtitle && (
+              <p className="mt-1 text-xs text-[var(--muted-foreground)]">
+                {card.subtitle}
               </p>
             )}
-            {card.isEmpty && card.hintLink && (
-              <Link href={card.hintLink}>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="mt-2 h-auto p-0 text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-                >
-                  {card.hintLabel}
-                </Button>
-              </Link>
+            {card.title === "Lucro da Empresa" && (
+              <p className="mt-1 text-xs font-medium text-[var(--muted-foreground)]">
+                Receita - Gastos do negócio
+              </p>
             )}
           </CardContent>
         </Card>

@@ -12,10 +12,10 @@ import {
   ArrowLeft,
   Save,
   Trash2,
-  Lock,
   ArrowDownLeft,
   ArrowUpRight,
-  Info,
+  Home,
+  Briefcase,
 } from "lucide-react";
 import type { Category, Transaction } from "@/lib/types";
 import Link from "next/link";
@@ -27,18 +27,19 @@ import { usePlanLimits } from "@/lib/hooks/use-plan-limits";
 interface TransactionFormProps {
   initialData?: Transaction;
   mode?: "create" | "edit";
+  initialScope?: "personal" | "business";
   initialType?: "income" | "expense" | null;
 }
 
 export function TransactionForm({
   initialData,
   mode = "create",
+  initialScope = "personal",
   initialType,
 }: TransactionFormProps) {
   const router = useRouter();
   const supabase = createClient();
   const {
-    canCreateTransaction,
     canUseBusinessScope,
     canUseInstallment,
     transactionsRemaining,
@@ -46,26 +47,14 @@ export function TransactionForm({
     refresh: refreshPlan,
   } = usePlanLimits();
 
-  const [type, setType] = useState<string>(initialData?.type || initialType || "expense");
-  const [scope, setScope] = useState<string>(initialData?.scope || "personal");
-  const [description, setDescription] = useState(
-    initialData?.description || ""
-  );
-  const [amount, setAmount] = useState(
-    initialData?.amount ? initialData.amount.toFixed(2) : ""
-  );
-  const [categoryId, setCategoryId] = useState(
-    initialData?.category_id || ""
-  );
-  const [transactionDate, setTransactionDate] = useState(
-    initialData?.transaction_date || new Date().toISOString().split("T")[0]
-  );
-  const [frequency, setFrequency] = useState(
-    initialData?.frequency || "one_time"
-  );
-  const [installmentTotal, setInstallmentTotal] = useState(
-    initialData?.installment_total?.toString() || ""
-  );
+  const [scope, setScope] = useState<"personal" | "business">(initialData?.scope || initialScope);
+  const [type, setType] = useState<"income" | "expense">(initialData?.type || (initialType as "income" | "expense") || "expense");
+  const [description, setDescription] = useState(initialData?.description || "");
+  const [amount, setAmount] = useState(initialData?.amount ? initialData.amount.toFixed(2) : "");
+  const [categoryId, setCategoryId] = useState(initialData?.category_id || "");
+  const [transactionDate, setTransactionDate] = useState(initialData?.transaction_date || new Date().toISOString().split("T")[0]);
+  const [frequency, setFrequency] = useState<Transaction["frequency"]>(initialData?.frequency || "one_time");
+  const [installmentTotal, setInstallmentTotal] = useState(initialData?.installment_total?.toString() || "");
   const [notes, setNotes] = useState(initialData?.notes || "");
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
@@ -73,11 +62,10 @@ export function TransactionForm({
   const [showDelete, setShowDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-  const [upgradeFeature, setUpgradeFeature] = useState<string>("");
+  const [upgradeFeature, setUpgradeFeature] = useState("");
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const user = (await supabase.auth.getUser()).data.user;
       const { data } = await supabase
         .from("categories")
         .select("*")
@@ -94,7 +82,7 @@ export function TransactionForm({
     ...categories.map((c) => ({ value: c.id, label: c.name })),
   ];
 
-  const handleScopeChange = (newScope: string) => {
+  const handleScopeChange = (newScope: "personal" | "business") => {
     if (newScope === "business" && !canUseBusinessScope) {
       setUpgradeFeature("business_scope");
       setShowUpgradeModal(true);
@@ -104,13 +92,18 @@ export function TransactionForm({
     setCategoryId("");
   };
 
+  const handleTypeChange = (newType: "income" | "expense") => {
+    setType(newType);
+    setCategoryId("");
+  };
+
   const handleFrequencyChange = (newFrequency: string) => {
     if (newFrequency === "installment" && !canUseInstallment) {
       setUpgradeFeature("installment");
       setShowUpgradeModal(true);
       return;
     }
-    setFrequency(newFrequency as typeof frequency);
+    setFrequency(newFrequency as Transaction["frequency"]);
     setInstallmentTotal("");
   };
 
@@ -210,7 +203,6 @@ export function TransactionForm({
       return;
     }
 
-    // Verificar limite de transações
     if (mode === "create") {
       const txCount = getTransactionCount();
       if (txCount > transactionsRemaining) {
@@ -228,9 +220,9 @@ export function TransactionForm({
       user_id: (await supabase.auth.getUser()).data.user!.id,
       description,
       amount: parseFloat(amount),
-      type: type as "income" | "expense",
-      scope: scope as "business" | "personal",
-      frequency: frequency as Transaction["frequency"],
+      type,
+      scope,
+      frequency,
       category_id: categoryId || null,
       transaction_date: transactionDate,
       status: (initialData?.status || "pending") as "pending" | "paid",
@@ -242,18 +234,9 @@ export function TransactionForm({
     };
 
     if (mode === "edit" && initialData) {
-      const updateData: Record<string, unknown> = { ...baseData };
-
-      if (initialData.scope === "personal" && scope === "business" && !canUseBusinessScope) {
-        setUpgradeFeature("business_scope");
-        setShowUpgradeModal(true);
-        setLoading(false);
-        return;
-      }
-
       const { error } = await supabase
         .from("transactions")
-        .update(updateData)
+        .update(baseData)
         .eq("id", initialData.id);
 
       if (error) {
@@ -262,7 +245,8 @@ export function TransactionForm({
         return;
       }
 
-      router.push("/transactions");
+      const backUrl = scope === "business" ? "/business/transactions" : "/personal/transactions";
+      router.push(backUrl);
       return;
     }
 
@@ -284,7 +268,6 @@ export function TransactionForm({
     } else {
       const { error } = await supabase.from("transactions").insert(baseData);
       if (error) {
-        // Se o erro for de limite do plano, mostrar modal
         if (error.message.includes("limite") || error.message.includes("plano")) {
           setUpgradeFeature("transaction_limit");
           setShowUpgradeModal(true);
@@ -298,7 +281,8 @@ export function TransactionForm({
     }
 
     await refreshPlan();
-    router.push("/transactions");
+    const backUrl = scope === "business" ? "/business/transactions" : "/personal/transactions";
+    router.push(backUrl);
   };
 
   const handleDelete = async () => {
@@ -306,14 +290,14 @@ export function TransactionForm({
     setDeleting(true);
     const { error } = await supabase.from("transactions").delete().eq("id", initialData.id);
     if (error) {
-      console.error("Erro ao excluir:", error);
       setError("Erro ao excluir: " + error.message);
       setDeleting(false);
       return;
     }
     setDeleting(false);
     setShowDelete(false);
-    router.push("/transactions");
+    const backUrl = scope === "business" ? "/business/transactions" : "/personal/transactions";
+    router.push(backUrl);
   };
 
   if (planLoading) {
@@ -326,6 +310,10 @@ export function TransactionForm({
     );
   }
 
+  const backUrl = mode === "edit" && initialData
+    ? (initialData.scope === "business" ? "/business/transactions" : "/personal/transactions")
+    : (scope === "business" ? "/business/transactions" : "/personal/transactions");
+
   return (
     <>
       <Card className="w-full max-w-2xl">
@@ -333,7 +321,7 @@ export function TransactionForm({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Link
-                href="/transactions"
+                href={backUrl}
                 className="rounded-lg p-1 hover:bg-[var(--accent)]"
               >
                 <ArrowLeft className="h-5 w-5" />
@@ -344,9 +332,8 @@ export function TransactionForm({
                 </CardTitle>
                 {mode === "create" && (
                   <p className="text-sm text-[var(--muted-foreground)] mt-0.5">
-                    {type === "income"
-                      ? "Registre uma entrada de dinheiro"
-                      : "Registre uma saída de dinheiro"}
+                    {scope === "personal" ? "Pessoal" : "Negócio"} —{" "}
+                    {type === "income" ? "Receita" : "Despesa"}
                   </p>
                 )}
               </div>
@@ -371,8 +358,7 @@ export function TransactionForm({
               </div>
             )}
 
-            {/* Aviso de limite de transações */}
-            {mode === "create" && transactionsRemaining >= 0 && (
+            {mode === "create" && transactionsRemaining < Infinity && (
               <div
                 className={cn(
                   "rounded-lg p-3 text-sm",
@@ -404,96 +390,83 @@ export function TransactionForm({
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="mb-1.5 block text-sm font-medium text-[var(--foreground)]">
-                  Tipo
-                </label>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setType("income");
-                      setCategoryId("");
-                    }}
-                    className={cn(
-                      "flex-1 rounded-lg border-2 px-3 py-3 text-sm font-medium transition-all",
-                      type === "income"
-                        ? "border-[var(--income)] bg-[var(--income)]/10 text-[var(--income)]"
-                        : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--income)]/50"
-                    )}
-                  >
-                    <div className="flex flex-col items-center gap-1">
-                      <ArrowDownLeft className="h-5 w-5" />
-                      <span>Receita</span>
-                      <span className="text-[10px] opacity-70">Entrada de R$</span>
-                    </div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setType("expense");
-                      setCategoryId("");
-                    }}
-                    className={cn(
-                      "flex-1 rounded-lg border-2 px-3 py-3 text-sm font-medium transition-all",
-                      type === "expense"
-                        ? "border-[var(--expense)] bg-[var(--expense)]/10 text-[var(--expense)]"
-                        : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--expense)]/50"
-                    )}
-                  >
-                    <div className="flex flex-col items-center gap-1">
-                      <ArrowUpRight className="h-5 w-5" />
-                      <span>Despesa</span>
-                      <span className="text-[10px] opacity-70">Saída de R$</span>
-                    </div>
-                  </button>
-                </div>
+            {/* Abas Pessoal / Negócio */}
+            <div>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleScopeChange("personal")}
+                  className={cn(
+                    "flex-1 flex items-center justify-center gap-2 rounded-lg border-2 px-4 py-3 text-sm font-semibold transition-all",
+                    scope === "personal"
+                      ? "border-[var(--personal)] bg-[var(--personal)]/10 text-[var(--personal)]"
+                      : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--personal)]/50"
+                  )}
+                >
+                  <Home className="h-4 w-4" />
+                  Pessoal
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleScopeChange("business")}
+                  disabled={!canUseBusinessScope}
+                  className={cn(
+                    "flex-1 relative flex items-center justify-center gap-2 rounded-lg border-2 px-4 py-3 text-sm font-semibold transition-all",
+                    scope === "business"
+                      ? "border-[var(--business)] bg-[var(--business)]/10 text-[var(--business)]"
+                      : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--business)]/50",
+                    !canUseBusinessScope && "opacity-60 cursor-not-allowed"
+                  )}
+                >
+                  <Briefcase className="h-4 w-4" />
+                  Negócio
+                  {!canUseBusinessScope && (
+                    <span className="rounded bg-[var(--primary)] px-1.5 py-0.5 text-[10px] font-bold text-white">
+                      Pro
+                    </span>
+                  )}
+                </button>
               </div>
-              <div>
-                <label className="mb-1.5 block text-sm font-medium text-[var(--foreground)]">
-                  Escopo
-                </label>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleScopeChange("personal")}
-                    className={cn(
-                      "flex-1 rounded-lg border-2 px-3 py-3 text-sm font-medium transition-all",
-                      scope === "personal"
-                        ? "border-[var(--personal)] bg-[var(--personal)]/10 text-[var(--personal)]"
-                        : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--personal)]/50"
-                    )}
-                  >
-                    <div className="flex flex-col items-center gap-1">
-                      <span className="text-base">🏠</span>
-                      <span>Pessoal</span>
-                      <span className="text-[10px] opacity-70">Casa, lazer</span>
-                    </div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleScopeChange("business")}
-                    className={cn(
-                      "flex-1 relative rounded-lg border-2 px-3 py-3 text-sm font-medium transition-all",
-                      scope === "business"
-                        ? "border-[var(--business)] bg-[var(--business)]/10 text-[var(--business)]"
-                        : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--business)]/50",
-                      !canUseBusinessScope && "opacity-60"
-                    )}
-                  >
-                    <div className="flex flex-col items-center gap-1">
-                      <span className="text-base">💼</span>
-                      <span>Negócio</span>
-                      <span className="text-[10px] opacity-70">Empresa, MEI</span>
-                    </div>
-                    {!canUseBusinessScope && (
-                      <span className="absolute -top-2 left-1/2 -translate-x-1/2 rounded bg-[var(--primary)] px-1 py-0.5 text-[10px] text-white">
-                        Pro
-                      </span>
-                    )}
-                  </button>
-                </div>
+            </div>
+
+            {/* Tipo: Receita / Despesa */}
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-[var(--foreground)]">
+                Tipo
+              </label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleTypeChange("income")}
+                  className={cn(
+                    "flex-1 rounded-lg border-2 px-3 py-3 text-sm font-medium transition-all",
+                    type === "income"
+                      ? "border-[var(--income)] bg-[var(--income)]/10 text-[var(--income)]"
+                      : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--income)]/50"
+                  )}
+                >
+                  <div className="flex flex-col items-center gap-1">
+                    <ArrowDownLeft className="h-5 w-5" />
+                    <span>Receita</span>
+                    <span className="text-[10px] opacity-70">Entrada de R$</span>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleTypeChange("expense")}
+                  className={cn(
+                    "flex-1 rounded-lg border-2 px-3 py-3 text-sm font-medium transition-all",
+                    type === "expense"
+                      ? "border-[var(--expense)] bg-[var(--expense)]/10 text-[var(--expense)]"
+                      : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--expense)]/50"
+                  )}
+                >
+                  <div className="flex flex-col items-center gap-1">
+                    <ArrowUpRight className="h-5 w-5" />
+                    <span>Despesa</span>
+                    <span className="text-[10px] opacity-70">Saída de R$</span>
+                  </div>
+                </button>
               </div>
             </div>
 
@@ -501,8 +474,12 @@ export function TransactionForm({
               label="Descrição"
               placeholder={
                 type === "income"
-                  ? "Ex: Salário, Freelance, Venda..."
-                  : "Ex: Conta de luz, Aluguel, Mercado..."
+                  ? scope === "personal"
+                    ? "Ex: Salário, Freelance, Rendimento..."
+                    : "Ex: Venda, Serviço, Cliente..."
+                  : scope === "personal"
+                    ? "Ex: Conta de luz, Aluguel, Mercado..."
+                    : "Ex: Insumo, Combustível, Aluguel do espaço..."
               }
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -549,17 +526,13 @@ export function TransactionForm({
                     key={option.value}
                     type="button"
                     onClick={() => handleFrequencyChange(option.value)}
-                    disabled={
-                      option.value === "installment" && !canUseInstallment
-                    }
+                    disabled={option.value === "installment" && !canUseInstallment}
                     className={cn(
                       "rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all",
                       frequency === option.value
                         ? "border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]"
                         : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--primary)]/50",
-                      option.value === "installment" &&
-                        !canUseInstallment &&
-                        "opacity-50 cursor-not-allowed"
+                      option.value === "installment" && !canUseInstallment && "opacity-50 cursor-not-allowed"
                     )}
                   >
                     <div className="flex flex-col items-center">
@@ -599,9 +572,7 @@ export function TransactionForm({
               />
             )}
 
-            {(frequency === "monthly" ||
-              frequency === "weekly" ||
-              frequency === "yearly") && (
+            {(frequency === "monthly" || frequency === "weekly" || frequency === "yearly") && (
               <div className="rounded-lg border border-[var(--warning)]/30 bg-[var(--warning)]/5 p-3 text-sm text-[var(--warning)]">
                 <p className="font-medium mb-1">Atenção: Isso vai criar 12 lançamentos</p>
                 <p className="text-xs opacity-80">
@@ -622,15 +593,12 @@ export function TransactionForm({
                   <span>
                     <strong>{installmentTotal}x</strong> de{" "}
                     <strong className="text-[var(--foreground)]">
-                      {formatCurrency(
-                        parseFloat(amount) / parseInt(installmentTotal)
-                      )}
+                      {formatCurrency(parseFloat(amount) / parseInt(installmentTotal))}
                     </strong>
                   </span>
                 </div>
                 <p className="mt-1 text-xs text-[var(--muted-foreground)]">
-                  Rótulos: 1/{installmentTotal} até {installmentTotal}/
-                  {installmentTotal}
+                  Rótulos: 1/{installmentTotal} até {installmentTotal}/{installmentTotal}
                 </p>
               </div>
             )}
@@ -640,10 +608,7 @@ export function TransactionForm({
                 Serão criadas{" "}
                 <strong>{installmentTotal} parcelas</strong> com rótulos de{" "}
                 <strong>1/{installmentTotal}</strong> a{" "}
-                <strong>
-                  {installmentTotal}/{installmentTotal}
-                </strong>
-                .
+                <strong>{installmentTotal}/{installmentTotal}</strong>.
               </div>
             )}
 
@@ -660,7 +625,7 @@ export function TransactionForm({
             </div>
 
             <div className="flex gap-3 pt-2">
-              <Link href="/transactions" className="flex-1">
+              <Link href={backUrl} className="flex-1">
                 <Button type="button" variant="outline" className="w-full">
                   Cancelar
                 </Button>

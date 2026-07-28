@@ -28,13 +28,16 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 const ITEMS_PER_PAGE = 15;
 
-export function TransactionList() {
+interface TransactionListProps {
+  scope?: "personal" | "business";
+}
+
+export function TransactionList({ scope: fixedScope }: TransactionListProps) {
   const supabase = createClient();
 
   const [transactions, setTransactions] = useState<TransactionWithCategory[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [scopeFilter, setScopeFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [monthFilter, setMonthFilter] = useState(getCurrentMonth());
@@ -46,7 +49,7 @@ export function TransactionList() {
 
   useEffect(() => {
     fetchTransactions();
-  }, [scopeFilter, typeFilter, statusFilter, monthFilter, page, searchTerm]);
+  }, [fixedScope, typeFilter, statusFilter, monthFilter, page, searchTerm]);
 
   const fetchTransactions = async () => {
     setLoading(true);
@@ -64,7 +67,7 @@ export function TransactionList() {
       .order("transaction_date", { ascending: false })
       .order("created_at", { ascending: false });
 
-    if (scopeFilter !== "all") query = query.eq("scope", scopeFilter);
+    if (fixedScope) query = query.eq("scope", fixedScope);
     if (typeFilter !== "all") query = query.eq("type", typeFilter);
     if (statusFilter !== "all") query = query.eq("status", statusFilter);
     if (searchTerm)
@@ -130,12 +133,14 @@ export function TransactionList() {
     return opts;
   })();
 
+  const newUrl = fixedScope === "business" ? "/business/transactions/new" : "/personal/transactions/new";
+
   return (
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>Lançamentos</CardTitle>
-          <Link href="/transactions/new">
+          <CardTitle>Lançamentos {fixedScope === "business" ? "do Negócio" : "Pessoais"}</CardTitle>
+          <Link href={newUrl}>
             <Button size="sm" className="gap-2">
               <Plus className="h-4 w-4" />
               Novo
@@ -158,19 +163,7 @@ export function TransactionList() {
               className="flex h-10 w-full rounded-lg border border-[var(--input)] bg-[var(--background)] pl-10 pr-3 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2"
             />
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <Select
-              value={scopeFilter}
-              onChange={(e) => {
-                setScopeFilter(e.target.value);
-                setPage(1);
-              }}
-              options={[
-                { value: "all", label: "Escopo" },
-                { value: "business", label: "Negócio" },
-                { value: "personal", label: "Pessoal" },
-              ]}
-            />
+          <div className="grid grid-cols-3 gap-2">
             <Select
               value={typeFilter}
               onChange={(e) => {
@@ -229,13 +222,13 @@ export function TransactionList() {
               Comece adicionando sua primeira receita ou despesa
             </p>
             <div className="flex justify-center gap-3">
-              <Link href="/transactions/new?type=income">
+              <Link href={`${newUrl}?type=income`}>
                 <Button variant="outline" className="gap-2 border-[var(--income)]/30 text-[var(--income)] hover:bg-[var(--income)]/5">
                   <ArrowDownLeft className="h-4 w-4" />
                   + Receita
                 </Button>
               </Link>
-              <Link href="/transactions/new?type=expense">
+              <Link href={`${newUrl}?type=expense`}>
                 <Button variant="outline" className="gap-2 border-[var(--expense)]/30 text-[var(--expense)] hover:bg-[var(--expense)]/5">
                   <ArrowUpRight className="h-4 w-4" />
                   + Despesa
@@ -328,7 +321,7 @@ export function TransactionList() {
                         )}
                       </button>
                       <Link
-                        href={`/transactions/${t.id}/edit`}
+                        href={t.scope === "business" ? `/business/transactions/${t.id}/edit` : `/personal/transactions/${t.id}/edit`}
                         className="rounded p-1 text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:text-[var(--foreground)] transition-colors"
                       >
                         <Pencil className="h-3.5 w-3.5" />

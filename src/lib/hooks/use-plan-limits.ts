@@ -98,7 +98,7 @@ export function usePlanLimits(): PlanLimits {
 
   const transactionsRemaining = planInfo
     ? planInfo.max_transactions === -1
-      ? -1
+      ? Infinity
       : Math.max(0, planInfo.max_transactions - planInfo.monthly_transactions)
     : 0;
 

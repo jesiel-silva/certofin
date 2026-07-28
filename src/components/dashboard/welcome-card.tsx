@@ -6,13 +6,17 @@ import { Button } from "@/components/ui/button";
 import {
   ArrowDownLeft,
   ArrowUpRight,
-  Wallet,
-  TrendingUp,
-  Receipt,
   Sparkles,
 } from "lucide-react";
 
-export function WelcomeCard() {
+interface WelcomeCardProps {
+  scope?: "personal" | "business";
+}
+
+export function WelcomeCard({ scope = "personal" }: WelcomeCardProps) {
+  const prefix = scope === "business" ? "/business" : "/personal";
+  const scopeLabel = scope === "business" ? "do seu negócio" : "pessoais";
+
   return (
     <Card className="border-[var(--primary)]/20 bg-gradient-to-br from-[var(--primary)]/5 to-transparent">
       <CardContent className="p-6 sm:p-8">
@@ -22,7 +26,7 @@ export function WelcomeCard() {
           </div>
           <div>
             <h2 className="text-xl font-bold text-[var(--foreground)]">
-              Bem-vindo ao CertoFin!
+              Nenhum lançamento {scopeLabel} este mês
             </h2>
             <p className="text-sm text-[var(--muted-foreground)] mt-1">
               Comece cadastrando suas receitas e despesas para ver seus
@@ -32,7 +36,7 @@ export function WelcomeCard() {
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 mb-6">
-          <Link href="/transactions/new?type=income" className="flex-1">
+          <Link href={`${prefix}/transactions/new?type=income`} className="flex-1">
             <Button
               variant="outline"
               className="w-full h-auto py-4 border-[var(--income)]/30 hover:bg-[var(--income)]/5 hover:border-[var(--income)]/50"
@@ -46,14 +50,14 @@ export function WelcomeCard() {
                     Adicionar Receita
                   </p>
                   <p className="text-xs text-[var(--muted-foreground)]">
-                    Salário, freelancer, vendas...
+                    {scope === "business" ? "Venda, serviço, cliente..." : "Salário, freelancer, vendas..."}
                   </p>
                 </div>
               </div>
             </Button>
           </Link>
 
-          <Link href="/transactions/new?type=expense" className="flex-1">
+          <Link href={`${prefix}/transactions/new?type=expense`} className="flex-1">
             <Button
               variant="outline"
               className="w-full h-auto py-4 border-[var(--expense)]/30 hover:bg-[var(--expense)]/5 hover:border-[var(--expense)]/50"
@@ -67,7 +71,7 @@ export function WelcomeCard() {
                     Adicionar Despesa
                   </p>
                   <p className="text-xs text-[var(--muted-foreground)]">
-                    Conta de luz, aluguel, mercado...
+                    {scope === "business" ? "Insumo, combustível, aluguel..." : "Conta de luz, aluguel, mercado..."}
                   </p>
                 </div>
               </div>

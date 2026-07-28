@@ -58,7 +58,7 @@ function LoginFormContent() {
       return;
     }
 
-    router.push("/dashboard");
+    router.push("/personal/dashboard");
   };
 
   const resendConfirmation = async () => {

@@ -12,7 +12,7 @@ export default function AuthCallbackPage() {
     const { data } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (event === "SIGNED_IN" && session) {
-          router.replace("/dashboard");
+          router.replace("/personal/dashboard");
         }
       }
     );
