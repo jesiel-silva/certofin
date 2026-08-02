@@ -2,7 +2,6 @@
 
 import { Menu } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
-import { Button } from "@/components/ui/button";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -10,17 +9,17 @@ interface HeaderProps {
 
 export function Header({ onMenuClick }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b border-[var(--border)] bg-[var(--background)]/95 backdrop-blur supports-[backdrop-filter]:bg-[var(--background)]/60 px-4 lg:px-6">
-      <Button
-        variant="ghost"
-        size="icon"
+    <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b border-[var(--primary)]/30 bg-[#020617]/90 backdrop-blur-md px-4 lg:px-6 shadow-[0_2px_20px_rgba(0,255,204,0.08)] scanline-overlay">
+      <button
         onClick={onMenuClick}
-        className="lg:hidden"
+        className="lg:hidden flex items-center justify-center p-1.5 text-[var(--primary)] border border-[var(--primary)]/30 bg-[var(--primary)]/10 hover:bg-[var(--primary)]/20 hover:shadow-[0_0_15px_var(--primary)] transition-all"
       >
         <Menu className="h-5 w-5" />
-      </Button>
+      </button>
       <div className="flex-1" />
-      <ThemeToggle />
+      <div className="flex items-center gap-2 border border-[var(--primary)]/20 p-1 backdrop-blur-sm bg-[#0B1221]/50">
+        <ThemeToggle />
+      </div>
     </header>
   );
 }
