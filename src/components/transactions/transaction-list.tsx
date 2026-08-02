@@ -245,6 +245,36 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
     try {
       const txs = allTransactions.length > 0 ? allTransactions : await fetchAllTransactions();
       
+      // Fetch user name
+      const { data: userData } = await supabase.auth.getUser();
+      let userName = "";
+      if (userData.user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("full_name")
+          .eq("id", userData.user.id)
+          .single();
+        if (profile) userName = profile.full_name || userData.user.email || "";
+      }
+      
+      // Convert SVG logo to image
+      const svgLogo = `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 12 55 L 26 69 L 38 57 L 24 43 Z" fill="#054388"/>
+        <path d="M 26 69 L 41 84 L 53 72 L 38 57 Z" fill="#031F44"/>
+        <path d="M 33 76 L 73 36 L 68 31 L 90 22 L 90 44 L 85 39 L 45 79 Z" fill="#009B9E"/>
+      </svg>`;
+      const svgBlob = new Blob([svgLogo], { type: "image/svg+xml" });
+      const svgUrl = URL.createObjectURL(svgBlob);
+      const img = new Image();
+      await new Promise((resolve) => { img.onload = resolve; img.src = svgUrl; });
+      const canvas = document.createElement("canvas");
+      canvas.width = 200;
+      canvas.height = 200;
+      const ctx = canvas.getContext("2d")!;
+      ctx.drawImage(img, 0, 0, 200, 200);
+      const logoDataUrl = canvas.toDataURL("image/png");
+      URL.revokeObjectURL(svgUrl);
+      
       const [year, monthNum] = monthFilter.split("-");
       const monthLabel = new Intl.DateTimeFormat("pt-BR", {
         month: "long",
@@ -253,23 +283,41 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
 
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
 
-      // Header
-      // Header
-      doc.setFontSize(20);
+      // Marca d'água grande no centro
+      const addWatermark = () => {
+        doc.addImage(logoDataUrl, "PNG", pageWidth / 2 - 30, pageHeight / 2 - 30, 60, 60);
+        doc.setTextColor(210, 210, 210);
+        doc.setFontSize(28);
+        doc.setFont("helvetica", "bold");
+        doc.text("CERTOFIN", pageWidth / 2, pageHeight / 2 + 40, { align: "center" });
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text("Soluções Financeiras", pageWidth / 2, pageHeight / 2 + 48, { align: "center" });
+      };
+      addWatermark();
+
+      // Header com logo real
+      doc.addImage(logoDataUrl, "PNG", 14, 8, 12, 12);
+      doc.setTextColor(5, 67, 136);
+      doc.setFontSize(16);
       doc.setFont("helvetica", "bold");
-      doc.text("CERTOFIN", 14, 18);
-      doc.setFontSize(9);
+      doc.text("CERTOFIN", 28, 15);
+      doc.setFontSize(8);
       doc.setFont("helvetica", "normal");
+      doc.setTextColor(0, 155, 158);
+      doc.text("Soluções Financeiras", 28, 20);
       doc.setTextColor(100, 100, 100);
-      doc.text(`Relatório Financeiro • ${fixedScope === "business" ? "Negócio" : "Pessoal"}`, 14, 24);
-      doc.text(`Período: ${monthLabel}`, 14, 29);
-      doc.text(`Gerado em: ${new Date().toLocaleString("pt-BR")}`, 14, 34);
+      doc.setFontSize(9);
+      doc.text(`Relatório ${fixedScope === "business" ? "Negócio" : "Pessoal"} • ${userName}`, 14, 28);
+      doc.text(`Período: ${monthLabel}`, 14, 33);
+      doc.text(`Gerado em: ${new Date().toLocaleString("pt-BR")}`, 14, 38);
 
       // Line separator
-      doc.setDrawColor(0, 255, 204);
+      doc.setDrawColor(0, 155, 158);
       doc.setLineWidth(0.5);
-      doc.line(14, 37, 196, 37);
+      doc.line(14, 41, 196, 41);
 
       const incomeTxs = txs.filter((t) => t.type === "income");
       const expenseTxs = txs.filter((t) => t.type === "expense");
@@ -365,6 +413,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
             4: { halign: "right" },
           },
           margin: { left: 14, right: 14 },
+          didDrawPage: () => { addWatermark(); },
         });
         currentY = (doc as jsPDF & { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 10;
       }
@@ -397,6 +446,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
             4: { halign: "right" },
           },
           margin: { left: 14, right: 14 },
+          didDrawPage: () => { addWatermark(); },
         });
         currentY = (doc as jsPDF & { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 10;
       }
