@@ -98,14 +98,14 @@ export default function DashboardPage() {
     const businessTx = transactions.filter((t) => t.scope === "business");
 
     const personalIncome = personalTx
-      .filter((t) => t.type === "income")
+      .filter((t) => t.type === "income" && t.status === "paid")
       .reduce((sum, t) => sum + t.amount, 0);
     const personalExpense = personalTx
       .filter((t) => t.type === "expense" && t.status === "paid")
       .reduce((sum, t) => sum + t.amount, 0);
 
     const businessIncome = businessTx
-      .filter((t) => t.type === "income")
+      .filter((t) => t.type === "income" && t.status === "paid")
       .reduce((sum, t) => sum + t.amount, 0);
     const businessExpense = businessTx
       .filter((t) => t.type === "expense" && t.status === "paid")
@@ -164,13 +164,13 @@ export default function DashboardPage() {
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([month, txns]) => {
         const personalIncome = txns
-          .filter((t) => t.scope === "personal" && t.type === "income")
+          .filter((t) => t.scope === "personal" && t.type === "income" && t.status === "paid")
           .reduce((sum, t) => sum + t.amount, 0);
         const personalExpense = txns
           .filter((t) => t.scope === "personal" && t.type === "expense" && t.status === "paid")
           .reduce((sum, t) => sum + t.amount, 0);
         const businessIncome = txns
-          .filter((t) => t.scope === "business" && t.type === "income")
+          .filter((t) => t.scope === "business" && t.type === "income" && t.status === "paid")
           .reduce((sum, t) => sum + t.amount, 0);
         const businessExpense = txns
           .filter((t) => t.scope === "business" && t.type === "expense" && t.status === "paid")
