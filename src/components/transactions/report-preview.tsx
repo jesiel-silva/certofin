@@ -1,9 +1,12 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { TransactionWithCategory } from "@/lib/types";
 import { X, Download, AlertTriangle, TrendingUp, TrendingDown, Clock, CheckCircle2, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/ui/logo";
+import { createClient } from "@/lib/supabase/client";
 
 interface ReportPreviewProps {
   transactions: TransactionWithCategory[];
@@ -29,11 +32,28 @@ export function ReportPreview({
   onExport,
   loading,
 }: ReportPreviewProps) {
+  const supabase = createClient();
+  const [userName, setUserName] = useState("");
   const [year, monthNum] = month.split("-");
   const monthLabel = new Intl.DateTimeFormat("pt-BR", {
     month: "long",
     year: "numeric",
   }).format(new Date(parseInt(year), parseInt(monthNum) - 1));
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("full_name")
+          .eq("id", user.id)
+          .single();
+        if (profile) setUserName(profile.full_name || user.email || "");
+      }
+    };
+    fetchUser();
+  }, [supabase]);
 
   const incomeTransactions = transactions.filter((t) => t.type === "income");
   const expenseTransactions = transactions.filter((t) => t.type === "expense");
@@ -161,7 +181,17 @@ export function ReportPreview({
             </div>
           ) : (
             <>
-              {/* 1. RESUMO EXECUTIVO */}
+              {/* Cabeçalho do Relatório */}
+              <div className="mb-8 flex items-center justify-between border-b border-[var(--border)] pb-6">
+                <Logo size="sm" showSubtitle />
+                <div className="text-right">
+                  <p className="text-sm font-semibold text-[var(--foreground)]">{userName}</p>
+                  <p className="text-xs text-[var(--muted-foreground)]">Relatório {scope === "business" ? "Negócio" : "Pessoal"}</p>
+                  <p className="text-xs text-[var(--muted-foreground)]">{monthLabel}</p>
+                </div>
+              </div>
+
+              {/* 1. VISÃO GERAL DO MÊS */}
               <section className="mb-8">
                 <h2 className="mb-4 flex items-center gap-2 text-sm font-bold text-[var(--foreground)] uppercase tracking-wider border-b border-[var(--border)] pb-2">
                   <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--primary)]/10 text-[10px] font-bold text-[var(--primary)]">1</span>
@@ -247,7 +277,13 @@ export function ReportPreview({
                 </div>
               </section>
 
-              {/* 3. RANKING DE GASTOS POR CATEGORIA */}
+              {/* Divisor com Logo */}
+              <div className="my-6 flex items-center gap-4 border-t border-[var(--border)] pt-6">
+                <Logo size="sm" showSubtitle={false} />
+                <div className="flex-1 border-t border-dashed border-[var(--border)]" />
+              </div>
+
+              {/* 3. CATEGORIAS COM MAIS GASTOS */}
               {topCategories.length > 0 && (
                 <section className="mb-8">
                   <h2 className="mb-4 flex items-center gap-2 text-sm font-bold text-[var(--foreground)] uppercase tracking-wider border-b border-[var(--border)] pb-2">
