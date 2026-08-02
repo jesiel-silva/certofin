@@ -437,13 +437,11 @@ export function ReportPreview({
                       </thead>
                       <tbody>
                         {incomeByDate.map(([date, txs]) =>
-                          txs.map((t, i) => (
+                          txs.map((t) => (
                             <tr key={t.id} className="border-b border-[var(--border)] last:border-b-0 hover:bg-[var(--accent)]/30">
-                              {i === 0 && (
-                                <td rowSpan={txs.length} className="px-4 py-3 text-xs text-[var(--muted-foreground)] align-top pt-4">
-                                  {formatDate(date)}
-                                </td>
-                              )}
+                              <td className="px-4 py-3 text-xs text-[var(--muted-foreground)]">
+                                {formatDate(date)}
+                              </td>
                               <td className="px-4 py-3 font-medium text-[var(--foreground)]">{t.description || "Sem descrição"}</td>
                               <td className="px-4 py-3 text-[var(--muted-foreground)]">{t.categories?.name || "—"}</td>
                               <td className="px-4 py-3 text-center">
@@ -489,13 +487,11 @@ export function ReportPreview({
                       </thead>
                       <tbody>
                         {expenseByDate.map(([date, txs]) =>
-                          txs.map((t, i) => (
+                          txs.map((t) => (
                             <tr key={t.id} className="border-b border-[var(--border)] last:border-b-0 hover:bg-[var(--accent)]/30">
-                              {i === 0 && (
-                                <td rowSpan={txs.length} className="px-4 py-3 text-xs text-[var(--muted-foreground)] align-top pt-4">
-                                  {formatDate(date)}
-                                </td>
-                              )}
+                              <td className="px-4 py-3 text-xs text-[var(--muted-foreground)]">
+                                {formatDate(date)}
+                              </td>
                               <td className="px-4 py-3 font-medium text-[var(--foreground)]">{t.description || "Sem descrição"}</td>
                               <td className="px-4 py-3 text-[var(--muted-foreground)]">{t.categories?.name || "—"}</td>
                               <td className="px-4 py-3 text-center">
