@@ -2,6 +2,7 @@
 
 import { Menu } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
+import { NotificationBell } from "./notification-bell";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -17,8 +18,11 @@ export function Header({ onMenuClick }: HeaderProps) {
         <Menu className="h-5 w-5" />
       </button>
       <div className="flex-1" />
-      <div className="flex items-center gap-2 border border-[var(--primary)]/20 p-1 backdrop-blur-sm bg-[#0B1221]/50">
-        <ThemeToggle />
+      <div className="flex items-center gap-2">
+        <NotificationBell />
+        <div className="border border-[var(--primary)]/20 p-1 backdrop-blur-sm bg-[#0B1221]/50">
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );

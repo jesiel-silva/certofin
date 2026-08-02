@@ -20,6 +20,7 @@ import {
   FileText,
   Pause,
   Play,
+  FileSpreadsheet,
 } from "lucide-react";
 import { formatCurrency, formatDate, getCurrentMonth } from "@/lib/utils";
 import type { TransactionWithCategory } from "@/lib/types";
@@ -454,6 +455,35 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
     }
   };
 
+  const handleExportCsv = async () => {
+    try {
+      const txs = allTransactions.length > 0 ? allTransactions : await fetchAllTransactions();
+
+      const headers = ["Data", "Descrição", "Categoria", "Tipo", "Escopo", "Status", "Valor"];
+      const rows = txs.map((t) => [
+        formatDate(t.transaction_date),
+        t.description || "Sem descrição",
+        t.categories?.name || "Sem categoria",
+        t.type === "income" ? "Receita" : "Despesa",
+        t.scope === "business" ? "Negócio" : "Pessoal",
+        t.status === "paid" ? "Pago" : "Pendente",
+        t.amount.toFixed(2).replace(".", ","),
+      ]);
+
+      const csvContent = [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(";")).join("\n");
+      const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `lancamentos-${monthFilter}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Erro ao gerar CSV:", err);
+      setError("Erro ao gerar CSV. Tente novamente.");
+    }
+  };
+
   const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
 
   const monthOptions = (() => {
@@ -502,6 +532,22 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
             >
               <Download className="h-4 w-4" />
               <span className="hidden sm:inline">{exportingPdf ? "Gerando..." : "Exportar PDF"}</span>
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                if (!canUseInstallment) {
+                  setShowUpgradeModal(true);
+                  return;
+                }
+                handleExportCsv();
+              }}
+              disabled={!canUseInstallment}
+              className="gap-2"
+            >
+              <FileSpreadsheet className="h-4 w-4" />
+              <span className="hidden sm:inline">CSV</span>
             </Button>
           </div>
         </div>
