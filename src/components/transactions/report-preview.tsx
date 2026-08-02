@@ -444,7 +444,6 @@ export function ReportPreview({
                                   {formatDate(date)}
                                 </td>
                               )}
-                              {i !== 0 && <td />}
                               <td className="px-4 py-3 font-medium text-[var(--foreground)]">{t.description || "Sem descrição"}</td>
                               <td className="px-4 py-3 text-[var(--muted-foreground)]">{t.categories?.name || "—"}</td>
                               <td className="px-4 py-3 text-center">
@@ -497,7 +496,6 @@ export function ReportPreview({
                                   {formatDate(date)}
                                 </td>
                               )}
-                              {i !== 0 && <td />}
                               <td className="px-4 py-3 font-medium text-[var(--foreground)]">{t.description || "Sem descrição"}</td>
                               <td className="px-4 py-3 text-[var(--muted-foreground)]">{t.categories?.name || "—"}</td>
                               <td className="px-4 py-3 text-center">
