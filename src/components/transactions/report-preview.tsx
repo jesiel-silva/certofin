@@ -108,9 +108,6 @@ export function ReportPreview({
   // Dias com gastos
   const daysWithExpenses = new Set(expenseTransactions.map((t) => t.transaction_date)).size;
 
-  // Previsão saldo pendente
-  const projectedBalance = balance + totalPendingIncome - totalPendingExpense;
-
   const groupByDate = (txs: TransactionWithCategory[]) => {
     const grouped: Record<string, TransactionWithCategory[]> = {};
     txs.forEach((t) => {
@@ -229,12 +226,6 @@ export function ReportPreview({
                     value={formatCurrency(balance)}
                     sub={balance >= 0 ? "Positivo" : "Negativo"}
                     color={balance >= 0 ? "success" : "destructive"}
-                  />
-                  <MetricCard
-                    label="Saldo Projetado"
-                    value={formatCurrency(projectedBalance)}
-                    sub="Com pendentes"
-                    color={projectedBalance >= 0 ? "success" : "destructive"}
                   />
                 </div>
               </section>
