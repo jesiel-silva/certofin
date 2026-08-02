@@ -50,16 +50,37 @@ export default function PersonalPlanosPage() {
       } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Verificar se já tem trial ativo
+      const { data: currentProfile } = await supabase
+        .from("profiles")
+        .select("trial_ends_at")
+        .eq("id", user.id)
+        .single();
+
+      if (currentProfile?.trial_ends_at && new Date(currentProfile.trial_ends_at) > new Date()) {
+        alert("Você já tem um trial ativo!");
+        setActivatingTrial(false);
+        return;
+      }
+
       // Definir trial para 7 dias a partir de agora
       const trialEnd = new Date();
       trialEnd.setDate(trialEnd.getDate() + 7);
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("profiles")
         .update({ trial_ends_at: trialEnd.toISOString() })
-        .eq("id", user.id);
+        .eq("id", user.id)
+        .select("trial_ends_at")
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Erro ao ativar trial:", error);
+        alert("Erro ao ativar trial: " + error.message);
+        return;
+      }
+
+      console.log("Trial ativado:", data);
 
       // Atualizar profile local
       setProfile((prev) =>
