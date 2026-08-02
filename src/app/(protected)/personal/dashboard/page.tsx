@@ -47,12 +47,16 @@ export default function DashboardPage() {
     if (userData.user) {
       const { data: profile } = await supabase
         .from("profiles")
-        .select("full_name, subscription_status")
+        .select("full_name, subscription_status, trial_ends_at")
         .eq("id", userData.user.id)
         .single();
       if (profile) {
         setUserName(profile.full_name || userData.user.email || "");
-        setUserPlan(profile.subscription_status || "free");
+        const isPro = profile.subscription_status === "pro";
+        const isTrial = profile.trial_ends_at
+          ? new Date(profile.trial_ends_at) > new Date()
+          : false;
+        setUserPlan(isPro || isTrial ? "pro" : "free");
       }
     }
 
