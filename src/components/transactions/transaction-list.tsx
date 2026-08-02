@@ -398,7 +398,6 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
             4: { halign: "right" },
           },
           margin: { left: 14, right: 14 },
-          didDrawPage: () => { addWatermark(); },
         });
         currentY = (doc as jsPDF & { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 10;
       }
@@ -431,7 +430,6 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
             4: { halign: "right" },
           },
           margin: { left: 14, right: 14 },
-          didDrawPage: () => { addWatermark(); },
         });
         currentY = (doc as jsPDF & { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 10;
       }
