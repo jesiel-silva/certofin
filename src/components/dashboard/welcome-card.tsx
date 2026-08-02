@@ -108,7 +108,7 @@ export function WelcomeCard({ scope = "personal", userName = "", userPlan = "fre
 
         <div className="hud-border bg-[#020617]/50 p-4">
           <p className="text-[10px] sm:text-xs font-display font-bold text-[var(--primary)] mb-2 uppercase tracking-widest">
-            [ PROTOCOLO DE INICIALIZAÇÃO ]
+            COMECE POR AQUI
           </p>
           <div className="grid gap-2 sm:grid-cols-3">
             <div className="flex items-center gap-2 text-[10px] sm:text-xs font-mono text-[var(--muted-foreground)]">
