@@ -74,18 +74,18 @@ export function ReportPreview({
   const totalPendingIncome = pendingIncome.reduce((sum, t) => sum + t.amount, 0);
   const totalPendingExpense = pendingExpense.reduce((sum, t) => sum + t.amount, 0);
 
-  // Maior gasto
-  const highestExpense = expenseTransactions.length > 0
-    ? expenseTransactions.reduce((max, t) => (t.amount > max.amount ? t : max), expenseTransactions[0])
+  // Maior gasto (pago)
+  const highestExpense = paidExpense.length > 0
+    ? paidExpense.reduce((max, t) => (t.amount > max.amount ? t : max), paidExpense[0])
     : null;
 
-  // Maior receita
-  const highestIncome = incomeTransactions.length > 0
-    ? incomeTransactions.reduce((max, t) => (t.amount > max.amount ? t : max), incomeTransactions[0])
+  // Maior receita (paga)
+  const highestIncome = paidIncome.length > 0
+    ? paidIncome.reduce((max, t) => (t.amount > max.amount ? t : max), paidIncome[0])
     : null;
 
-  // Gastos por categoria
-  const expensesByCategory = expenseTransactions.reduce<Record<string, CategorySummary>>((acc, t) => {
+  // Gastos por categoria (apenas pagos)
+  const expensesByCategory = paidExpense.reduce<Record<string, CategorySummary>>((acc, t) => {
     const catName = t.categories?.name || "Sem categoria";
     const catColor = t.categories?.color || "#6b7280";
     if (!acc[catName]) {
@@ -100,9 +100,9 @@ export function ReportPreview({
     .sort((a, b) => b.total - a.total)
     .slice(0, 5);
 
-  // Ticket médio
-  const avgTicket = expenseTransactions.length > 0
-    ? totalExpense / expenseTransactions.length
+  // Ticket médio (apenas pagos)
+  const avgTicket = paidExpense.length > 0
+    ? totalExpense / paidExpense.length
     : 0;
 
   // Dias com gastos
@@ -252,21 +252,21 @@ export function ReportPreview({
                     icon={<TrendingUp className="h-4 w-4" />}
                     label="Maior Receita"
                     value={formatCurrency(highestIncome ? highestIncome.amount : 0)}
-                    detail={highestIncome?.description || "Sem lançamentos"}
+                    detail={highestIncome?.description || "Nenhuma receita paga"}
                     color="success"
                   />
                   <IndicatorCard
                     icon={<TrendingDown className="h-4 w-4" />}
                     label="Maior Gasto"
                     value={formatCurrency(highestExpense ? highestExpense.amount : 0)}
-                    detail={highestExpense?.description || "Sem lançamentos"}
+                    detail={highestExpense?.description || "Nenhuma despesa paga"}
                     color="destructive"
                   />
                   <IndicatorCard
                     icon={<BarChart3 className="h-4 w-4" />}
                     label="Média por Gasto"
                     value={formatCurrency(avgTicket)}
-                    detail={expenseTransactions.length > 0 ? `${expenseTransactions.length} despesas` : "Sem despesas"}
+                    detail={paidExpense.length > 0 ? `${paidExpense.length} pagas` : "Nenhuma paga"}
                     color="primary"
                   />
                   <IndicatorCard

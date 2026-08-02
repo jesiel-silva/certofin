@@ -338,20 +338,20 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
       doc.setFont("helvetica", "bold");
       doc.text("2. INDICADORES IMPORTANTES", 14, 76);
 
-      const highestExpense = expenseTxs.length > 0
-        ? expenseTxs.reduce((max, t) => (t.amount > max.amount ? t : max), expenseTxs[0])
+      const highestExpense = paidExpense.length > 0
+        ? paidExpense.reduce((max, t) => (t.amount > max.amount ? t : max), paidExpense[0])
         : null;
-      const highestIncome = incomeTxs.length > 0
-        ? incomeTxs.reduce((max, t) => (t.amount > max.amount ? t : max), incomeTxs[0])
+      const highestIncome = paidIncome.length > 0
+        ? paidIncome.reduce((max, t) => (t.amount > max.amount ? t : max), paidIncome[0])
         : null;
-      const avgTicket = expenseTxs.length > 0 ? totalExpense / expenseTxs.length : 0;
+      const avgTicket = paidExpense.length > 0 ? totalExpense / paidExpense.length : 0;
 
       doc.setFontSize(9);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(100, 100, 100);
-      doc.text(`Maior Receita: R$ ${highestIncome ? highestIncome.amount.toFixed(2) : "0,00"} — ${highestIncome?.description || "Sem lançamentos"}`, 14, 83);
-      doc.text(`Maior Gasto: R$ ${highestExpense ? highestExpense.amount.toFixed(2) : "0,00"} — ${highestExpense?.description || "Sem lançamentos"}`, 14, 89);
-      doc.text(`Média por Gasto: R$ ${avgTicket.toFixed(2)}`, 14, 95);
+      doc.text(`Maior Receita: R$ ${highestIncome ? highestIncome.amount.toFixed(2) : "0,00"} — ${highestIncome?.description || "Nenhuma receita paga"}`, 14, 83);
+      doc.text(`Maior Gasto: R$ ${highestExpense ? highestExpense.amount.toFixed(2) : "0,00"} — ${highestExpense?.description || "Nenhuma despesa paga"}`, 14, 89);
+      doc.text(`Média por Gasto: R$ ${avgTicket.toFixed(2)} (${paidExpense.length} pagas)`, 14, 95);
       doc.text(`Pendente (Receber): R$ ${totalPendingIncome.toFixed(2)} (${pendingIncome.length} itens)`, 14, 101);
       doc.text(`Pendente (Pagar): R$ ${totalPendingExpense.toFixed(2)} (${pendingExpense.length} itens)`, 14, 107);
 
