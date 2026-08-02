@@ -285,7 +285,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
       doc.setTextColor(0, 0, 0);
       doc.setFontSize(11);
       doc.setFont("helvetica", "bold");
-      doc.text("1. RESUMO EXECUTIVO", 14, 45);
+      doc.text("1. VISÃO GERAL DO MÊS", 14, 45);
 
       doc.setFontSize(9);
       doc.setFont("helvetica", "normal");
@@ -300,7 +300,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
       doc.setTextColor(0, 0, 0);
       doc.setFontSize(11);
       doc.setFont("helvetica", "bold");
-      doc.text("2. INDICADORES-CHAVE", 14, 76);
+      doc.text("2. INDICADORES IMPORTANTES", 14, 76);
 
       const highestExpense = expenseTxs.length > 0
         ? expenseTxs.reduce((max, t) => (t.amount > max.amount ? t : max), expenseTxs[0])
