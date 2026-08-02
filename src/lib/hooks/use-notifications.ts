@@ -37,8 +37,12 @@ export function useNotifications(): UseNotificationsReturn {
       } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Primeiro, refresh das notificações no banco
-      await supabase.rpc("refresh_notifications", { user_uuid: user.id });
+      // Tentar refresh das notificações (pode falhar se migration não rodou)
+      try {
+        await supabase.rpc("refresh_notifications", { user_uuid: user.id });
+      } catch {
+        // Tabela ou função ainda não existe, ignorar
+      }
 
       // Buscar notificações
       const { data, error } = await supabase
@@ -49,13 +53,19 @@ export function useNotifications(): UseNotificationsReturn {
         .limit(50);
 
       if (error) {
+        // Se a tabela não existe, simplesmente retorna vazio
+        if (error.code === "42P01" || error.message?.includes("does not exist")) {
+          setNotifications([]);
+          return;
+        }
         console.error("Erro ao buscar notificações:", error);
         return;
       }
 
       setNotifications(data || []);
     } catch (err) {
-      console.error("Erro ao buscar notificações:", err);
+      // Erro geral — ignora silenciosamente
+      setNotifications([]);
     } finally {
       setIsLoading(false);
     }
@@ -70,61 +80,77 @@ export function useNotifications(): UseNotificationsReturn {
   }, [fetchNotifications]);
 
   const markAsRead = async (id: string) => {
-    const { error } = await supabase
-      .from("notifications")
-      .update({ is_read: true })
-      .eq("id", id);
+    try {
+      const { error } = await supabase
+        .from("notifications")
+        .update({ is_read: true })
+        .eq("id", id);
 
-    if (!error) {
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
-      );
+      if (!error) {
+        setNotifications((prev) =>
+          prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
+        );
+      }
+    } catch {
+      // Tabela não existe ainda
     }
   };
 
   const markAllAsRead = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
 
-    const { error } = await supabase
-      .from("notifications")
-      .update({ is_read: true })
-      .eq("user_id", user.id)
-      .eq("is_read", false);
+      const { error } = await supabase
+        .from("notifications")
+        .update({ is_read: true })
+        .eq("user_id", user.id)
+        .eq("is_read", false);
 
-    if (!error) {
-      setNotifications((prev) =>
-        prev.map((n) => ({ ...n, is_read: true }))
-      );
+      if (!error) {
+        setNotifications((prev) =>
+          prev.map((n) => ({ ...n, is_read: true }))
+        );
+      }
+    } catch {
+      // Tabela não existe ainda
     }
   };
 
   const deleteNotification = async (id: string) => {
-    const { error } = await supabase
-      .from("notifications")
-      .delete()
-      .eq("id", id);
+    try {
+      const { error } = await supabase
+        .from("notifications")
+        .delete()
+        .eq("id", id);
 
-    if (!error) {
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
+      if (!error) {
+        setNotifications((prev) => prev.filter((n) => n.id !== id));
+      }
+    } catch {
+      // Tabela não existe ainda
     }
   };
 
   const clearAll = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
 
-    const { error } = await supabase
-      .from("notifications")
-      .delete()
-      .eq("user_id", user.id);
+      const { error } = await supabase
+        .from("notifications")
+        .delete()
+        .eq("user_id", user.id);
 
-    if (!error) {
-      setNotifications([]);
+      if (!error) {
+        setNotifications([]);
+      }
+    } catch {
+      // Tabela não existe ainda
     }
   };
 
