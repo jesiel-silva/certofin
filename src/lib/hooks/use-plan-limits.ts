@@ -20,6 +20,7 @@ export interface PlanLimits {
   transactionsRemaining: number;
   isLoading: boolean;
   error: string | null;
+  isTrial: boolean;
   refresh: () => Promise<void>;
 }
 
@@ -129,6 +130,7 @@ export function usePlanLimits(): PlanLimits {
     transactionsRemaining,
     isLoading,
     error,
+    isTrial: planInfo?.is_trial ?? false,
     refresh: fetchPlanInfo,
   };
 }

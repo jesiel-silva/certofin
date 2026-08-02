@@ -31,12 +31,10 @@ export function Sidebar({ open, onClose }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
-  const { canUseBusinessScope } = usePlanLimits();
+  const { canUseBusinessScope, isTrial } = usePlanLimits();
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [userPlan, setUserPlan] = useState<"free" | "pro">("free");
-  const [isTrial, setIsTrial] = useState(false);
-  const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -45,17 +43,12 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         setUserEmail(user.email || "");
         const { data: profile } = await supabase
           .from("profiles")
-          .select("full_name, subscription_status, trial_ends_at")
+          .select("full_name, subscription_status")
           .eq("id", user.id)
           .single();
         if (profile) {
           setUserName(profile.full_name || "");
           setUserPlan(profile.subscription_status || "free");
-          if (profile.trial_ends_at) {
-            const trialActive = new Date(profile.trial_ends_at) > new Date();
-            setIsTrial(trialActive && profile.subscription_status !== "pro");
-            setTrialEndsAt(profile.trial_ends_at);
-          }
         }
       }
     };
@@ -188,7 +181,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             </span>
           </div>
 
-          {canUseBusinessScope || isTrial ? (
+          {canUseBusinessScope ? (
             <div className="space-y-1">
               {businessItems.map((item) => {
                 const active = isActive(item.href);
