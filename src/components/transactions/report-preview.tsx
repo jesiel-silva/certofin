@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { TransactionWithCategory } from "@/lib/types";
-import { X, Download, AlertTriangle, TrendingUp, TrendingDown, Clock, CheckCircle2, BarChart3 } from "lucide-react";
+import { X, Download, AlertTriangle, TrendingUp, TrendingDown, Clock, CheckCircle2, BarChart3, Lock, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
 import { createClient } from "@/lib/supabase/client";
+import Link from "next/link";
 
 interface ReportPreviewProps {
   transactions: TransactionWithCategory[];
@@ -15,6 +16,7 @@ interface ReportPreviewProps {
   onClose: () => void;
   onExport: () => void;
   loading: boolean;
+  isFree?: boolean;
 }
 
 interface CategorySummary {
@@ -31,6 +33,7 @@ export function ReportPreview({
   onClose,
   onExport,
   loading,
+  isFree = false,
 }: ReportPreviewProps) {
   const supabase = createClient();
   const [userName, setUserName] = useState("");
@@ -149,15 +152,25 @@ export function ReportPreview({
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Button
-                size="sm"
-                onClick={onExport}
-                disabled={loading}
-                className="gap-2"
-              >
-                <Download className="h-4 w-4" />
-                {loading ? "Gerando..." : "Exportar PDF"}
-              </Button>
+              {isFree ? (
+                <Link
+                  href="/personal/planos"
+                  className="inline-flex items-center gap-2 rounded-lg bg-[var(--primary)] px-3 py-1.5 text-xs font-bold text-white hover:bg-[var(--primary)]/80 transition-colors"
+                >
+                  <Crown className="h-3 w-3" />
+                  Desbloquear Tudo
+                </Link>
+              ) : (
+                <Button
+                  size="sm"
+                  onClick={onExport}
+                  disabled={loading}
+                  className="gap-2"
+                >
+                  <Download className="h-4 w-4" />
+                  {loading ? "Gerando..." : "Exportar PDF"}
+                </Button>
+              )}
               <button
                 onClick={onClose}
                 className="rounded-lg p-2 text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:text-[var(--foreground)] transition-colors"
@@ -230,8 +243,10 @@ export function ReportPreview({
                 <h2 className="mb-4 flex items-center gap-2 text-sm font-bold text-[var(--foreground)] uppercase tracking-wider border-b border-[var(--border)] pb-2">
                   <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--primary)]/10 text-[10px] font-bold text-[var(--primary)]">2</span>
                   INDICADORES IMPORTANTES
+                  {isFree && <Lock className="h-3 w-3 text-[var(--warning)] ml-1" />}
                 </h2>
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                <div className={isFree ? "blur-sm pointer-events-none select-none" : ""}>
+                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                   <IndicatorCard
                     icon={<TrendingUp className="h-4 w-4" />}
                     label="Maior Receita"
@@ -275,9 +290,23 @@ export function ReportPreview({
                     color="primary"
                   />
                 </div>
+                </div>
+                {isFree && (
+                  <div className="mt-4 rounded-lg border border-[var(--warning)]/30 bg-[var(--warning)]/5 p-4 text-center">
+                    <Lock className="mx-auto h-5 w-5 text-[var(--warning)] mb-2" />
+                    <p className="text-sm font-medium text-[var(--foreground)]">Indicadores detalhados são do plano Pro</p>
+                    <Link
+                      href="/personal/planos"
+                      className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-[var(--primary)] hover:underline"
+                    >
+                      Desbloquear com Trial Grátis
+                    </Link>
+                  </div>
+                )}
               </section>
 
               {/* Divisor com Logo */}
+              <div className={isFree ? "blur-sm pointer-events-none select-none" : ""}>
               <div className="my-6 flex items-center gap-4 border-t border-[var(--border)] pt-6">
                 <Logo size="sm" showSubtitle={false} />
                 <div className="flex-1 border-t border-dashed border-[var(--border)]" />
@@ -491,6 +520,35 @@ export function ReportPreview({
                     </table>
                   </div>
                 </section>
+              )}
+              </div>
+
+              {/* Upgrade CTA para Free */}
+              {isFree && (
+                <div className="mt-6 rounded-xl border-2 border-dashed border-[var(--primary)]/30 bg-[var(--primary)]/5 p-8 text-center">
+                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--primary)]/10">
+                    <Crown className="h-7 w-7 text-[var(--primary)]" />
+                  </div>
+                  <h3 className="text-lg font-bold text-[var(--foreground)]">Desbloqueie o relatório completo</h3>
+                  <p className="mt-2 text-sm text-[var(--muted-foreground)] max-w-md mx-auto">
+                    Com o plano Pro você acesso a indicadores detalhados, categorias, status dos lançamentos e exportação em PDF.
+                  </p>
+                  <div className="mt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <Link
+                      href="/personal/planos"
+                      className="inline-flex items-center gap-2 rounded-lg bg-[var(--primary)] px-6 py-3 text-sm font-bold text-white hover:bg-[var(--primary)]/80 transition-colors"
+                    >
+                      <Crown className="h-4 w-4" />
+                      Testar Pro Grátis por 7 Dias
+                    </Link>
+                    <button
+                      onClick={onClose}
+                      className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+                    >
+                      Depois
+                    </button>
+                  </div>
+                </div>
               )}
 
               {/* FOOTER */}

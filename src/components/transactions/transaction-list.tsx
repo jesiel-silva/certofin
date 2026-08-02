@@ -482,14 +482,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
             <Button
               size="sm"
               variant="outline"
-              onClick={() => {
-                if (!canUseInstallment) {
-                  setShowUpgradeModal(true);
-                  return;
-                }
-                handleOpenReport();
-              }}
-              disabled={!canUseInstallment}
+              onClick={handleOpenReport}
               className="gap-2"
             >
               <FileText className="h-4 w-4" />
@@ -774,6 +767,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
           onClose={() => setShowReportPreview(false)}
           onExport={handleExportPdf}
           loading={exportingPdf}
+          isFree={!canUseInstallment}
         />
       )}
 
