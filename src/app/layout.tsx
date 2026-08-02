@@ -1,6 +1,23 @@
 import type { Metadata } from "next";
+import { Inter, JetBrains_Mono, Orbitron } from "next/font/google";
 import { ThemeProviderWrapper } from "@/components/ui/theme-provider";
 import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
+});
+
+const orbitron = Orbitron({
+  subsets: ["latin"],
+  variable: "--font-orbitron",
+  weight: ["400", "500", "600", "700", "800", "900"],
+});
 
 export const metadata: Metadata = {
   title: "CertoFin - Gestão Financeira Inteligente",
@@ -14,8 +31,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className="light" suppressHydrationWarning>
-      <body className="min-h-screen antialiased">
+    <html lang="pt-BR" className={`dark ${inter.variable} ${jetbrainsMono.variable} ${orbitron.variable}`} suppressHydrationWarning>
+      <body className={`${inter.className} min-h-screen antialiased`}>
         <ThemeProviderWrapper>
           {children}
         </ThemeProviderWrapper>

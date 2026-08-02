@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { KpiCards } from "@/components/dashboard/kpi-cards";
 import { ExpenseChart } from "@/components/dashboard/expense-chart";
 import { MonthlyChart } from "@/components/dashboard/monthly-chart";
+import { MonthComparison } from "@/components/dashboard/month-comparison";
 import { WelcomeCard } from "@/components/dashboard/welcome-card";
 import {
   getCurrentMonth,
@@ -29,6 +30,8 @@ export default function DashboardPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [userName, setUserName] = useState("");
+  const [userPlan, setUserPlan] = useState<"free" | "pro">("free");
 
   useEffect(() => {
     fetchAllData();
@@ -38,6 +41,20 @@ export default function DashboardPage() {
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
     const startDate = sixMonthsAgo.toISOString().split("T")[0];
+
+    // Fetch user info
+    const { data: userData } = await supabase.auth.getUser();
+    if (userData.user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name, subscription_status")
+        .eq("id", userData.user.id)
+        .single();
+      if (profile) {
+        setUserName(profile.full_name || userData.user.email || "");
+        setUserPlan(profile.subscription_status || "free");
+      }
+    }
 
     const [txResult, catResult] = await Promise.all([
       supabase
@@ -95,7 +112,6 @@ export default function DashboardPage() {
       personalExpense,
       businessIncome,
       businessExpense,
-      businessProfit: businessIncome - businessExpense,
     };
   }, [transactions]);
 
@@ -241,7 +257,7 @@ export default function DashboardPage() {
       </div>
 
       {isEmpty ? (
-        <WelcomeCard />
+        <WelcomeCard userName={userName} userPlan={userPlan} />
       ) : (
         <>
           <KpiCards
@@ -249,14 +265,15 @@ export default function DashboardPage() {
             personalExpense={summary.personalExpense}
             businessIncome={summary.businessIncome}
             businessExpense={summary.businessExpense}
-            businessProfit={summary.businessProfit}
             isEmpty={isEmpty}
           />
 
           <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
             <ExpenseChart data={expensesByCategory} title="Despesas por Categoria" />
-            <MonthlyChart data={monthlyHistory} />
+            <MonthlyChart data={monthlyHistory} userPlan={userPlan} />
           </div>
+
+          <MonthComparison data={monthlyHistory} userPlan={userPlan} />
         </>
       )}
     </div>
