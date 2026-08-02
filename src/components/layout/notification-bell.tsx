@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Bell, Check, Trash2, AlertTriangle, Clock, TrendingUp, TrendingDown, Info, X } from "lucide-react";
+import { Bell, Check, Trash2, AlertTriangle, Clock, TrendingUp, TrendingDown, Info, X, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNotifications, type Notification } from "@/lib/hooks/use-notifications";
 
@@ -99,9 +99,27 @@ function NotificationItem({
 }
 
 export function NotificationBell() {
-  const { notifications, unreadCount, markAsRead, markAllAsRead, deleteNotification, clearAll } = useNotifications();
+  const { notifications, unreadCount, markAsRead, markAllAsRead, deleteNotification, clearAll, refresh } = useNotifications();
   const [isOpen, setIsOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const handleRefreshNotifications = async () => {
+    setRefreshing(true);
+    try {
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.rpc("refresh_notifications", { user_uuid: user.id });
+        await refresh();
+      }
+    } catch {
+      // Ignorar erro
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -145,6 +163,14 @@ export function NotificationBell() {
               )}
             </div>
             <div className="flex items-center gap-1">
+              <button
+                onClick={handleRefreshNotifications}
+                disabled={refreshing}
+                className="rounded p-1 text-[var(--muted-foreground)] hover:bg-[var(--accent)] transition-colors"
+                title="Verificar novas notificações"
+              >
+                <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} />
+              </button>
               {unreadCount > 0 && (
                 <button
                   onClick={markAllAsRead}

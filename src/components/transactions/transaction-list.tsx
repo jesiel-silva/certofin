@@ -469,7 +469,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
         t.type === "income" ? "Receita" : "Despesa",
         t.scope === "business" ? "Negócio" : "Pessoal",
         t.status === "paid" ? "Pago" : "Pendente",
-        t.amount.toFixed(2).replace(".", ","),
+        t.amount.toFixed(2),
       ]);
 
       // CSV limpo: vírgula como separador, sem aspas, valor como número
@@ -478,7 +478,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
         ...rows.map((row) => row.join(","))
       ].join("\r\n");
 
-      const blob = new Blob(["\uFEFF" + csvContent], {
+      const blob = new Blob([csvContent], {
         type: "text/csv;charset=utf-8;",
       });
       const url = URL.createObjectURL(blob);

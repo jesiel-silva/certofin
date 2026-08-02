@@ -333,6 +333,17 @@ export function TransactionForm({
     }
 
     await refreshPlan();
+
+    // Gerar notificações após salvar transação
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.rpc("refresh_notifications", { user_uuid: user.id });
+      }
+    } catch {
+      // Ignorar erro de notificações
+    }
+
     const backUrl = scope === "business" ? "/business/transactions" : "/personal/transactions";
     router.push(backUrl);
   };
