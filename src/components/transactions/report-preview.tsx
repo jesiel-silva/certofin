@@ -212,13 +212,13 @@ export function ReportPreview({
                   <MetricCard
                     label="Receitas Recebidas"
                     value={formatCurrency(totalIncome)}
-                    sub={`${incomeTransactions.length} lançamentos`}
+                    sub={`${paidIncome.length} lançamentos`}
                     color="success"
                   />
                   <MetricCard
                     label="Despesas Pagas"
                     value={formatCurrency(totalExpense)}
-                    sub={`${expenseTransactions.length} lançamentos`}
+                    sub={`${paidExpense.length} lançamentos`}
                     color="destructive"
                   />
                   <MetricCard
