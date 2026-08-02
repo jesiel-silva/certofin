@@ -472,17 +472,11 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
         t.amount.toFixed(2).replace(".", ","),
       ]);
 
-      const csvContent = [headers, ...rows]
-        .map((row) =>
-          row
-            .map((cell, i) => {
-              // Última coluna (Valor) vai sem aspas para Excel reconhecer como número
-              if (i === row.length - 1) return cell;
-              return `"${cell}"`;
-            })
-            .join(";")
-        )
-        .join("\r\n");
+      // CSV limpo: vírgula como separador, sem aspas, valor como número
+      const csvContent = [
+        headers.join(","),
+        ...rows.map((row) => row.join(","))
+      ].join("\r\n");
 
       const blob = new Blob(["\uFEFF" + csvContent], {
         type: "text/csv;charset=utf-8;",
