@@ -61,14 +61,15 @@ export function ReportPreview({
   const incomeTransactions = transactions.filter((t) => t.type === "income");
   const expenseTransactions = transactions.filter((t) => t.type === "expense");
 
-  const totalIncome = incomeTransactions.reduce((sum, t) => sum + t.amount, 0);
-  const totalExpense = expenseTransactions.reduce((sum, t) => sum + t.amount, 0);
-  const balance = totalIncome - totalExpense;
-
   const pendingIncome = incomeTransactions.filter((t) => t.status === "pending");
   const pendingExpense = expenseTransactions.filter((t) => t.status === "pending");
   const paidIncome = incomeTransactions.filter((t) => t.status === "paid");
   const paidExpense = expenseTransactions.filter((t) => t.status === "paid");
+
+  // Totais usam apenas pagos (contabilidade de caixa)
+  const totalIncome = paidIncome.reduce((sum, t) => sum + t.amount, 0);
+  const totalExpense = paidExpense.reduce((sum, t) => sum + t.amount, 0);
+  const balance = totalIncome - totalExpense;
 
   const totalPendingIncome = pendingIncome.reduce((sum, t) => sum + t.amount, 0);
   const totalPendingExpense = pendingExpense.reduce((sum, t) => sum + t.amount, 0);
@@ -212,13 +213,13 @@ export function ReportPreview({
                 </h2>
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                   <MetricCard
-                    label="Receitas Totais"
+                    label="Receitas Recebidas"
                     value={formatCurrency(totalIncome)}
                     sub={`${incomeTransactions.length} lançamentos`}
                     color="success"
                   />
                   <MetricCard
-                    label="Despesas Totais"
+                    label="Despesas Pagas"
                     value={formatCurrency(totalExpense)}
                     sub={`${expenseTransactions.length} lançamentos`}
                     color="destructive"

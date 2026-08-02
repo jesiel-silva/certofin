@@ -307,8 +307,10 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
 
       const incomeTxs = txs.filter((t) => t.type === "income");
       const expenseTxs = txs.filter((t) => t.type === "expense");
-      const totalIncome = incomeTxs.reduce((sum, t) => sum + t.amount, 0);
-      const totalExpense = expenseTxs.reduce((sum, t) => sum + t.amount, 0);
+      const paidIncome = incomeTxs.filter((t) => t.status === "paid");
+      const paidExpense = expenseTxs.filter((t) => t.status === "paid");
+      const totalIncome = paidIncome.reduce((sum, t) => sum + t.amount, 0);
+      const totalExpense = paidExpense.reduce((sum, t) => sum + t.amount, 0);
       const balance = totalIncome - totalExpense;
       const pendingIncome = incomeTxs.filter((t) => t.status === "pending");
       const pendingExpense = expenseTxs.filter((t) => t.status === "pending");
@@ -324,8 +326,8 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
       doc.setFontSize(9);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(100, 100, 100);
-      doc.text(`Receitas Totais: R$ ${totalIncome.toFixed(2)} (${incomeTxs.length} lançamentos)`, 14, 52);
-      doc.text(`Despesas Totais: R$ ${totalExpense.toFixed(2)} (${expenseTxs.length} lançamentos)`, 14, 58);
+      doc.text(`Receitas Recebidas: R$ ${totalIncome.toFixed(2)} (${paidIncome.length} lançamentos)`, 14, 52);
+      doc.text(`Despesas Pagas: R$ ${totalExpense.toFixed(2)} (${paidExpense.length} lançamentos)`, 14, 58);
       doc.setTextColor(balance >= 0 ? 16 : 239, balance >= 0 ? 185 : 68, balance >= 0 ? 129 : 68);
       doc.setFont("helvetica", "bold");
       doc.text(`Saldo do Período: R$ ${balance.toFixed(2)} (${balance >= 0 ? "Positivo" : "Negativo"})`, 14, 64);
