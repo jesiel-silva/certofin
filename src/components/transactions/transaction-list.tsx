@@ -472,8 +472,21 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
         t.amount.toFixed(2).replace(".", ","),
       ]);
 
-      const csvContent = [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(";")).join("\n");
-      const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+      const csvContent = [headers, ...rows]
+        .map((row) =>
+          row
+            .map((cell, i) => {
+              // Última coluna (Valor) vai sem aspas para Excel reconhecer como número
+              if (i === row.length - 1) return cell;
+              return `"${cell}"`;
+            })
+            .join(";")
+        )
+        .join("\r\n");
+
+      const blob = new Blob(["\uFEFF" + csvContent], {
+        type: "text/csv;charset=utf-8;",
+      });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
