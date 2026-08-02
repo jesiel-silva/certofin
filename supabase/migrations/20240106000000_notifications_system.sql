@@ -262,19 +262,28 @@ CREATE OR REPLACE FUNCTION public.generate_system_notifications(user_uuid UUID)
 RETURNS void AS $$
 DECLARE
   user_plan TEXT;
+  is_trial BOOLEAN;
   tx_count BIGINT;
 BEGIN
   SELECT subscription_status INTO user_plan
   FROM public.profiles WHERE id = user_uuid;
 
-  -- Contar transações do mês
+  -- Verificar se está em trial
+  is_trial := public.is_trial_active(user_uuid);
+
+  -- Se é pro ou trial, não mostra avisos de limite
+  IF user_plan = 'pro' OR is_trial THEN
+    RETURN;
+  END IF;
+
+  -- Contar transações do mês (apenas para free)
   SELECT COUNT(*) INTO tx_count
   FROM public.transactions
   WHERE user_id = user_uuid
     AND DATE_TRUNC('month', transaction_date) = DATE_TRUNC('month', CURRENT_DATE);
 
   -- Aviso quando atingir 80% do limite (Free)
-  IF user_plan = 'free' AND tx_count >= 8 AND tx_count < 10 THEN
+  IF tx_count >= 8 AND tx_count < 10 THEN
     IF NOT EXISTS (
       SELECT 1 FROM public.notifications
       WHERE user_id = user_uuid AND type = 'system'
@@ -291,7 +300,7 @@ BEGIN
   END IF;
 
   -- Aviso quando atingir limite (Free)
-  IF user_plan = 'free' AND tx_count >= 10 THEN
+  IF tx_count >= 10 THEN
     IF NOT EXISTS (
       SELECT 1 FROM public.notifications
       WHERE user_id = user_uuid AND type = 'system'
