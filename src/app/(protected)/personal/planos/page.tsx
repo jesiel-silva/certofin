@@ -67,6 +67,8 @@ export default function PersonalPlanosPage() {
       );
 
       alert("Trial PRO ativado! Você tem 7 dias de acesso completo.");
+      // Recarregar para atualizar sidebar e hooks
+      window.location.reload();
     } catch (err) {
       console.error("Erro ao ativar trial:", err);
       alert("Erro ao ativar trial. Tente novamente.");

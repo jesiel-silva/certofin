@@ -48,15 +48,21 @@ export function usePlanLimits(): PlanLimits {
         { user_uuid: user.id }
       );
 
+      // Sempre buscar trial_ends_at diretamente da tabela
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("subscription_status, trial_ends_at")
+        .eq("id", user.id)
+        .single();
+
+      const isPro = profile?.subscription_status === "pro";
+      const isTrial = profile?.trial_ends_at
+        ? new Date(profile.trial_ends_at) > new Date()
+        : false;
+
       if (rpcError) {
         console.error("Erro ao buscar plano:", rpcError);
-        // Fallback: buscar diretamente da tabela
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("subscription_status, trial_ends_at")
-          .eq("id", user.id)
-          .single();
-
+        // Fallback: buscar contagem diretamente
         const { count } = await supabase
           .from("transactions")
           .select("*", { count: "exact", head: true })
@@ -70,11 +76,6 @@ export function usePlanLimits(): PlanLimits {
             ).toISOString()
           );
 
-        const isPro = profile?.subscription_status === "pro";
-        const isTrial = profile?.trial_ends_at
-          ? new Date(profile.trial_ends_at) > new Date()
-          : false;
-
         setPlanInfo({
           plan: profile?.subscription_status || "free",
           is_trial: isTrial,
@@ -87,7 +88,17 @@ export function usePlanLimits(): PlanLimits {
         return;
       }
 
-      setPlanInfo(data as PlanInfo);
+      // RPC funcionou, mas mesclar com dados de trial da tabela
+      const rpcData = data as Record<string, unknown>;
+      setPlanInfo({
+        plan: (rpcData.plan as string) || "free",
+        is_trial: isTrial,
+        trial_ends_at: profile?.trial_ends_at || null,
+        monthly_transactions: (rpcData.monthly_transactions as number) || 0,
+        max_transactions: isPro || isTrial ? -1 : 10,
+        can_use_business: isPro || isTrial,
+        can_use_installment: isPro || isTrial,
+      });
     } catch (err) {
       console.error("Erro ao verificar plano:", err);
       setError("Erro ao verificar plano do usuário");
