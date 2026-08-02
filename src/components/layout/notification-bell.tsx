@@ -118,7 +118,7 @@ export function NotificationBell() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "relative p-2 border transition-all",
+          "relative p-2 border transition-all z-50",
           isOpen
             ? "border-[var(--primary)]/50 bg-[var(--primary)]/10 shadow-[0_0_10px_var(--primary)]"
             : "border-[var(--primary)]/20 hover:border-[var(--primary)]/40 hover:bg-[var(--primary)]/5"
