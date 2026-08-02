@@ -45,8 +45,10 @@ function renderCustomLabel({
       fill="white"
       textAnchor="middle"
       dominantBaseline="central"
-      fontSize={11}
-      fontWeight={600}
+      fontSize={10}
+      fontFamily="var(--font-jetbrains-mono)"
+      fontWeight={700}
+      style={{ textShadow: "0 0 5px rgba(0,0,0,0.8)" }}
     >
       {`${(percent * 100).toFixed(0)}%`}
     </text>
@@ -59,13 +61,13 @@ export function ExpenseChart({
 }: ExpenseChartProps) {
   if (!data.length) {
     return (
-      <Card>
+      <Card className="hud-border overflow-hidden bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay">
         <CardHeader>
-          <CardTitle className="text-sm font-medium">{title}</CardTitle>
+          <CardTitle className="text-xs sm:text-sm font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">{title}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex h-[200px] sm:h-[250px] items-center justify-center text-sm text-[var(--muted-foreground)]">
-            Sem dados para exibir
+          <div className="flex h-[200px] sm:h-[250px] items-center justify-center text-xs sm:text-sm font-mono text-[var(--primary)]/40">
+            [ SEM DADOS ]
           </div>
         </CardContent>
       </Card>
@@ -75,11 +77,11 @@ export function ExpenseChart({
   const total = data.reduce((sum, item) => sum + item.total, 0);
 
   return (
-    <Card>
+    <Card className="hud-border overflow-hidden bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay">
       <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-medium">{title}</CardTitle>
-          <span className="text-xs font-semibold text-[var(--foreground)]">
+        <div className="flex items-center justify-between border-b border-[var(--primary)]/20 pb-2 mb-2">
+          <CardTitle className="text-xs sm:text-sm font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">{title}</CardTitle>
+          <span className="text-xs sm:text-sm font-mono font-bold text-[var(--destructive)] text-glow-red">
             {formatCurrency(total)}
           </span>
         </div>
@@ -94,7 +96,7 @@ export function ExpenseChart({
                 cy="50%"
                 innerRadius={55}
                 outerRadius={85}
-                paddingAngle={2}
+                paddingAngle={4}
                 dataKey="total"
                 nameKey="category_name"
                 labelLine={false}
@@ -103,9 +105,10 @@ export function ExpenseChart({
                 {data.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
-                    fill={entry.category_color}
-                    stroke="var(--card)"
-                    strokeWidth={2}
+                    fill="transparent"
+                    stroke={entry.category_color}
+                    strokeWidth={3}
+                    style={{ filter: `drop-shadow(0 0 5px ${entry.category_color}80)` }}
                   />
                 ))}
               </Pie>
@@ -114,21 +117,21 @@ export function ExpenseChart({
                   if (active && payload && payload.length) {
                     const item = payload[0].payload as CategorySummary;
                     return (
-                      <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-3 shadow-lg">
-                        <div className="flex items-center gap-2 mb-1">
+                      <div className="hud-border bg-[#0B1221]/95 p-3 shadow-xl backdrop-blur-md min-w-[150px]">
+                        <div className="flex items-center gap-2 mb-2 pb-2 border-b border-white/10">
                           <div
-                            className="h-3 w-3 rounded-full"
-                            style={{ backgroundColor: item.category_color }}
+                            className="h-2 w-2"
+                            style={{ backgroundColor: item.category_color, boxShadow: `0 0 8px ${item.category_color}` }}
                           />
-                          <span className="text-sm font-semibold">
+                          <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[var(--foreground)] opacity-90">
                             {item.category_name}
                           </span>
                         </div>
-                        <p className="text-sm font-bold text-[var(--foreground)]">
+                        <p className="text-sm sm:text-base font-bold font-mono" style={{ color: item.category_color, textShadow: `0 0 5px ${item.category_color}80` }}>
                           {formatCurrency(item.total)}
                         </p>
-                        <p className="text-xs text-[var(--muted-foreground)]">
-                          {item.percentage.toFixed(1)}% do total
+                        <p className="text-[10px] sm:text-xs font-mono text-[var(--muted-foreground)] mt-1">
+                          {item.percentage.toFixed(1)}% DO TOTAL
                         </p>
                       </div>
                     );
@@ -140,27 +143,27 @@ export function ExpenseChart({
           </ResponsiveContainer>
 
           {/* Legend with details */}
-          <div className="w-full space-y-2 mt-2">
+          <div className="w-full space-y-2 mt-4 pt-4 border-t border-[var(--border)]">
             {data.slice(0, 5).map((item) => (
               <div key={item.category_id} className="flex items-center gap-3">
                 <div
-                  className="h-2.5 w-2.5 shrink-0 rounded-full"
-                  style={{ backgroundColor: item.category_color }}
+                  className="h-1.5 w-1.5 shrink-0"
+                  style={{ backgroundColor: item.category_color, boxShadow: `0 0 5px ${item.category_color}` }}
                 />
-                <span className="flex-1 truncate text-xs text-[var(--muted-foreground)]">
+                <span className="flex-1 truncate text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[var(--foreground)] opacity-80">
                   {item.category_name}
                 </span>
-                <span className="text-xs font-semibold text-[var(--foreground)]">
+                <span className="text-xs sm:text-sm font-bold font-mono text-[var(--foreground)]">
                   {formatCurrency(item.total)}
                 </span>
-                <span className="w-10 text-right text-[10px] font-medium text-[var(--muted-foreground)]">
+                <span className="w-10 text-right text-[10px] sm:text-xs font-bold font-mono text-[var(--primary)] opacity-80">
                   {item.percentage.toFixed(0)}%
                 </span>
               </div>
             ))}
             {data.length > 5 && (
-              <p className="text-center text-[10px] text-[var(--muted-foreground)]">
-                +{data.length - 5} outras categorias
+              <p className="text-center text-[10px] sm:text-xs font-mono font-bold text-[var(--muted-foreground)] pt-2 border-t border-white/5">
+                + {data.length - 5} OUTRAS CATEGORIAS
               </p>
             )}
           </div>

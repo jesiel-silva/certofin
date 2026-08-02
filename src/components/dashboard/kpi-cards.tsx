@@ -5,8 +5,6 @@ import {
   TrendingUp,
   TrendingDown,
   Wallet,
-  DollarSign,
-  BarChart3,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -16,7 +14,6 @@ interface KpiCardsProps {
   personalExpense: number;
   businessIncome: number;
   businessExpense: number;
-  businessProfit: number;
   isEmpty: boolean;
 }
 
@@ -25,7 +22,6 @@ export function KpiCards({
   personalExpense,
   businessIncome,
   businessExpense,
-  businessProfit,
   isEmpty,
 }: KpiCardsProps) {
   const personalNet = personalIncome - personalExpense;
@@ -36,82 +32,83 @@ export function KpiCards({
       title: "Receita Pessoal",
       value: personalNet,
       icon: TrendingUp,
-      color: personalNet >= 0 ? "text-emerald-600" : "text-rose-600",
-      bg: personalNet >= 0 ? "bg-emerald-500/10" : "bg-rose-500/10",
+      color: personalNet >= 0 ? "text-[var(--success)]" : "text-[var(--destructive)]",
+      glowTextClass: personalNet >= 0 ? "text-glow-green" : "text-glow-red",
+      bg: personalNet >= 0 ? "bg-[var(--success)]/10 glow-green" : "bg-[var(--destructive)]/10 glow-red",
+      iconGlow: personalNet >= 0 ? "animate-pulse-glow" : "",
       subtitle: `${formatCurrency(personalIncome)} - ${formatCurrency(personalExpense)}`,
     },
     {
       title: "Gastos Pessoal",
       value: personalExpense,
       icon: TrendingDown,
-      color: "text-rose-600",
-      bg: "bg-rose-500/10",
+      color: "text-[var(--destructive)]",
+      glowTextClass: "text-glow-red",
+      bg: "bg-[var(--destructive)]/10 glow-red",
+      iconGlow: "animate-pulse-glow",
       subtitle: null,
     },
     {
       title: "Receita Negócio",
       value: businessNet,
       icon: TrendingUp,
-      color: businessNet >= 0 ? "text-blue-600" : "text-rose-600",
-      bg: businessNet >= 0 ? "bg-blue-500/10" : "bg-rose-500/10",
+      color: businessNet >= 0 ? "text-[var(--primary)]" : "text-[var(--destructive)]",
+      glowTextClass: businessNet >= 0 ? "text-glow-cyan" : "text-glow-red",
+      bg: businessNet >= 0 ? "bg-[var(--primary)]/10 glow-cyan" : "bg-[var(--destructive)]/10 glow-red",
+      iconGlow: businessNet >= 0 ? "animate-pulse-glow" : "",
       subtitle: `${formatCurrency(businessIncome)} - ${formatCurrency(businessExpense)}`,
     },
     {
       title: "Gastos Negócio",
       value: businessExpense,
       icon: TrendingDown,
-      color: "text-orange-600",
-      bg: "bg-orange-500/10",
-      subtitle: null,
-    },
-    {
-      title: "Lucro da Empresa",
-      value: businessProfit,
-      icon: DollarSign,
-      color: businessProfit >= 0 ? "text-emerald-600" : "text-rose-600",
-      bg: businessProfit >= 0 ? "bg-emerald-500/10" : "bg-rose-500/10",
+      color: "text-[var(--warning)]",
+      glowTextClass: "text-glow-yellow",
+      bg: "bg-[var(--warning)]/10 glow-yellow",
+      iconGlow: "animate-pulse-glow",
       subtitle: null,
     },
   ];
 
   if (isEmpty) {
     return (
-      <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--card)] p-8 text-center">
-        <Wallet className="mx-auto h-10 w-10 text-[var(--muted-foreground)]/40" />
-        <p className="mt-3 text-sm font-medium text-[var(--muted-foreground)]">
-          Nenhum lançamento este mês
+      <div className="hud-border p-8 text-center scanline-overlay animate-fade-in-up">
+        <Wallet className="mx-auto h-10 w-10 text-[var(--primary)]/40 animate-pulse-glow" />
+        <p className="mt-3 text-sm sm:text-base font-mono font-medium text-[var(--muted-foreground)]">
+          NENHUM LANÇAMENTO DETECTADO
         </p>
-        <p className="mt-1 text-xs text-[var(--muted-foreground)]/70">
-          Comece adicionando uma receita ou despesa
+        <p className="mt-1 text-xs sm:text-sm font-mono text-[var(--muted-foreground)]/70">
+          [ AGUARDANDO DADOS... ]
         </p>
       </div>
     );
   }
 
   return (
-    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
-      {cards.map((card) => (
-        <Card key={card.title}>
+    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      {cards.map((card, index) => (
+        <Card
+          key={card.title}
+          className={cn(
+            "hud-border overflow-hidden bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay animate-fade-in-up",
+            `delay-${(index + 1) * 100}`
+          )}
+        >
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">
+            <CardTitle className="text-xs sm:text-sm font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
               {card.title}
             </CardTitle>
-            <div className={cn("rounded-lg p-2", card.bg)}>
-              <card.icon className={cn("h-5 w-5", card.color)} />
+            <div className={cn("rounded-none p-2 border border-[currentColor]/30 bg-[currentColor]/10 transition-all duration-300", card.bg, card.iconGlow)}>
+              <card.icon className={cn("h-4 w-4 sm:h-5 sm:w-5", card.color)} />
             </div>
           </CardHeader>
           <CardContent>
-            <p className={cn("text-2xl font-bold", card.color)}>
+            <p className={cn("text-lg sm:text-2xl font-mono font-bold tracking-tight", card.color, card.glowTextClass)}>
               {formatCurrency(card.value)}
             </p>
             {card.subtitle && (
-              <p className="mt-1 text-xs text-[var(--muted-foreground)]">
+              <p className="mt-1 text-[10px] sm:text-xs text-[var(--muted-foreground)] font-mono opacity-80">
                 {card.subtitle}
-              </p>
-            )}
-            {card.title === "Lucro da Empresa" && (
-              <p className="mt-1 text-xs font-medium text-[var(--muted-foreground)]">
-                Receita - Gastos do negócio
               </p>
             )}
           </CardContent>
