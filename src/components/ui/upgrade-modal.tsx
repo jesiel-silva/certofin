@@ -23,7 +23,7 @@ export function UpgradeModal({ open, onClose, feature }: UpgradeModalProps) {
       case "installment":
         return "Lançamentos parcelados são exclusivos do plano Pro. Crie projeções de compras parceladas para meses futuros.";
       case "transaction_limit":
-        return "Você atingiu o limite de 30 lançamentos do plano grátis este mês. Faça upgrade para ter lançamentos ilimitados.";
+        return "Você atingiu o limite de 10 lançamentos do plano grátis este mês. Faça upgrade para ter lançamentos ilimitados.";
       default:
         return "Este recurso é exclusivo do plano Pro. Desbloqueie todo o potencial do CertoFin.";
     }
@@ -44,7 +44,7 @@ export function UpgradeModal({ open, onClose, feature }: UpgradeModalProps) {
             </div>
             <div>
               <p className="font-semibold text-[var(--foreground)]">Plano Pro</p>
-              <p className="text-sm text-[var(--muted-foreground)]">R$ 29,90/mês</p>
+              <p className="text-sm text-[var(--muted-foreground)]">R$ 9,90/mês</p>
             </div>
           </div>
 

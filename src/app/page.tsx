@@ -76,9 +76,9 @@ const steps = [
 ];
 
 const stats = [
-  { number: "30", label: "Lançamentos grátis/mês" },
+  { number: "10", label: "Lançamentos grátis/mês" },
   { number: "24h", label: "Acesso livre" },
-  { number: "R$29", label: "Plano Pro/mês" },
+  { number: "R$9,90", label: "Plano Pro/mês" },
   { number: "🔒", label: "Seguro" },
 ];
 
@@ -516,7 +516,7 @@ export default function HomePage() {
                 <ul className="mb-8 space-y-4 font-mono">
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--success)] shrink-0 mt-0.5" />
-                    <span className="text-[11px] uppercase tracking-wider text-[var(--muted-foreground)]">Até 30 lançamentos por mês</span>
+                    <span className="text-[11px] uppercase tracking-wider text-[var(--muted-foreground)]">Até 10 lançamentos por mês</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--success)] shrink-0 mt-0.5" />
@@ -560,7 +560,7 @@ export default function HomePage() {
                 <div className="mb-8">
                   <div className="flex items-baseline gap-1 font-mono">
                     <span className="text-base text-[var(--primary)]">R$</span>
-                    <span className="text-5xl font-black text-white text-glow-cyan">29,90</span>
+                    <span className="text-5xl font-black text-white text-glow-cyan">9,90</span>
                     <span className="text-[10px] uppercase tracking-widest text-[var(--primary)] font-bold">/MÊS</span>
                   </div>
                   <p className="mt-1 text-[9px] font-mono uppercase tracking-widest text-[var(--muted-foreground)]">Cobrança recorrente em cartão. Cancele quando quiser.</p>
@@ -615,12 +615,12 @@ export default function HomePage() {
           <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-[10px] font-mono font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-[var(--primary)]" />
-              <span>30 lançamentos grátis/mês</span>
+              <span>10 lançamentos grátis/mês</span>
             </div>
             <div className="h-1.5 w-1.5 rounded-none bg-[var(--primary)]/30 hidden sm:block" />
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-[var(--primary)]" />
-              <span>Pro ilimitado por R$ 29,90</span>
+              <span>Pro ilimitado por R$ 9,90</span>
             </div>
             <div className="h-1.5 w-1.5 rounded-none bg-[var(--primary)]/30 hidden sm:block" />
             <div className="flex items-center gap-2">

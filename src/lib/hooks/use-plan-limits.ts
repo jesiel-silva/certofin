@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase/client";
 
 export interface PlanInfo {
   plan: "free" | "pro";
+  is_trial: boolean;
+  trial_ends_at: string | null;
   monthly_transactions: number;
   max_transactions: number;
   can_use_business: boolean;
@@ -51,7 +53,7 @@ export function usePlanLimits(): PlanLimits {
         // Fallback: buscar diretamente da tabela
         const { data: profile } = await supabase
           .from("profiles")
-          .select("subscription_status")
+          .select("subscription_status, trial_ends_at")
           .eq("id", user.id)
           .single();
 
@@ -60,7 +62,7 @@ export function usePlanLimits(): PlanLimits {
           .select("*", { count: "exact", head: true })
           .eq("user_id", user.id)
           .gte(
-            "created_at",
+            "transaction_date",
             new Date(
               new Date().getFullYear(),
               new Date().getMonth(),
@@ -68,12 +70,19 @@ export function usePlanLimits(): PlanLimits {
             ).toISOString()
           );
 
+        const isPro = profile?.subscription_status === "pro";
+        const isTrial = profile?.trial_ends_at
+          ? new Date(profile.trial_ends_at) > new Date()
+          : false;
+
         setPlanInfo({
           plan: profile?.subscription_status || "free",
+          is_trial: isTrial,
+          trial_ends_at: profile?.trial_ends_at || null,
           monthly_transactions: count || 0,
-          max_transactions: profile?.subscription_status === "pro" ? -1 : 30,
-          can_use_business: profile?.subscription_status === "pro",
-          can_use_installment: profile?.subscription_status === "pro",
+          max_transactions: isPro || isTrial ? -1 : 10,
+          can_use_business: isPro || isTrial,
+          can_use_installment: isPro || isTrial,
         });
         return;
       }

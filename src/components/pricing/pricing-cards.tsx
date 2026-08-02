@@ -19,7 +19,7 @@ export function PricingCards({ currentPlan, onSelectPlan }: PricingCardsProps) {
       period: "/mês",
       description: "Para quem quer organizar as finanças pessoais",
       features: [
-        { text: "Até 30 lançamentos por mês", included: true },
+        { text: "Até 10 lançamentos por mês", included: true },
         { text: "Controle de finanças pessoais", included: true },
         { text: "Contas recorrentes fixas", included: true },
         { text: "Finanças do negócio/trabalho", included: false },
@@ -33,7 +33,7 @@ export function PricingCards({ currentPlan, onSelectPlan }: PricingCardsProps) {
       id: "pro" as const,
       name: "Plano Pro",
       subtitle: "Recomendado",
-      price: "29,90",
+      price: "9,90",
       period: "/mês",
       description: "Para quem trabalha por conta própria",
       features: [

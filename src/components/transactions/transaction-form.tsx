@@ -421,7 +421,7 @@ export function TransactionForm({
               >
                 {transactionsRemaining === 0 ? (
                   <p>
-                    Você atingiu o limite de 30 lançamentos do mês.{" "}
+                    Você atingiu o limite de 10 lançamentos do mês.{" "}
                     <button
                       type="button"
                       onClick={() => {

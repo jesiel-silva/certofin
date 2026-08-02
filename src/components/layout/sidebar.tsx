@@ -35,6 +35,8 @@ export function Sidebar({ open, onClose }: SidebarProps) {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [userPlan, setUserPlan] = useState<"free" | "pro">("free");
+  const [isTrial, setIsTrial] = useState(false);
+  const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -43,12 +45,17 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         setUserEmail(user.email || "");
         const { data: profile } = await supabase
           .from("profiles")
-          .select("full_name, subscription_status")
+          .select("full_name, subscription_status, trial_ends_at")
           .eq("id", user.id)
           .single();
         if (profile) {
           setUserName(profile.full_name || "");
           setUserPlan(profile.subscription_status || "free");
+          if (profile.trial_ends_at) {
+            const trialActive = new Date(profile.trial_ends_at) > new Date();
+            setIsTrial(trialActive && profile.subscription_status !== "pro");
+            setTrialEndsAt(profile.trial_ends_at);
+          }
         }
       }
     };
@@ -117,9 +124,11 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               "ml-auto rounded-full px-2 py-0.5 text-[8px] font-mono font-bold",
               userPlan === "pro"
                 ? "bg-[var(--warning)]/20 text-[var(--warning)] border border-[var(--warning)]/40 text-glow-yellow"
+                : isTrial
+                ? "bg-[var(--success)]/20 text-[var(--success)] border border-[var(--success)]/40 text-glow-green"
                 : "bg-[var(--muted)]/20 text-[var(--muted-foreground)] border border-[var(--border)] text-glow-gray"
             )}>
-              {userPlan === "pro" ? "PRO" : "FREE"}
+              {userPlan === "pro" ? "PRO" : isTrial ? "TRIAL" : "FREE"}
             </span>
           </Link>
         </div>
@@ -179,7 +188,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             </span>
           </div>
 
-          {canUseBusinessScope ? (
+          {canUseBusinessScope || isTrial ? (
             <div className="space-y-1">
               {businessItems.map((item) => {
                 const active = isActive(item.href);
