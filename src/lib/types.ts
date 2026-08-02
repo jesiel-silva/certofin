@@ -1,6 +1,6 @@
 export type Scope = "business" | "personal";
 export type TransactionType = "income" | "expense";
-export type Frequency = "one_time" | "monthly" | "weekly" | "yearly" | "installment";
+export type Frequency = "one_time" | "monthly";
 export type PaymentStatus = "pending" | "paid";
 
 export interface Profile {
@@ -43,10 +43,14 @@ export interface Transaction {
   notes: string;
   created_at: string;
   updated_at: string;
+  due_day: number | null;
+  is_recurring: boolean;
+  recurring_active: boolean;
 }
 
 export interface TransactionWithCategory extends Transaction {
   categories: Category | null;
+  template_id?: string;
 }
 
 export interface MonthlySummary {
@@ -71,7 +75,6 @@ export interface CategorySummary {
 export interface DashboardData {
   currentMonth: MonthlySummary;
   pendingNextMonth: number;
-  businessProfit: number;
   personalSurplus: number;
   expensesByCategory: CategorySummary[];
   monthlyHistory: MonthlySummary[];
