@@ -208,7 +208,7 @@ export function ReportPreview({
                   <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--primary)]/10 text-[10px] font-bold text-[var(--primary)]">1</span>
                   Visão Geral do Mês
                 </h2>
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                   <MetricCard
                     label="Receitas Recebidas"
                     value={formatCurrency(totalIncome)}
@@ -578,10 +578,10 @@ function MetricCard({ label, value, sub, color }: { label: string; value: string
   };
 
   return (
-    <div className={`rounded-xl border p-4 ${colorClasses[color] || colorClasses.primary}`}>
-      <p className={`text-xs font-medium ${textColors[color] || textColors.primary}`}>{label}</p>
-      <p className={`mt-1 text-lg font-bold ${textColors[color] || textColors.primary}`}>{value}</p>
-      <p className="text-xs text-[var(--muted-foreground)]">{sub}</p>
+    <div className={`rounded-xl border p-6 ${colorClasses[color] || colorClasses.primary}`}>
+      <p className={`text-sm font-medium ${textColors[color] || textColors.primary}`}>{label}</p>
+      <p className={`mt-2 text-2xl font-bold ${textColors[color] || textColors.primary}`}>{value}</p>
+      <p className="mt-1 text-sm text-[var(--muted-foreground)]">{sub}</p>
     </div>
   );
 }
