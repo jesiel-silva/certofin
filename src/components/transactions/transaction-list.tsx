@@ -257,7 +257,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
         if (profile) userName = profile.full_name || userData.user.email || "";
       }
       
-      // Convert SVG logo to image
+      // Converter SVG logo para imagem
       const svgLogo = `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M 12 55 L 26 69 L 38 57 L 24 43 Z" fill="#054388"/>
         <path d="M 26 69 L 41 84 L 53 72 L 38 57 Z" fill="#031F44"/>
@@ -274,7 +274,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
       ctx.drawImage(img, 0, 0, 200, 200);
       const logoDataUrl = canvas.toDataURL("image/png");
       URL.revokeObjectURL(svgUrl);
-      
+
       const [year, monthNum] = monthFilter.split("-");
       const monthLabel = new Intl.DateTimeFormat("pt-BR", {
         month: "long",
@@ -282,21 +282,6 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
       }).format(new Date(parseInt(year), parseInt(monthNum) - 1));
 
       const doc = new jsPDF();
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-
-      // Marca d'água grande no centro
-      const addWatermark = () => {
-        doc.addImage(logoDataUrl, "PNG", pageWidth / 2 - 30, pageHeight / 2 - 30, 60, 60);
-        doc.setTextColor(210, 210, 210);
-        doc.setFontSize(28);
-        doc.setFont("helvetica", "bold");
-        doc.text("CERTOFIN", pageWidth / 2, pageHeight / 2 + 40, { align: "center" });
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "normal");
-        doc.text("Soluções Financeiras", pageWidth / 2, pageHeight / 2 + 48, { align: "center" });
-      };
-      addWatermark();
 
       // Header com logo real
       doc.addImage(logoDataUrl, "PNG", 14, 8, 12, 12);
