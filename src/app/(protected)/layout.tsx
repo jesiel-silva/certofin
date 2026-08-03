@@ -1,23 +1,11 @@
-"use client";
+import { ProtectedLayoutClient } from "./layout-client";
 
-import { useState } from "react";
-import { Sidebar } from "@/components/layout/sidebar";
-import { Header } from "@/components/layout/header";
+export const dynamic = "force-dynamic";
 
 export default function ProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  return (
-    <div className="min-h-screen bg-[var(--background)]">
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <div className="lg:pl-64">
-        <Header onMenuClick={() => setSidebarOpen(true)} />
-        <main className="p-4 lg:p-6">{children}</main>
-      </div>
-    </div>
-  );
+  return <ProtectedLayoutClient>{children}</ProtectedLayoutClient>;
 }
