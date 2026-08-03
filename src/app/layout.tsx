@@ -3,6 +3,8 @@ import { Inter, JetBrains_Mono, Orbitron } from "next/font/google";
 import { ThemeProviderWrapper } from "@/components/ui/theme-provider";
 import "./globals.css";
 
+export const dynamic = "force-dynamic";
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
