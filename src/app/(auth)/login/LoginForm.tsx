@@ -149,7 +149,7 @@ function LoginFormContent() {
         <div className="mx-auto w-full max-w-md">
           <div className="mb-8 lg:hidden flex flex-col items-center">
             <Link href="/" className="block w-fit">
-              <Logo size="lg" />
+              <Logo size="lg" className="!justify-center" />
             </Link>
           </div>
 
