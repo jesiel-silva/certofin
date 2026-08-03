@@ -151,7 +151,7 @@ export default function SignupPage() {
           {/* Logo mobile */}
           <div className="mb-8 flex justify-center lg:hidden">
             <Link href="/">
-              <Logo size="lg" />
+              <Logo size="lg" showSubtitle={false} />
             </Link>
           </div>
 
