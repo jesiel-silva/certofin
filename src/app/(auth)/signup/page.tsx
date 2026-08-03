@@ -150,13 +150,11 @@ export default function SignupPage() {
         <div className="mx-auto w-full max-w-md">
           {/* Logo mobile */}
           <div className="mb-8 lg:hidden">
-            <Link href="/" className="flex flex-col items-center gap-2">
-              <Logo size="lg" showText={false} className="bg-[var(--primary)]/10 rounded-2xl p-2" />
-              <span className="text-xl font-bold" style={{ fontFamily: "var(--font-orbitron)" }}>
-                <span className="text-[var(--primary)]">Certo</span>
-                <span className="text-[#009B9E]">Fin</span>
-              </span>
-            </Link>
+            <div className="mx-auto w-fit">
+              <Link href="/">
+                <Logo size="lg" />
+              </Link>
+            </div>
           </div>
 
           {/* Header */}
