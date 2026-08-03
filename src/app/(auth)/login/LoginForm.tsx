@@ -97,7 +97,7 @@ function LoginFormContent() {
 
         <div className="relative z-10">
           <Link href="/" className="mb-12 inline-flex items-center">
-            <Logo size="lg" showText={false} />
+            <Logo size="lg" showText={false} className="bg-white/20 backdrop-blur rounded-2xl p-1" />
             <span className="ml-3 text-2xl font-bold text-white">CertoFin</span>
           </Link>
 
