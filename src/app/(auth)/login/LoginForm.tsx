@@ -147,8 +147,8 @@ function LoginFormContent() {
       {/* Lado Direito - Formulário */}
       <div className="flex flex-1 flex-col justify-center px-6 py-12 sm:px-12 lg:px-16 xl:px-20">
         <div className="mx-auto w-full max-w-md">
-          <div className="mb-8 lg:hidden">
-            <Link href="/" className="flex justify-center">
+          <div className="mb-8 lg:hidden text-center">
+            <Link href="/">
               <Logo size="lg" />
             </Link>
           </div>

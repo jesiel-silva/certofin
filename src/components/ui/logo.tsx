@@ -35,7 +35,7 @@ export function Logo({
   const shouldShowSubtitle = showSubtitle ?? (size !== "sm");
 
   return (
-    <div className={cn("flex items-center gap-3 select-none", className)}>
+    <div className={cn("inline-flex items-center gap-3 select-none", className)}>
       <svg
         viewBox="0 0 100 100"
         fill="none"
