@@ -31,7 +31,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [userName, setUserName] = useState("");
-  const [userPlan, setUserPlan] = useState<"free" | "pro">("free");
+  const [userPlan, setUserPlan] = useState<"free" | "pro" | "trial">("free");
 
   useEffect(() => {
     fetchAllData();
@@ -56,7 +56,7 @@ export default function DashboardPage() {
         const isTrial = profile.trial_ends_at
           ? new Date(profile.trial_ends_at) > new Date()
           : false;
-        setUserPlan(isPro || isTrial ? "pro" : "free");
+        setUserPlan(isPro ? "pro" : isTrial ? "trial" : "free");
       }
     }
 

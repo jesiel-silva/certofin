@@ -7,7 +7,7 @@ import { TrendingUp, TrendingDown, Minus, ArrowRight, Lock } from "lucide-react"
 
 interface MonthComparisonProps {
   data: MonthlySummary[];
-  userPlan?: "free" | "pro";
+  userPlan?: "free" | "pro" | "trial";
 }
 
 export function MonthComparison({ data, userPlan = "free" }: MonthComparisonProps) {

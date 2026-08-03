@@ -18,7 +18,7 @@ import { TrendingUp, TrendingDown, Minus, Lock } from "lucide-react";
 
 interface MonthlyChartProps {
   data: MonthlySummary[];
-  userPlan?: "free" | "pro";
+  userPlan?: "free" | "pro" | "trial";
 }
 
 export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {

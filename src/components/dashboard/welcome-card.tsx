@@ -13,13 +13,14 @@ import {
 interface WelcomeCardProps {
   scope?: "personal" | "business";
   userName?: string;
-  userPlan?: "free" | "pro";
+  userPlan?: "free" | "pro" | "trial";
 }
 
 export function WelcomeCard({ scope = "personal", userName = "", userPlan = "free" }: WelcomeCardProps) {
   const prefix = scope === "business" ? "/business" : "/personal";
   const scopeLabel = scope === "business" ? "do seu negócio" : "pessoais";
   const isPro = userPlan === "pro";
+  const isTrial = userPlan === "trial";
 
   return (
     <Card className="hud-border bg-[#0B1221]/80 scanline-overlay">
@@ -40,9 +41,9 @@ export function WelcomeCard({ scope = "personal", userName = "", userPlan = "fre
                 </p>
               </div>
             </div>
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${isPro ? 'bg-[var(--warning)]/20 border border-[var(--warning)]/40' : 'bg-[var(--muted)]/20 border border-[var(--muted)]/40'}`}>
-              <span className={`text-xs font-mono font-bold uppercase ${isPro ? 'text-[var(--warning)]' : 'text-[var(--muted-foreground)]'}`}>
-                {isPro ? 'PRO' : 'FREE'}
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${isTrial ? 'bg-[var(--success)]/20 border border-[var(--success)]/40' : isPro ? 'bg-[var(--warning)]/20 border border-[var(--warning)]/40' : 'bg-[var(--muted)]/20 border border-[var(--muted)]/40'}`}>
+              <span className={`text-xs font-mono font-bold uppercase ${isTrial ? 'text-[var(--success)]' : isPro ? 'text-[var(--warning)]' : 'text-[var(--muted-foreground)]'}`}>
+                {isTrial ? 'TRIAL' : isPro ? 'PRO' : 'FREE'}
               </span>
             </div>
           </div>
@@ -54,7 +55,7 @@ export function WelcomeCard({ scope = "personal", userName = "", userPlan = "fre
           </div>
           <div>
             <h2 className="text-lg sm:text-xl font-display font-bold text-[var(--foreground)] uppercase tracking-wider">
-              NENHUM LANÇAMENTO {scopeLabel.toUpperCase()} DETECTADO
+              NENHUM LANÇAMENTO {scopeLabel.toUpperCase()} NESTE MÊS
             </h2>
             <p className="text-xs sm:text-sm font-mono text-[var(--muted-foreground)] mt-1">
               [ AGUARDANDO DADOS... ]
