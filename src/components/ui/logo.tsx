@@ -27,8 +27,8 @@ export function Logo({
 
   const subtitleSizes = {
     sm: "text-[9px] tracking-[0.24em] mt-[1px]",
-    md: "text-[12px] tracking-[0.26em] mt-[2px]",
-    lg: "text-[16px] tracking-[0.28em] mt-[3px]",
+    md: "text-[10px] tracking-[0.26em] mt-[2px]",
+    lg: "text-[10px] tracking-[0.28em] mt-[2px]",
   };
 
   // Default to showing subtitle for md/lg if not explicitly passed
