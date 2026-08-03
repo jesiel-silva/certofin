@@ -66,7 +66,7 @@ export default function SignupPage() {
   return (
     <div className="flex min-h-screen bg-[var(--background)]">
       {/* Lado Esquerdo - Branding */}
-      <div className="relative hidden w-1/2 overflow-hidden lg:flex lg:flex-col lg:justify-center lg:px-12 xl:px-20">
+      <div className="relative hidden w-0 lg:block lg:w-1/2 overflow-hidden lg:flex lg:flex-col lg:justify-center lg:px-12 xl:px-20">
         {/* Background gradiente */}
         <div className="absolute inset-0 bg-gradient-to-br from-[var(--primary)] via-[var(--primary)]/90 to-[var(--primary)]/70" />
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
@@ -149,9 +149,9 @@ export default function SignupPage() {
       <div className="flex flex-1 flex-col justify-center px-6 py-12 sm:px-12 lg:px-16 xl:px-20">
         <div className="mx-auto w-full max-w-md">
           {/* Logo mobile */}
-          <div className="mb-8 lg:hidden flex flex-col items-center">
-            <Link href="/" className="block w-fit">
-              <Logo size="lg" className="!justify-center" />
+          <div className="mb-8 lg:hidden">
+            <Link href="/" className="flex justify-center">
+              <Logo size="lg" />
             </Link>
           </div>
 
