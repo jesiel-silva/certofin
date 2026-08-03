@@ -66,20 +66,6 @@ export function Logo({
               <stop offset="0%" stopColor="#031F44" />
               <stop offset="100%" stopColor="#005A9C" />
             </linearGradient>
-
-            <linearGradient
-              id="logo-arrow-grad"
-              x1="30"
-              y1="80"
-              x2="90"
-              y2="20"
-              gradientUnits="userSpaceOnUse"
-            >
-              <stop offset="0%" stopColor="#054388" />
-              <stop offset="35%" stopColor="#0073BC" />
-              <stop offset="70%" stopColor="#00A0E3" />
-              <stop offset="100%" stopColor="#009B9E" />
-            </linearGradient>
           </defs>
 
           <path
@@ -89,10 +75,6 @@ export function Logo({
           <path
             d="M 26 69 L 41 84 L 53 72 L 38 57 Z"
             fill="url(#logo-bottom-fold-grad)"
-          />
-          <path
-            d="M 33 76 L 73 36 L 68 31 L 90 22 L 90 44 L 85 39 L 45 79 Z"
-            fill="url(#logo-arrow-grad)"
           />
         </svg>
 
