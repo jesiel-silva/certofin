@@ -63,9 +63,9 @@ export default function PersonalPlanosPage() {
         return;
       }
 
-      // Definir trial para 7 dias a partir de agora
+      // Definir trial para 14 dias a partir de agora
       const trialEnd = new Date();
-      trialEnd.setDate(trialEnd.getDate() + 7);
+      trialEnd.setDate(trialEnd.getDate() + 14);
 
       const { data, error } = await supabase
         .from("profiles")
@@ -87,7 +87,7 @@ export default function PersonalPlanosPage() {
         prev ? { ...prev, trial_ends_at: trialEnd.toISOString() } : prev
       );
 
-      alert("Trial PRO ativado! Você tem 7 dias de acesso completo.");
+      alert("Trial PRO ativado! Você tem 14 dias de acesso completo.");
       // Recarregar para atualizar sidebar e hooks
       window.location.reload();
     } catch (err) {
@@ -152,7 +152,7 @@ export default function PersonalPlanosPage() {
                 {activatingTrial ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 ) : null}
-                Testar PRO grátis por 7 dias
+                Testar PRO grátis por 14 dias
               </Button>
               <p className="mt-2 text-xs text-[var(--muted-foreground)]">
                 Acesso completo a todos os recursos do plano Pro

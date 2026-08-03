@@ -124,7 +124,7 @@ export default function SignupPage() {
               <div>
                 <p className="font-medium text-white">Comece grátis</p>
                 <p className="text-sm text-white/60">
-                  30 lançamentos/mês sem pagar nada
+                  10 lançamentos/mês sem pagar nada
                 </p>
               </div>
             </div>
@@ -219,7 +219,7 @@ export default function SignupPage() {
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
                 <CheckCircle className="h-4 w-4 text-[var(--success)]" />
-                <span>30 lançamentos grátis por mês</span>
+                <span>10 lançamentos grátis por mês</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
                 <CheckCircle className="h-4 w-4 text-[var(--success)]" />
