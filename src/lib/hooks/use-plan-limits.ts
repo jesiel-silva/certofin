@@ -78,7 +78,7 @@ export function usePlanLimits(): PlanLimits {
           );
 
         setPlanInfo({
-          plan: profile?.subscription_status || "free",
+          plan: (profile?.subscription_status as "free" | "pro") || "free",
           is_trial: isTrial,
           trial_ends_at: profile?.trial_ends_at || null,
           monthly_transactions: count || 0,
@@ -91,8 +91,9 @@ export function usePlanLimits(): PlanLimits {
 
       // RPC funcionou, mas mesclar com dados de trial da tabela
       const rpcData = data as Record<string, unknown>;
+      const rpcPlan = rpcData.plan === "pro" ? "pro" : "free";
       setPlanInfo({
-        plan: (rpcData.plan as string) || "free",
+        plan: rpcPlan,
         is_trial: isTrial,
         trial_ends_at: profile?.trial_ends_at || null,
         monthly_transactions: (rpcData.monthly_transactions as number) || 0,
