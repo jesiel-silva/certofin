@@ -149,9 +149,9 @@ export default function SignupPage() {
       <div className="flex flex-1 flex-col justify-center px-6 py-12 sm:px-12 lg:px-16 xl:px-20">
         <div className="mx-auto w-full max-w-md">
           {/* Logo mobile */}
-          <div className="mb-8 text-center lg:hidden">
-            <Link href="/" className="inline-block">
-              <Logo size="lg" className="inline-flex" />
+          <div className="mb-8 lg:hidden flex flex-col items-center">
+            <Link href="/" className="block w-fit">
+              <Logo size="lg" />
             </Link>
           </div>
 
