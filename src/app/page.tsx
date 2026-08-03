@@ -545,8 +545,9 @@ export default function HomePage() {
             </div>
 
             {/* Pro Plan */}
-            <div className="relative flex flex-col justify-between hud-border border-[var(--primary)] bg-[#0B1221] p-8 shadow-[0_0_25px_rgba(0,255,204,0.15)] scanline-overlay">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+            <div className="relative flex flex-col justify-between hud-border border-[var(--primary)] bg-[#0B1221] p-8 shadow-[0_0_25px_rgba(0,255,204,0.15)]">
+              <div className="absolute inset-0 pointer-events-none z-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(0,255,204,0.05)_2px,rgba(0,255,204,0.05)_4px)]" />
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
                 <div className="flex items-center gap-1 border border-[var(--primary)] bg-[#0B1221] px-4 py-1 text-[9px] font-mono font-bold text-[var(--primary)] uppercase tracking-widest glow-cyan">
                   <Crown className="h-3 w-3" />
                   MAIS ESCOLHIDO
@@ -576,15 +577,15 @@ export default function HomePage() {
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--primary)] shrink-0 mt-0.5" />
-                    <span className="text-[11px] uppercase tracking-wider text-[var(--muted-foreground)]">Cálculo real de lucro operacional</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="h-4 w-4 text-[var(--primary)] shrink-0 mt-0.5" />
                     <span className="text-[11px] uppercase tracking-wider text-[var(--muted-foreground)]">Lançamentos parcelados</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--primary)] shrink-0 mt-0.5" />
                     <span className="text-[11px] uppercase tracking-wider text-[var(--muted-foreground)]">Dashboard avançado com gráficos</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="h-4 w-4 text-[var(--primary)] shrink-0 mt-0.5" />
+                    <span className="text-[11px] uppercase tracking-wider text-[var(--muted-foreground)]">14 dias de trial grátis</span>
                   </li>
                 </ul>
               </div>
