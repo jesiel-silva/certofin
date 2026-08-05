@@ -46,6 +46,7 @@ export interface Transaction {
   due_day: number | null;
   is_recurring: boolean;
   recurring_active: boolean;
+  last_paid_date: string | null;
 }
 
 export interface TransactionWithCategory extends Transaction {

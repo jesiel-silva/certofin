@@ -117,12 +117,24 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
         
         // Check if the due_day falls within the selected month's date range
         if (dueDay <= lastDay) {
+          // Determine status based on last_paid_date
+          const currentMonth = `${year}-${month}`;
+          let virtualStatus: "pending" | "paid" = "pending";
+          if (template.last_paid_date) {
+            const paidMonth = template.last_paid_date.substring(0, 7);
+            // If the paid month is >= current virtual month, it's paid
+            if (paidMonth >= currentMonth) {
+              virtualStatus = "paid";
+            }
+          }
+
           virtualTransactions.push({
             ...template,
             id: `virtual_${template.id}_${year}_${month}`,
             transaction_date: virtualDate,
             is_recurring: true,
             recurring_active: template.recurring_active,
+            status: virtualStatus,
             template_id: template.id,
           });
         }
@@ -157,12 +169,36 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
   const toggleStatus = async (id: string, currentStatus: string) => {
     // Handle virtual recurring transactions
     if (id.startsWith("virtual_")) {
-      const templateId = (await supabase.from("transactions").select("id").eq("id", id.split("_")[1]).single()).data?.id || id.split("_")[1];
-      const newActive = currentStatus === "pending";
-      await supabase
-        .from("transactions")
-        .update({ recurring_active: newActive })
-        .eq("id", templateId);
+      const parts = id.split("_");
+      const templateId = parts[1];
+      const year = parts[2];
+      const month = parts[3];
+      const currentMonth = `${year}-${month}`;
+
+      if (currentStatus === "pending") {
+        // Mark as paid: save last_paid_date on template
+        await supabase
+          .from("transactions")
+          .update({ last_paid_date: `${currentMonth}-28`, status: "paid" })
+          .eq("id", templateId);
+      } else {
+        // Mark as unpaid: clear last_paid_date if it matches current month
+        const { data: template } = await supabase
+          .from("transactions")
+          .select("last_paid_date")
+          .eq("id", templateId)
+          .single();
+
+        if (template && template.last_paid_date) {
+          const paidMonth = template.last_paid_date.substring(0, 7);
+          if (paidMonth === currentMonth) {
+            await supabase
+              .from("transactions")
+              .update({ last_paid_date: null, status: "pending" })
+              .eq("id", templateId);
+          }
+        }
+      }
       fetchTransactions();
       return;
     }
@@ -710,27 +746,44 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
                       {formatCurrency(t.amount)}
                     </p>
                     <div className="mt-1 flex items-center justify-end gap-1">
-                      {t.is_recurring ? (
+                      {t.is_recurring && t.recurring_active ? (
+                        <>
+                          <button
+                            onClick={() => toggleStatus(t.id, t.status)}
+                            className={cn(
+                              "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium transition-colors",
+                              t.status === "paid"
+                                ? "bg-[var(--success)]/10 text-[var(--success)] hover:bg-[var(--success)]/20"
+                                : "bg-[var(--warning)]/10 text-[var(--warning)] hover:bg-[var(--warning)]/20"
+                            )}
+                          >
+                            {t.status === "paid" ? (
+                              <>
+                                <Check className="h-3 w-3" />
+                                {t.type === "income" ? "Recebido" : "Pago"}
+                              </>
+                            ) : (
+                              <>
+                                <Circle className="h-3 w-3" />
+                                Pendente
+                              </>
+                            )}
+                          </button>
+                          <button
+                            onClick={() => pauseRecurring(t.id)}
+                            className="inline-flex items-center gap-1 rounded-full bg-[var(--muted-foreground)]/10 px-2 py-0.5 text-xs font-medium text-[var(--muted-foreground)] hover:bg-[var(--muted-foreground)]/20 transition-colors"
+                            title="Pausar recorrência"
+                          >
+                            <Pause className="h-3 w-3" />
+                          </button>
+                        </>
+                      ) : t.is_recurring && !t.recurring_active ? (
                         <button
                           onClick={() => pauseRecurring(t.id)}
-                          className={cn(
-                            "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium transition-colors",
-                            t.recurring_active
-                              ? "bg-[var(--primary)]/10 text-[var(--primary)] hover:bg-[var(--primary)]/20"
-                              : "bg-[var(--muted-foreground)]/10 text-[var(--muted-foreground)] hover:bg-[var(--muted-foreground)]/20"
-                          )}
+                          className="inline-flex items-center gap-1 rounded-full bg-[var(--primary)]/10 px-2 py-0.5 text-xs font-medium text-[var(--primary)] hover:bg-[var(--primary)]/20 transition-colors"
                         >
-                          {t.recurring_active ? (
-                            <>
-                              <Pause className="h-3 w-3" />
-                              Pausar
-                            </>
-                          ) : (
-                            <>
-                              <Play className="h-3 w-3" />
-                              Ativar
-                            </>
-                          )}
+                          <Play className="h-3 w-3" />
+                          Ativar
                         </button>
                       ) : (
                         <button
