@@ -143,28 +143,49 @@ export function ExpenseChart({
           </ResponsiveContainer>
 
           {/* Legend with details */}
-          <div className="w-full space-y-2 mt-4 pt-4 border-t border-[var(--border)]">
-            {data.slice(0, 5).map((item) => (
-              <div key={item.category_id} className="flex items-center gap-3">
+          <div className="w-full mt-4 pt-4 border-t border-[var(--border)]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5">
+              {data.slice(0, 6).map((item) => (
                 <div
-                  className="h-1.5 w-1.5 shrink-0"
-                  style={{ backgroundColor: item.category_color, boxShadow: `0 0 5px ${item.category_color}` }}
-                />
-                <span className="flex-1 truncate text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[var(--foreground)] opacity-80">
-                  {item.category_name}
-                </span>
-                <span className="text-xs sm:text-sm font-bold font-mono text-[var(--foreground)]">
-                  {formatCurrency(item.total)}
-                </span>
-                <span className="w-10 text-right text-[10px] sm:text-xs font-bold font-mono text-[var(--primary)] opacity-80">
-                  {item.percentage.toFixed(0)}%
-                </span>
+                  key={item.category_id}
+                  className="flex items-center gap-1.5 rounded border border-[var(--border)] bg-[var(--background)]/50 px-2 py-1 min-w-0"
+                >
+                  <div
+                    className="h-2 w-2 shrink-0 rounded-full"
+                    style={{ backgroundColor: item.category_color, boxShadow: `0 0 6px ${item.category_color}` }}
+                  />
+                  <span className="truncate text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[var(--foreground)] opacity-80">
+                    {item.category_name}
+                  </span>
+                  <span className="shrink-0 text-[9px] sm:text-[10px] font-bold font-mono text-[var(--foreground)]">
+                    {formatCurrency(item.total)}
+                  </span>
+                  <span className="shrink-0 text-[9px] sm:text-[10px] font-bold font-mono text-[var(--primary)] opacity-80">
+                    {item.percentage.toFixed(0)}%
+                  </span>
+                </div>
+              ))}
+            </div>
+            {data.length > 6 && (
+              <div className="mt-2 flex flex-wrap justify-center gap-1">
+                {data.slice(6, 12).map((item) => (
+                  <span
+                    key={item.category_id}
+                    className="inline-flex items-center gap-1 rounded bg-[var(--accent)]/50 px-1.5 py-0.5 text-[8px] sm:text-[9px] font-mono font-bold text-[var(--muted-foreground)]"
+                  >
+                    <span
+                      className="h-1.5 w-1.5 rounded-full shrink-0"
+                      style={{ backgroundColor: item.category_color }}
+                    />
+                    {item.category_name}
+                  </span>
+                ))}
+                {data.length > 12 && (
+                  <span className="inline-flex items-center rounded bg-[var(--accent)]/50 px-1.5 py-0.5 text-[8px] sm:text-[9px] font-mono font-bold text-[var(--muted-foreground)]">
+                    +{data.length - 12}
+                  </span>
+                )}
               </div>
-            ))}
-            {data.length > 5 && (
-              <p className="text-center text-[10px] sm:text-xs font-mono font-bold text-[var(--muted-foreground)] pt-2 border-t border-white/5">
-                + {data.length - 5} OUTRAS CATEGORIAS
-              </p>
             )}
           </div>
         </div>

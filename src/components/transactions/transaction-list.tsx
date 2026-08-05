@@ -746,7 +746,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
                           {t.status === "paid" ? (
                             <>
                               <Check className="h-3 w-3" />
-                              Pago
+                              {t.type === "income" ? "Recebido" : "Pago"}
                             </>
                           ) : (
                             <>

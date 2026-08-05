@@ -14,6 +14,10 @@ interface KpiCardsProps {
   personalExpense: number;
   businessIncome: number;
   businessExpense: number;
+  personalPendingIncome: number;
+  personalPendingExpense: number;
+  businessPendingIncome: number;
+  businessPendingExpense: number;
   isEmpty: boolean;
 }
 
@@ -22,6 +26,10 @@ export function KpiCards({
   personalExpense,
   businessIncome,
   businessExpense,
+  personalPendingIncome,
+  personalPendingExpense,
+  businessPendingIncome,
+  businessPendingExpense,
   isEmpty,
 }: KpiCardsProps) {
   const personalNet = personalIncome - personalExpense;
@@ -36,7 +44,8 @@ export function KpiCards({
       glowTextClass: personalNet >= 0 ? "text-glow-green" : "text-glow-red",
       bg: personalNet >= 0 ? "bg-[var(--success)]/10 glow-green" : "bg-[var(--destructive)]/10 glow-red",
       iconGlow: personalNet >= 0 ? "animate-pulse-glow" : "",
-      subtitle: `${formatCurrency(personalIncome)} - ${formatCurrency(personalExpense)}`,
+      subtitle: null,
+      pending: personalPendingIncome > 0 ? `A receber - ${formatCurrency(personalPendingIncome)}` : null,
     },
     {
       title: "Gastos Pessoal",
@@ -47,6 +56,7 @@ export function KpiCards({
       bg: "bg-[var(--destructive)]/10 glow-red",
       iconGlow: "animate-pulse-glow",
       subtitle: null,
+      pending: personalPendingExpense > 0 ? `A pagar - ${formatCurrency(personalPendingExpense)}` : null,
     },
     {
       title: "Receita Negócio",
@@ -56,7 +66,8 @@ export function KpiCards({
       glowTextClass: businessNet >= 0 ? "text-glow-cyan" : "text-glow-red",
       bg: businessNet >= 0 ? "bg-[var(--primary)]/10 glow-cyan" : "bg-[var(--destructive)]/10 glow-red",
       iconGlow: businessNet >= 0 ? "animate-pulse-glow" : "",
-      subtitle: `${formatCurrency(businessIncome)} - ${formatCurrency(businessExpense)}`,
+      subtitle: null,
+      pending: businessPendingIncome > 0 ? `A receber - ${formatCurrency(businessPendingIncome)}` : null,
     },
     {
       title: "Gastos Negócio",
@@ -67,6 +78,7 @@ export function KpiCards({
       bg: "bg-[var(--warning)]/10 glow-yellow",
       iconGlow: "animate-pulse-glow",
       subtitle: null,
+      pending: businessPendingExpense > 0 ? `A pagar - ${formatCurrency(businessPendingExpense)}` : null,
     },
   ];
 
@@ -107,8 +119,13 @@ export function KpiCards({
               {formatCurrency(card.value)}
             </p>
             {card.subtitle && (
-              <p className="mt-1 text-[10px] sm:text-xs text-[var(--muted-foreground)] font-mono opacity-80">
+              <p className="mt-1 text-xs sm:text-sm text-[var(--muted-foreground)] font-mono opacity-80">
                 {card.subtitle}
+              </p>
+            )}
+            {card.pending && (
+              <p className="mt-1 text-xs sm:text-sm text-[var(--muted-foreground)] font-mono opacity-80">
+                {card.pending}
               </p>
             )}
           </CardContent>

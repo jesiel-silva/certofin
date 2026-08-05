@@ -111,13 +111,31 @@ export default function DashboardPage() {
       .filter((t) => t.type === "expense" && t.status === "paid")
       .reduce((sum, t) => sum + t.amount, 0);
 
+    const personalPendingIncome = allTransactions
+      .filter((t) => t.scope === "personal" && t.type === "income" && t.status === "pending")
+      .reduce((sum, t) => sum + t.amount, 0);
+    const personalPendingExpense = allTransactions
+      .filter((t) => t.scope === "personal" && t.type === "expense" && t.status === "pending")
+      .reduce((sum, t) => sum + t.amount, 0);
+
+    const businessPendingIncome = allTransactions
+      .filter((t) => t.scope === "business" && t.type === "income" && t.status === "pending")
+      .reduce((sum, t) => sum + t.amount, 0);
+    const businessPendingExpense = allTransactions
+      .filter((t) => t.scope === "business" && t.type === "expense" && t.status === "pending")
+      .reduce((sum, t) => sum + t.amount, 0);
+
     return {
       personalIncome,
       personalExpense,
       businessIncome,
       businessExpense,
+      personalPendingIncome,
+      personalPendingExpense,
+      businessPendingIncome,
+      businessPendingExpense,
     };
-  }, [transactions]);
+  }, [transactions, allTransactions]);
 
   const getCategoryInfo = (categoryId: string | null) => {
     if (!categoryId) return { name: "Sem categoria", color: "#6b7280" };
@@ -269,6 +287,10 @@ export default function DashboardPage() {
             personalExpense={summary.personalExpense}
             businessIncome={summary.businessIncome}
             businessExpense={summary.businessExpense}
+            personalPendingIncome={summary.personalPendingIncome}
+            personalPendingExpense={summary.personalPendingExpense}
+            businessPendingIncome={summary.businessPendingIncome}
+            businessPendingExpense={summary.businessPendingExpense}
             isEmpty={isEmpty}
           />
 
