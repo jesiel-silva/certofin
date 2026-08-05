@@ -95,12 +95,11 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
       return;
     }
 
-    // Fetch recurring templates (is_recurring = true AND recurring_active = true)
+    // Fetch recurring templates (is_recurring = true)
     let recurringQuery = supabase
       .from("transactions")
       .select("*, categories(*)")
-      .eq("is_recurring", true)
-      .eq("recurring_active", true);
+      .eq("is_recurring", true);
 
     if (fixedScope) recurringQuery = recurringQuery.eq("scope", fixedScope);
     if (typeFilter !== "all") recurringQuery = recurringQuery.eq("type", typeFilter);
@@ -123,7 +122,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
             id: `virtual_${template.id}_${year}_${month}`,
             transaction_date: virtualDate,
             is_recurring: true,
-            recurring_active: true,
+            recurring_active: template.recurring_active,
             template_id: template.id,
           });
         }
