@@ -171,30 +171,49 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
     if (id.startsWith("virtual_")) {
       const parts = id.split("_");
       const templateId = parts[1];
-      const year = parts[2];
-      const month = parts[3];
-      const currentMonth = `${year}-${month}`;
+      const year = parseInt(parts[2]);
+      const month = parseInt(parts[3]);
+      const currentMonth = `${parts[2]}-${parts[3]}`;
+
+      // Fetch template to get due_day
+      const { data: template } = await supabase
+        .from("transactions")
+        .select("last_paid_date, due_day")
+        .eq("id", templateId)
+        .single();
 
       if (currentStatus === "pending") {
-        // Mark as paid: save last_paid_date on template
+        // Mark as paid: save last_paid_date and move transaction_date to next month
+        const nextDate = new Date(year, month, 1); // month is 1-indexed, so month = next month
+        const nextMonth = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, "0")}`;
+        const dueDay = template?.due_day || 1;
+        const lastDayOfNextMonth = new Date(nextDate.getFullYear(), nextDate.getMonth() + 1, 0).getDate();
+        const targetDay = Math.min(dueDay, lastDayOfNextMonth);
+
         await supabase
           .from("transactions")
-          .update({ last_paid_date: `${currentMonth}-28`, status: "paid" })
+          .update({
+            last_paid_date: `${currentMonth}-28`,
+            status: "paid",
+            transaction_date: `${nextMonth}-${String(targetDay).padStart(2, "0")}`,
+          })
           .eq("id", templateId);
       } else {
-        // Mark as unpaid: clear last_paid_date if it matches current month
-        const { data: template } = await supabase
-          .from("transactions")
-          .select("last_paid_date")
-          .eq("id", templateId)
-          .single();
-
+        // Mark as unpaid: clear last_paid_date and move transaction_date back to current month
         if (template && template.last_paid_date) {
           const paidMonth = template.last_paid_date.substring(0, 7);
           if (paidMonth === currentMonth) {
+            const dueDay = template?.due_day || 1;
+            const lastDayOfMonth = new Date(year, month, 0).getDate();
+            const targetDay = Math.min(dueDay, lastDayOfMonth);
+
             await supabase
               .from("transactions")
-              .update({ last_paid_date: null, status: "pending" })
+              .update({
+                last_paid_date: null,
+                status: "pending",
+                transaction_date: `${currentMonth}-${String(targetDay).padStart(2, "0")}`,
+              })
               .eq("id", templateId);
           }
         }
