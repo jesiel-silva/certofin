@@ -113,19 +113,26 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
       for (const template of recurringTemplates) {
         const dueDay = template.due_day || 1;
         const targetDay = Math.min(dueDay, lastDay);
-        const virtualDate = `${year}-${month}-${String(targetDay).padStart(2, "0")}`;
+        const currentMonth = `${year}-${month}`;
         
         // Check if the due_day falls within the selected month's date range
         if (dueDay <= lastDay) {
           // Determine status based on last_paid_date
-          const currentMonth = `${year}-${month}`;
           let virtualStatus: "pending" | "paid" = "pending";
           if (template.last_paid_date) {
             const paidMonth = template.last_paid_date.substring(0, 7);
-            // If the paid month is >= current virtual month, it's paid
             if (paidMonth >= currentMonth) {
               virtualStatus = "paid";
             }
+          }
+
+          // Use template's transaction_date if it matches the selected month, otherwise calculate
+          const templateDateMonth = template.transaction_date?.substring(0, 7);
+          let virtualDate: string;
+          if (templateDateMonth === currentMonth) {
+            virtualDate = template.transaction_date;
+          } else {
+            virtualDate = `${currentMonth}-${String(targetDay).padStart(2, "0")}`;
           }
 
           virtualTransactions.push({
