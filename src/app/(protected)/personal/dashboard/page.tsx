@@ -89,7 +89,7 @@ export default function DashboardPage() {
   const transactions = useMemo(() => {
     const { start, end } = getMonthRange(currentMonth);
     return allTransactions
-      .filter((t) => t.transaction_date >= start && t.transaction_date <= end)
+      .filter((t) => t.transaction_date >= start && t.transaction_date <= end && !t.is_recurring)
       .map((t) => ({ ...t, amount: Number(t.amount) }));
   }, [currentMonth, allTransactions]);
 
@@ -112,17 +112,17 @@ export default function DashboardPage() {
       .reduce((sum, t) => sum + t.amount, 0);
 
     const personalPendingIncome = allTransactions
-      .filter((t) => t.scope === "personal" && t.type === "income" && t.status === "pending")
+      .filter((t) => t.scope === "personal" && t.type === "income" && t.status === "pending" && !t.is_recurring)
       .reduce((sum, t) => sum + t.amount, 0);
     const personalPendingExpense = allTransactions
-      .filter((t) => t.scope === "personal" && t.type === "expense" && t.status === "pending")
+      .filter((t) => t.scope === "personal" && t.type === "expense" && t.status === "pending" && !t.is_recurring)
       .reduce((sum, t) => sum + t.amount, 0);
 
     const businessPendingIncome = allTransactions
-      .filter((t) => t.scope === "business" && t.type === "income" && t.status === "pending")
+      .filter((t) => t.scope === "business" && t.type === "income" && t.status === "pending" && !t.is_recurring)
       .reduce((sum, t) => sum + t.amount, 0);
     const businessPendingExpense = allTransactions
-      .filter((t) => t.scope === "business" && t.type === "expense" && t.status === "pending")
+      .filter((t) => t.scope === "business" && t.type === "expense" && t.status === "pending" && !t.is_recurring)
       .reduce((sum, t) => sum + t.amount, 0);
 
     return {
@@ -172,11 +172,13 @@ export default function DashboardPage() {
 
   const calcMonthlyHistory = (): MonthlySummary[] => {
     const months = new Map<string, Transaction[]>();
-    allTransactions.forEach((t) => {
-      const month = t.transaction_date.substring(0, 7);
-      if (!months.has(month)) months.set(month, []);
-      months.get(month)!.push(t);
-    });
+    allTransactions
+      .filter((t) => !t.is_recurring)
+      .forEach((t) => {
+        const month = t.transaction_date.substring(0, 7);
+        if (!months.has(month)) months.set(month, []);
+        months.get(month)!.push(t);
+      });
 
     return Array.from(months.entries())
       .sort(([a], [b]) => a.localeCompare(b))
