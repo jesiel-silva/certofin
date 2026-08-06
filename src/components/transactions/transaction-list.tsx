@@ -126,12 +126,16 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
             }
           }
 
-          // Use template's transaction_date if it matches the selected month, otherwise calculate
+          // Use template's transaction_date only if it matches the selected month
           const templateDateMonth = template.transaction_date?.substring(0, 7);
           let virtualDate: string;
           if (templateDateMonth === currentMonth) {
             virtualDate = template.transaction_date;
+          } else if (virtualStatus === "paid") {
+            // Template date moved to future month after being marked paid - skip from this month's list
+            continue;
           } else {
+            // New template or reverted - use calculated date
             virtualDate = `${currentMonth}-${String(targetDay).padStart(2, "0")}`;
           }
 
