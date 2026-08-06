@@ -563,7 +563,8 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
   const monthOptions = (() => {
     const opts = [];
     const now = new Date();
-    for (let i = 0; i < 12; i++) {
+    // 12 months past + 3 months future
+    for (let i = 11; i >= -3; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
       const label = new Intl.DateTimeFormat("pt-BR", {

@@ -212,7 +212,7 @@ export default function DashboardPage() {
   const monthOptions = (() => {
     const opts = [];
     const now = new Date();
-    for (let i = 0; i < 12; i++) {
+    for (let i = 11; i >= -3; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
       opts.push({ value: val, label: formatMonthYear(val) });
