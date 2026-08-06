@@ -106,6 +106,20 @@ export default function DashboardPage() {
     return true;
   };
 
+  // Helper: check if a recurring template is paid for the current month
+  const isRecurringPaidForMonth = (t: Transaction): boolean => {
+    if (!t.is_recurring) return false;
+    const templateDateMonth = t.transaction_date?.substring(0, 7);
+    // Template moved to next month after being paid
+    // Check if last_paid_date covers the previous month (which is the current view month)
+    if (t.last_paid_date) {
+      const paidMonth = t.last_paid_date.substring(0, 7);
+      // The paid month should be the current month or later
+      if (paidMonth >= currentMonth) return true;
+    }
+    return false;
+  };
+
   const summary = useMemo(() => {
     const personalTx = transactions.filter((t) => t.scope === "personal");
     const businessTx = transactions.filter((t) => t.scope === "business");
@@ -122,6 +136,21 @@ export default function DashboardPage() {
       .reduce((sum, t) => sum + t.amount, 0);
     const businessExpense = businessTx
       .filter((t) => t.type === "expense" && t.status === "paid")
+      .reduce((sum, t) => sum + t.amount, 0);
+
+    // Recurring paid for current month
+    const recurringPaidIncome = allTransactions
+      .filter((t) => t.type === "income" && isRecurringPaidForMonth(t))
+      .reduce((sum, t) => sum + t.amount, 0);
+    const recurringPaidExpense = allTransactions
+      .filter((t) => t.type === "expense" && isRecurringPaidForMonth(t))
+      .reduce((sum, t) => sum + t.amount, 0);
+
+    const personalRecurringPaid = allTransactions
+      .filter((t) => t.scope === "personal" && t.type === "expense" && isRecurringPaidForMonth(t))
+      .reduce((sum, t) => sum + t.amount, 0);
+    const businessRecurringPaid = allTransactions
+      .filter((t) => t.scope === "business" && t.type === "expense" && isRecurringPaidForMonth(t))
       .reduce((sum, t) => sum + t.amount, 0);
 
     // Pending: normal pending + recurring pending for current month
@@ -141,9 +170,9 @@ export default function DashboardPage() {
 
     return {
       personalIncome,
-      personalExpense,
+      personalExpense: personalExpense + personalRecurringPaid,
       businessIncome,
-      businessExpense,
+      businessExpense: businessExpense + businessRecurringPaid,
       personalPendingIncome,
       personalPendingExpense,
       businessPendingIncome,
