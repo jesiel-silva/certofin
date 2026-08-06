@@ -93,6 +93,19 @@ export default function DashboardPage() {
       .map((t) => ({ ...t, amount: Number(t.amount) }));
   }, [currentMonth, allTransactions]);
 
+  // Helper: check if a recurring template is pending for the current month
+  const isRecurringPendingForMonth = (t: Transaction): boolean => {
+    if (!t.is_recurring) return false;
+    const templateDateMonth = t.transaction_date?.substring(0, 7);
+    if (templateDateMonth !== currentMonth) return false;
+    // If last_paid_date covers the current month, it's paid
+    if (t.last_paid_date) {
+      const paidMonth = t.last_paid_date.substring(0, 7);
+      if (paidMonth >= currentMonth) return false;
+    }
+    return true;
+  };
+
   const summary = useMemo(() => {
     const personalTx = transactions.filter((t) => t.scope === "personal");
     const businessTx = transactions.filter((t) => t.scope === "business");
@@ -111,18 +124,19 @@ export default function DashboardPage() {
       .filter((t) => t.type === "expense" && t.status === "paid")
       .reduce((sum, t) => sum + t.amount, 0);
 
+    // Pending: normal pending + recurring pending for current month
     const personalPendingIncome = allTransactions
-      .filter((t) => t.scope === "personal" && t.type === "income" && t.status === "pending" && !t.is_recurring)
+      .filter((t) => t.scope === "personal" && t.type === "income" && (t.status === "pending" || isRecurringPendingForMonth(t)))
       .reduce((sum, t) => sum + t.amount, 0);
     const personalPendingExpense = allTransactions
-      .filter((t) => t.scope === "personal" && t.type === "expense" && t.status === "pending" && !t.is_recurring)
+      .filter((t) => t.scope === "personal" && t.type === "expense" && (t.status === "pending" || isRecurringPendingForMonth(t)))
       .reduce((sum, t) => sum + t.amount, 0);
 
     const businessPendingIncome = allTransactions
-      .filter((t) => t.scope === "business" && t.type === "income" && t.status === "pending" && !t.is_recurring)
+      .filter((t) => t.scope === "business" && t.type === "income" && (t.status === "pending" || isRecurringPendingForMonth(t)))
       .reduce((sum, t) => sum + t.amount, 0);
     const businessPendingExpense = allTransactions
-      .filter((t) => t.scope === "business" && t.type === "expense" && t.status === "pending" && !t.is_recurring)
+      .filter((t) => t.scope === "business" && t.type === "expense" && (t.status === "pending" || isRecurringPendingForMonth(t)))
       .reduce((sum, t) => sum + t.amount, 0);
 
     return {
