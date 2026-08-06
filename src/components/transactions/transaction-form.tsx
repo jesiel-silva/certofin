@@ -16,10 +16,15 @@ import {
   ArrowUpRight,
   Home,
   Briefcase,
+  ChevronLeft,
+  ChevronRight,
+  Check,
+  Circle,
 } from "lucide-react";
 import type { Category, Transaction } from "@/lib/types";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { formatMonthYear } from "@/lib/utils";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { UpgradeModal } from "@/components/ui/upgrade-modal";
 import { usePlanLimits } from "@/lib/hooks/use-plan-limits";
@@ -63,6 +68,14 @@ export function TransactionForm({
   const [deleting, setDeleting] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeFeature, setUpgradeFeature] = useState("");
+
+  // State for recurring transaction navigation
+  const [currentMonth, setCurrentMonth] = useState(
+    initialData?.is_recurring ? initialData.transaction_date.substring(0, 7) : ""
+  );
+  const [currentStatus, setCurrentStatus] = useState<"paid" | "pending">(
+    initialData?.status || "pending"
+  );
 
   // Nova categoria
   const [showNewCategory, setShowNewCategory] = useState(false);
@@ -269,6 +282,92 @@ export function TransactionForm({
 
   const handleFrequencyChange = (newFrequency: string) => {
     setFrequency(newFrequency as Transaction["frequency"]);
+  };
+
+  const handlePrevMonth = () => {
+    if (!currentMonth) return;
+    const [year, month] = currentMonth.split("-").map(Number);
+    const prev = new Date(year, month - 2, 1);
+    const newMonth = `${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, "0")}`;
+    setCurrentMonth(newMonth);
+    // Update status based on last_paid_date
+    if (initialData?.is_recurring && initialData.last_paid_date) {
+      const paidMonth = initialData.last_paid_date.substring(0, 7);
+      setCurrentStatus(paidMonth >= newMonth ? "paid" : "pending");
+    } else {
+      setCurrentStatus("pending");
+    }
+    // Update transaction_date for the new month
+    const dueDayNum = parseInt(dueDay) || 1;
+    const lastDay = new Date(prev.getFullYear(), prev.getMonth() + 1, 0).getDate();
+    const targetDay = Math.min(dueDayNum, lastDay);
+    setTransactionDate(`${newMonth}-${String(targetDay).padStart(2, "0")}`);
+  };
+
+  const handleNextMonth = () => {
+    if (!currentMonth) return;
+    const [year, month] = currentMonth.split("-").map(Number);
+    const next = new Date(year, month, 1);
+    const newMonth = `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, "0")}`;
+    setCurrentMonth(newMonth);
+    // Update status based on last_paid_date
+    if (initialData?.is_recurring && initialData.last_paid_date) {
+      const paidMonth = initialData.last_paid_date.substring(0, 7);
+      setCurrentStatus(paidMonth >= newMonth ? "paid" : "pending");
+    } else {
+      setCurrentStatus("pending");
+    }
+    // Update transaction_date for the new month
+    const dueDayNum = parseInt(dueDay) || 1;
+    const lastDay = new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate();
+    const targetDay = Math.min(dueDayNum, lastDay);
+    setTransactionDate(`${newMonth}-${String(targetDay).padStart(2, "0")}`);
+  };
+
+  const handleToggleStatus = async () => {
+    if (!initialData?.is_recurring || !currentMonth) return;
+
+    const newStatus = currentStatus === "paid" ? "pending" : "paid";
+    const [year, month] = currentMonth.split("-").map(Number);
+    const dueDayNum = parseInt(dueDay) || 1;
+
+    if (newStatus === "paid") {
+      // Mark as paid: save last_paid_date and move to next month
+      const nextDate = new Date(year, month, 1);
+      const nextMonth = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, "0")}`;
+      const lastDayOfNextMonth = new Date(nextDate.getFullYear(), nextDate.getMonth() + 1, 0).getDate();
+      const targetDay = Math.min(dueDayNum, lastDayOfNextMonth);
+
+      await supabase
+        .from("transactions")
+        .update({
+          last_paid_date: `${currentMonth}-28`,
+          status: "paid",
+          transaction_date: `${nextMonth}-${String(targetDay).padStart(2, "0")}`,
+        })
+        .eq("id", initialData.id);
+
+      setCurrentStatus("paid");
+      // Move to next month
+      setCurrentMonth(nextMonth);
+      setTransactionDate(`${nextMonth}-${String(targetDay).padStart(2, "0")}`);
+    } else {
+      // Mark as pending: clear last_paid_date and move back to current month
+      const lastDayOfMonth = new Date(year, month, 0).getDate();
+      const targetDay = Math.min(dueDayNum, lastDayOfMonth);
+
+      await supabase
+        .from("transactions")
+        .update({
+          last_paid_date: null,
+          status: "pending",
+          transaction_date: `${currentMonth}-${String(targetDay).padStart(2, "0")}`,
+        })
+        .eq("id", initialData.id);
+
+      setCurrentStatus("pending");
+      setTransactionDate(`${currentMonth}-${String(targetDay).padStart(2, "0")}`);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -835,6 +934,57 @@ export function TransactionForm({
                   </select>
                   <span className="text-sm text-[var(--muted-foreground)]">de cada mês</span>
                 </div>
+
+                {mode === "edit" && initialData?.is_recurring && currentMonth && (
+                  <div className="mt-3 pt-3 border-t border-[var(--primary)]/20">
+                    <div className="flex items-center justify-between">
+                      <button
+                        type="button"
+                        onClick={handlePrevMonth}
+                        className="flex items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--background)] px-2 py-1 text-xs font-medium text-[var(--foreground)] hover:bg-[var(--accent)] transition-colors"
+                      >
+                        <ChevronLeft className="h-3 w-3" />
+                        Anterior
+                      </button>
+                      <span className="text-sm font-medium text-[var(--foreground)]">
+                        {formatMonthYear(currentMonth)}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleNextMonth}
+                        className="flex items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--background)] px-2 py-1 text-xs font-medium text-[var(--foreground)] hover:bg-[var(--accent)] transition-colors"
+                      >
+                        Próximo
+                        <ChevronRight className="h-3 w-3" />
+                      </button>
+                    </div>
+                    <div className="mt-2 flex items-center justify-center">
+                      <button
+                        type="button"
+                        onClick={handleToggleStatus}
+                        className={cn(
+                          "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium transition-colors",
+                          currentStatus === "paid"
+                            ? "bg-[var(--success)]/10 text-[var(--success)] hover:bg-[var(--success)]/20"
+                            : "bg-[var(--warning)]/10 text-[var(--warning)] hover:bg-[var(--warning)]/20"
+                        )}
+                      >
+                        {currentStatus === "paid" ? (
+                          <>
+                            <Check className="h-4 w-4" />
+                            Pago
+                          </>
+                        ) : (
+                          <>
+                            <Circle className="h-4 w-4" />
+                            Pendente
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 <p className="mt-2 text-xs text-[var(--muted-foreground)]">
                   Essa transação aparecerá automaticamente todo mês no dia {dueDay}.
                 </p>
