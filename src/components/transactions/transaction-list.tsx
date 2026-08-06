@@ -277,22 +277,67 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
     const startDate = `${year}-${month}-01`;
     const lastDay = new Date(parseInt(year), parseInt(month), 0).getDate();
     const endDate = `${year}-${month}-${String(lastDay).padStart(2, "0")}`;
+    const currentMonth = `${year}-${month}`;
 
+    // Fetch regular transactions
     let query = supabase
       .from("transactions")
       .select("*, categories(*)")
       .gte("transaction_date", startDate)
       .lte("transaction_date", endDate)
+      .eq("is_recurring", false)
       .order("transaction_date", { ascending: true });
 
     if (fixedScope) query = query.eq("scope", fixedScope);
 
-    const { data } = await query;
-    const txData = ((data as TransactionWithCategory[]) || []).map((t) => ({
+    const { data: regularData } = await query;
+    const txData = ((regularData as TransactionWithCategory[]) || []).map((t) => ({
       ...t,
       amount: Number(t.amount),
     }));
-    return txData;
+
+    // Fetch recurring templates and generate virtual transactions
+    let recurringQuery = supabase
+      .from("transactions")
+      .select("*, categories(*)")
+      .eq("is_recurring", true);
+
+    if (fixedScope) recurringQuery = recurringQuery.eq("scope", fixedScope);
+
+    const { data: recurringTemplates } = await recurringQuery;
+    const virtualTxs: TransactionWithCategory[] = [];
+
+    if (recurringTemplates) {
+      for (const template of recurringTemplates) {
+        const dueDay = template.due_day || 1;
+        if (dueDay > lastDay) continue;
+
+        const templateDateMonth = template.transaction_date?.substring(0, 7);
+        if (templateDateMonth !== currentMonth) continue;
+
+        // Determine status based on last_paid_date
+        let virtualStatus: "pending" | "paid" = "pending";
+        if (template.last_paid_date) {
+          const paidMonth = template.last_paid_date.substring(0, 7);
+          if (paidMonth >= currentMonth) {
+            virtualStatus = "paid";
+          }
+        }
+
+        virtualTxs.push({
+          ...template,
+          id: `virtual_${template.id}_${year}_${month}`,
+          transaction_date: template.transaction_date,
+          is_recurring: true,
+          recurring_active: template.recurring_active,
+          status: virtualStatus,
+          template_id: template.id,
+          amount: Number(template.amount),
+        });
+      }
+    }
+
+    return [...txData, ...virtualTxs];
   };
 
   const handleOpenReport = async () => {
@@ -443,7 +488,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
 
         const incomeData = incomeTxs.map((t) => [
           formatDate(t.transaction_date),
-          t.description || "Sem descrição",
+          `${t.description || "Sem descrição"}${t.is_recurring ? " (Recorrente)" : ""}`,
           t.categories?.name || "Sem categoria",
           t.status === "paid" ? "Pago" : "Pendente",
           `R$ ${t.amount.toFixed(2)}`,
@@ -475,7 +520,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
 
         const expenseData = expenseTxs.map((t) => [
           formatDate(t.transaction_date),
-          t.description || "Sem descrição",
+          `${t.description || "Sem descrição"}${t.is_recurring ? " (Recorrente)" : ""}`,
           t.categories?.name || "Sem categoria",
           t.status === "paid" ? "Pago" : "Pendente",
           `R$ ${t.amount.toFixed(2)}`,
@@ -524,7 +569,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
       const headers = ["Data", "Descrição", "Categoria", "Tipo", "Escopo", "Status", "Valor"];
       const rows = txs.map((t) => [
         formatDate(t.transaction_date),
-        t.description || "Sem descrição",
+        `${t.description || "Sem descrição"}${t.is_recurring ? " (Recorrente)" : ""}`,
         t.categories?.name || "Sem categoria",
         t.type === "income" ? "Receita" : "Despesa",
         t.scope === "business" ? "Negócio" : "Pessoal",

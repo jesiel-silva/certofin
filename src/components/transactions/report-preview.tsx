@@ -433,7 +433,7 @@ export function ReportPreview({
                               <td className="px-4 py-3 text-xs text-[var(--muted-foreground)]">
                                 {formatDate(date)}
                               </td>
-                              <td className="px-4 py-3 font-medium text-[var(--foreground)]">{t.description || "Sem descrição"}</td>
+                              <td className="px-4 py-3 font-medium text-[var(--foreground)]">{t.description || "Sem descrição"}{t.is_recurring ? " (Recorrente)" : ""}</td>
                               <td className="px-4 py-3 text-[var(--muted-foreground)]">{t.categories?.name || "—"}</td>
                               <td className="px-4 py-3 text-center">
                                 <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${t.status === "paid" ? "bg-[var(--success)]/10 text-[var(--success)]" : "bg-[var(--warning)]/10 text-[var(--warning)]"}`}>
@@ -483,7 +483,7 @@ export function ReportPreview({
                               <td className="px-4 py-3 text-xs text-[var(--muted-foreground)]">
                                 {formatDate(date)}
                               </td>
-                              <td className="px-4 py-3 font-medium text-[var(--foreground)]">{t.description || "Sem descrição"}</td>
+                              <td className="px-4 py-3 font-medium text-[var(--foreground)]">{t.description || "Sem descrição"}{t.is_recurring ? " (Recorrente)" : ""}</td>
                               <td className="px-4 py-3 text-[var(--muted-foreground)]">{t.categories?.name || "—"}</td>
                               <td className="px-4 py-3 text-center">
                                 <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${t.status === "paid" ? "bg-[var(--success)]/10 text-[var(--success)]" : "bg-[var(--warning)]/10 text-[var(--warning)]"}`}>
