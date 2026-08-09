@@ -138,18 +138,17 @@ export default function DashboardPage() {
       .filter((t) => t.type === "expense" && t.status === "paid")
       .reduce((sum, t) => sum + t.amount, 0);
 
-    // Recurring paid for current month
-    const recurringPaidIncome = allTransactions
-      .filter((t) => t.type === "income" && isRecurringPaidForMonth(t))
+    // Recurring paid for current month (income + expense, separated by scope)
+    const personalRecurringPaidIncome = allTransactions
+      .filter((t) => t.scope === "personal" && t.type === "income" && isRecurringPaidForMonth(t))
       .reduce((sum, t) => sum + t.amount, 0);
-    const recurringPaidExpense = allTransactions
-      .filter((t) => t.type === "expense" && isRecurringPaidForMonth(t))
-      .reduce((sum, t) => sum + t.amount, 0);
-
-    const personalRecurringPaid = allTransactions
+    const personalRecurringPaidExpense = allTransactions
       .filter((t) => t.scope === "personal" && t.type === "expense" && isRecurringPaidForMonth(t))
       .reduce((sum, t) => sum + t.amount, 0);
-    const businessRecurringPaid = allTransactions
+    const businessRecurringPaidIncome = allTransactions
+      .filter((t) => t.scope === "business" && t.type === "income" && isRecurringPaidForMonth(t))
+      .reduce((sum, t) => sum + t.amount, 0);
+    const businessRecurringPaidExpense = allTransactions
       .filter((t) => t.scope === "business" && t.type === "expense" && isRecurringPaidForMonth(t))
       .reduce((sum, t) => sum + t.amount, 0);
 
@@ -169,10 +168,10 @@ export default function DashboardPage() {
       .reduce((sum, t) => sum + t.amount, 0);
 
     return {
-      personalIncome,
-      personalExpense: personalExpense + personalRecurringPaid,
-      businessIncome,
-      businessExpense: businessExpense + businessRecurringPaid,
+      personalIncome: personalIncome + personalRecurringPaidIncome,
+      personalExpense: personalExpense + personalRecurringPaidExpense,
+      businessIncome: businessIncome + businessRecurringPaidIncome,
+      businessExpense: businessExpense + businessRecurringPaidExpense,
       personalPendingIncome,
       personalPendingExpense,
       businessPendingIncome,
@@ -188,10 +187,14 @@ export default function DashboardPage() {
 
   const calcExpenseByCategory = (): CategorySummary[] => {
     const expenses = transactions.filter((t) => t.type === "expense" && t.status === "paid");
-    const totalExpenses = expenses.reduce((sum, t) => sum + t.amount, 0);
+    // Add recurring expenses paid for the current month
+    const recurringExpenses = allTransactions
+      .filter((t) => t.type === "expense" && isRecurringPaidForMonth(t));
+    const allExpenses = [...expenses, ...recurringExpenses];
+    const totalExpenses = allExpenses.reduce((sum, t) => sum + t.amount, 0);
     const categoryMap = new Map<string, { name: string; color: string; total: number }>();
 
-    expenses.forEach((t) => {
+    allExpenses.forEach((t) => {
       const key = t.category_id || "uncategorized";
       const info = getCategoryInfo(t.category_id);
       const existing = categoryMap.get(key);

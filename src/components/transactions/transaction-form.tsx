@@ -332,41 +332,74 @@ export function TransactionForm({
     const dueDayNum = parseInt(dueDay) || 1;
 
     if (newStatus === "paid") {
-      // Mark as paid: save last_paid_date and move to next month
+      // Mark as paid: update last_paid_date and create next month's transaction
       const nextDate = new Date(year, month, 1);
       const nextMonth = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, "0")}`;
       const lastDayOfNextMonth = new Date(nextDate.getFullYear(), nextDate.getMonth() + 1, 0).getDate();
       const targetDay = Math.min(dueDayNum, lastDayOfNextMonth);
 
+      // Update template: mark as paid, keep transaction_date in current month
       await supabase
         .from("transactions")
         .update({
           last_paid_date: `${currentMonth}-28`,
           status: "paid",
-          transaction_date: `${nextMonth}-${String(targetDay).padStart(2, "0")}`,
         })
         .eq("id", initialData.id);
+
+      // Create a new non-recurring transaction for next month
+      const nextMonthDate = `${nextMonth}-${String(targetDay).padStart(2, "0")}`;
+      await supabase.from("transactions").insert({
+        user_id: initialData.user_id,
+        description: initialData.description,
+        amount: initialData.amount,
+        type: initialData.type,
+        scope: initialData.scope,
+        frequency: "one_time",
+        category_id: initialData.category_id,
+        transaction_date: nextMonthDate,
+        status: "pending",
+        notes: `[auto_recurring:${initialData.id}]${initialData.notes ? " " + initialData.notes : ""}`,
+        installment_current: null,
+        installment_total: null,
+        parent_transaction_id: null,
+        due_date: null,
+        due_day: null,
+        is_recurring: false,
+        recurring_active: false,
+      });
 
       setCurrentStatus("paid");
-      // Move to next month
-      setCurrentMonth(nextMonth);
-      setTransactionDate(`${nextMonth}-${String(targetDay).padStart(2, "0")}`);
     } else {
-      // Mark as pending: clear last_paid_date and move back to current month
-      const lastDayOfMonth = new Date(year, month, 0).getDate();
-      const targetDay = Math.min(dueDayNum, lastDayOfMonth);
+      // Mark as unpaid: clear last_paid_date and delete next month's auto-created transaction
+      if (initialData.last_paid_date) {
+        const paidMonth = initialData.last_paid_date.substring(0, 7);
+        if (paidMonth === currentMonth) {
+          // Calculate next month to find the auto-created transaction
+          const nextDate = new Date(year, month, 1);
+          const nextMonth = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, "0")}`;
+          const lastDayOfNextMonth = new Date(nextDate.getFullYear(), nextDate.getMonth() + 1, 0).getDate();
 
-      await supabase
-        .from("transactions")
-        .update({
-          last_paid_date: null,
-          status: "pending",
-          transaction_date: `${currentMonth}-${String(targetDay).padStart(2, "0")}`,
-        })
-        .eq("id", initialData.id);
+          // Delete the auto-created transaction for the next month
+          await supabase
+            .from("transactions")
+            .delete()
+            .eq("is_recurring", false)
+            .ilike("notes", `%[auto_recurring:${initialData.id}]%`)
+            .gte("transaction_date", `${nextMonth}-01`)
+            .lte("transaction_date", `${nextMonth}-${String(lastDayOfNextMonth).padStart(2, "0")}`);
 
-      setCurrentStatus("pending");
-      setTransactionDate(`${currentMonth}-${String(targetDay).padStart(2, "0")}`);
+          await supabase
+            .from("transactions")
+            .update({
+              last_paid_date: null,
+              status: "pending",
+            })
+            .eq("id", initialData.id);
+
+          setCurrentStatus("pending");
+        }
+      }
     }
   };
 

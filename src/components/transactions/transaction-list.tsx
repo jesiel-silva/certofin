@@ -181,44 +181,77 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
       const month = parseInt(parts[3]);
       const currentMonth = `${parts[2]}-${parts[3]}`;
 
-      // Fetch template to get due_day
+      // Fetch full template data
       const { data: template } = await supabase
         .from("transactions")
-        .select("last_paid_date, due_day")
+        .select("*")
         .eq("id", templateId)
         .single();
 
+      if (!template) return;
+
       if (currentStatus === "pending") {
-        // Mark as paid: save last_paid_date and move transaction_date to next month
-        const nextDate = new Date(year, month, 1); // month is 1-indexed, so month = next month
+        // Mark as paid: update last_paid_date and create next month's transaction
+        const dueDay = template.due_day || 1;
+        const nextDate = new Date(year, month, 1);
         const nextMonth = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, "0")}`;
-        const dueDay = template?.due_day || 1;
         const lastDayOfNextMonth = new Date(nextDate.getFullYear(), nextDate.getMonth() + 1, 0).getDate();
         const targetDay = Math.min(dueDay, lastDayOfNextMonth);
 
+        // Update template: mark as paid, keep transaction_date in current month
         await supabase
           .from("transactions")
           .update({
             last_paid_date: `${currentMonth}-28`,
             status: "paid",
-            transaction_date: `${nextMonth}-${String(targetDay).padStart(2, "0")}`,
           })
           .eq("id", templateId);
+
+        // Create a new non-recurring transaction for next month
+        const nextMonthDate = `${nextMonth}-${String(targetDay).padStart(2, "0")}`;
+        await supabase.from("transactions").insert({
+          user_id: template.user_id,
+          description: template.description,
+          amount: template.amount,
+          type: template.type,
+          scope: template.scope,
+          frequency: "one_time",
+          category_id: template.category_id,
+          transaction_date: nextMonthDate,
+          status: "pending",
+          notes: `[auto_recurring:${templateId}]${template.notes ? " " + template.notes : ""}`,
+          installment_current: null,
+          installment_total: null,
+          parent_transaction_id: null,
+          due_date: null,
+          due_day: null,
+          is_recurring: false,
+          recurring_active: false,
+        });
       } else {
-        // Mark as unpaid: clear last_paid_date and move transaction_date back to current month
-        if (template && template.last_paid_date) {
+        // Mark as unpaid: clear last_paid_date and delete next month's auto-created transaction
+        if (template.last_paid_date) {
           const paidMonth = template.last_paid_date.substring(0, 7);
           if (paidMonth === currentMonth) {
-            const dueDay = template?.due_day || 1;
-            const lastDayOfMonth = new Date(year, month, 0).getDate();
-            const targetDay = Math.min(dueDay, lastDayOfMonth);
+            // Calculate next month to find the auto-created transaction
+            const nextDate = new Date(year, month, 1);
+            const nextMonth = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, "0")}`;
+            const lastDayOfNextMonth = new Date(nextDate.getFullYear(), nextDate.getMonth() + 1, 0).getDate();
+
+            // Delete the auto-created transaction for the next month
+            await supabase
+              .from("transactions")
+              .delete()
+              .eq("is_recurring", false)
+              .ilike("notes", `%[auto_recurring:${templateId}]%`)
+              .gte("transaction_date", `${nextMonth}-01`)
+              .lte("transaction_date", `${nextMonth}-${String(lastDayOfNextMonth).padStart(2, "0")}`);
 
             await supabase
               .from("transactions")
               .update({
                 last_paid_date: null,
                 status: "pending",
-                transaction_date: `${currentMonth}-${String(targetDay).padStart(2, "0")}`,
               })
               .eq("id", templateId);
           }
