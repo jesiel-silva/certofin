@@ -190,7 +190,7 @@ export default function HomePage() {
               </span>
             </h1>
             
-            <p className="mt-8 text-lg leading-relaxed text-[var(--muted-foreground)] sm:text-xl max-w-2xl mx-auto">
+            <p className="mt-8 text-lg leading-relaxed text-[var(--muted-foreground)] sm:text-xl lg:text-2xl max-w-2xl mx-auto">
               Separe o que é do negócio do que é pessoal de um jeito automático e simples.
               Saiba exatamente quanto lucrou e quanto sobrou pra gastar com você.
             </p>
@@ -219,10 +219,10 @@ export default function HomePage() {
                 key={stat.label}
                 className={`group relative overflow-hidden hud-border bg-[#0B1221]/80 p-6 backdrop-blur-md scanline-overlay animate-fade-in-up delay-${(index + 1) * 100}`}
               >
-                <div className="text-3xl font-extrabold text-white group-hover:scale-105 transition-transform duration-300 text-glow-cyan font-sans">
+                <div className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white group-hover:scale-105 transition-transform duration-300 text-glow-cyan font-sans">
                   {stat.number}
                 </div>
-                <div className="mt-2 text-xs font-sans font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
+                <div className="mt-2 text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
                   {stat.label}
                 </div>
                 <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-[var(--primary)]/20 to-transparent blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -356,7 +356,7 @@ export default function HomePage() {
               <Eye className="h-3.5 w-3.5" />
               <span>MÓDULOS DE INTELIGÊNCIA</span>
             </div>
-            <h2 className="text-3xl font-extrabold text-white sm:text-5xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-space-grotesk)" }}>
+            <h2 className="text-3xl font-extrabold text-white sm:text-5xl lg:text-6xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-space-grotesk)" }}>
               FEITO PARA FACILITAR A <span className="text-[var(--primary)] text-glow-cyan">SUA VIDA</span>
             </h2>
             <p className="mt-4 text-xs font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
@@ -373,10 +373,10 @@ export default function HomePage() {
                 <div className="mb-6 flex h-14 w-14 items-center justify-center border border-[var(--primary)]/30 bg-[var(--primary)]/10 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_15px_var(--primary)]">
                   <feature.icon className="h-6 w-6 text-[var(--primary)]" />
                 </div>
-                <h3 className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--primary)]">
+                <h3 className="text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--primary)]">
                   {feature.title}
                 </h3>
-                <p className="mt-3 text-xs font-sans leading-relaxed text-[var(--muted-foreground)]">
+                <p className="mt-3 text-xs sm:text-sm font-sans leading-relaxed text-[var(--muted-foreground)]">
                   {feature.description}
                 </p>
                 <div className="absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl from-[var(--primary)]/20 to-transparent pointer-events-none" />
@@ -397,10 +397,10 @@ export default function HomePage() {
               <Zap className="h-3.5 w-3.5" />
               <span>INICIALIZAÇÃO RÁPIDA</span>
             </div>
-            <h2 className="text-3xl font-extrabold text-white sm:text-5xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-space-grotesk)" }}>
+            <h2 className="text-3xl font-extrabold text-white sm:text-5xl lg:text-6xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-space-grotesk)" }}>
               SISTEMA EM <span className="text-[var(--primary)] text-glow-cyan">3 PASSOS</span>
             </h2>
-            <p className="mt-4 text-xs font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
+            <p className="mt-4 text-xs sm:text-sm font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
               Sincronize seus dados em menos de 1 minuto
             </p>
           </div>
@@ -421,10 +421,10 @@ export default function HomePage() {
                     {step.step}
                   </div>
                 </div>
-                <h3 className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--primary)] text-glow-cyan">
+                <h3 className="text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--primary)] text-glow-cyan">
                   {step.title}
                 </h3>
-                <p className="mt-3 text-xs font-sans leading-relaxed text-[var(--muted-foreground)]">
+                <p className="mt-3 text-xs sm:text-sm font-sans leading-relaxed text-[var(--muted-foreground)]">
                   {step.description}
                 </p>
                 {index < steps.length - 1 && (
@@ -443,10 +443,10 @@ export default function HomePage() {
         <div className="absolute inset-0 data-grid opacity-30 pointer-events-none" />
         <div className="relative mx-auto max-w-6xl px-6">
           <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-3xl font-extrabold text-white sm:text-5xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-space-grotesk)" }}>
+            <h2 className="text-3xl font-extrabold text-white sm:text-5xl lg:text-6xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-space-grotesk)" }}>
               POR QUE O <span className="text-[var(--primary)] text-glow-cyan">CERTOFIN?</span>
             </h2>
-            <p className="mt-4 text-xs font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
+            <p className="mt-4 text-xs sm:text-sm font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
               Desenhado de ponta a ponta para fornecer segurança e clareza.
             </p>
           </div>
@@ -456,8 +456,8 @@ export default function HomePage() {
               <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center border border-[var(--success)]/30 bg-[var(--success)]/10 text-[var(--success)] transition-all group-hover:scale-105 group-hover:shadow-[0_0_15px_var(--success)]">
                 <Lock className="h-8 w-8" />
               </div>
-              <h3 className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--success)] text-glow-green">Sua privacidade garantida</h3>
-              <p className="mt-3 text-xs font-sans leading-relaxed text-[var(--muted-foreground)]">
+              <h3 className="text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--success)] text-glow-green">Sua privacidade garantida</h3>
+              <p className="mt-3 text-xs sm:text-sm font-sans leading-relaxed text-[var(--muted-foreground)]">
                 Suas informações são blindadas. Nós não temos e nunca teremos acesso aos seus dados financeiros confidenciais.
               </p>
             </div>
@@ -466,8 +466,8 @@ export default function HomePage() {
               <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center border border-[var(--primary)]/30 bg-[var(--primary)]/10 text-[var(--primary)] transition-all group-hover:scale-105 group-hover:shadow-[0_0_15px_var(--primary)]">
                 <Zap className="h-8 w-8" />
               </div>
-              <h3 className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--primary)] text-glow-cyan">Agilidade e Sem Fricção</h3>
-              <p className="mt-3 text-xs font-sans leading-relaxed text-[var(--muted-foreground)]">
+              <h3 className="text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--primary)] text-glow-cyan">Agilidade e Sem Fricção</h3>
+              <p className="mt-3 text-xs sm:text-sm font-sans leading-relaxed text-[var(--muted-foreground)]">
                 Anote transações em poucos segundos de qualquer lugar. Interface mobile leve e focada na rapidez.
               </p>
             </div>
@@ -476,8 +476,8 @@ export default function HomePage() {
               <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center border border-[var(--warning)]/30 bg-[var(--warning)]/10 text-[var(--warning)] transition-all group-hover:scale-105 group-hover:shadow-[0_0_15px_var(--warning)]">
                 <BarChart3 className="h-8 w-8" />
               </div>
-              <h3 className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--warning)] text-glow-yellow">Relatórios Visuais</h3>
-              <p className="mt-3 text-xs font-sans leading-relaxed text-[var(--muted-foreground)]">
+              <h3 className="text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--warning)] text-glow-yellow">Relatórios Visuais</h3>
+              <p className="mt-3 text-xs sm:text-sm font-sans leading-relaxed text-[var(--muted-foreground)]">
                 Visualize na hora gráficos fáceis de ler que apontam gargalos de custos e mostram onde seu lucro está.
               </p>
             </div>
@@ -490,10 +490,10 @@ export default function HomePage() {
         <div className="absolute inset-0 data-grid opacity-50 pointer-events-none" />
         <div className="mx-auto max-w-6xl px-6 relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl font-extrabold text-white sm:text-5xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-space-grotesk)" }}>
+            <h2 className="text-3xl font-extrabold text-white sm:text-5xl lg:text-6xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-space-grotesk)" }}>
               PLANOS DE <span className="text-[var(--primary)] text-glow-cyan">ACESSO</span>
             </h2>
-            <p className="mt-4 text-xs font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
+            <p className="mt-4 text-xs sm:text-sm font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
               Comece sem gastar nada e aumente os recursos apenas quando o seu negócio pedir.
             </p>
           </div>
@@ -503,36 +503,36 @@ export default function HomePage() {
             <div className="flex flex-col justify-between hud-border bg-[#0B1221]/80 backdrop-blur-md p-8 transition-all hover:border-[var(--primary)]/50 scanline-overlay">
               <div>
                 <div className="mb-6">
-                  <h3 className="text-lg font-sans font-bold uppercase tracking-widest text-[var(--muted-foreground)]">NÍVEL 1: BÁSICO</h3>
-                  <p className="text-xs font-sans text-[var(--muted-foreground)]/60">Recursos fundamentais</p>
+                  <h3 className="text-lg sm:text-xl font-sans font-bold uppercase tracking-widest text-[var(--muted-foreground)]">NÍVEL 1: BÁSICO</h3>
+                  <p className="text-xs sm:text-sm font-sans text-[var(--muted-foreground)]/60">Recursos fundamentais</p>
                 </div>
                 <div className="mb-8">
                   <div className="flex items-baseline gap-1 font-sans">
-                    <span className="text-base text-[var(--primary)]/40">R$</span>
-                    <span className="text-5xl font-black text-white">0</span>
-                    <span className="text-xs uppercase tracking-widest text-[var(--primary)]/40 font-bold">/MÊS</span>
+                    <span className="text-base sm:text-lg text-[var(--primary)]/40">R$</span>
+                    <span className="text-5xl sm:text-6xl font-black text-white">0</span>
+                    <span className="text-xs sm:text-sm uppercase tracking-widest text-[var(--primary)]/40 font-bold">/MÊS</span>
                   </div>
                 </div>
                 <ul className="mb-8 space-y-4 font-sans">
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--success)] shrink-0 mt-0.5" />
-                    <span className="text-xs uppercase tracking-wider text-[var(--muted-foreground)]">Até 10 lançamentos por mês</span>
+                    <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--muted-foreground)]">Até 10 lançamentos por mês</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--success)] shrink-0 mt-0.5" />
-                    <span className="text-xs uppercase tracking-wider text-[var(--muted-foreground)]">Controle financeiro pessoal</span>
+                    <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--muted-foreground)]">Controle financeiro pessoal</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--success)] shrink-0 mt-0.5" />
-                    <span className="text-xs uppercase tracking-wider text-[var(--muted-foreground)]">Agendamento de contas fixas</span>
+                    <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--muted-foreground)]">Agendamento de contas fixas</span>
                   </li>
                   <li className="flex items-start gap-3 opacity-40">
                     <Lock className="h-4 w-4 text-[var(--destructive)] shrink-0 mt-0.5" />
-                    <span className="text-xs uppercase tracking-wider text-[var(--destructive)] line-through">Separação de negócio/pessoal</span>
+                    <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--destructive)] line-through">Separação de negócio/pessoal</span>
                   </li>
                   <li className="flex items-start gap-3 opacity-40">
                     <Lock className="h-4 w-4 text-[var(--destructive)] shrink-0 mt-0.5" />
-                    <span className="text-xs uppercase tracking-wider text-[var(--destructive)] line-through">Lançamentos parcelados</span>
+                    <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--destructive)] line-through">Lançamentos parcelados</span>
                   </li>
                 </ul>
               </div>
@@ -555,37 +555,37 @@ export default function HomePage() {
               </div>
               <div>
                 <div className="mb-6">
-                  <h3 className="text-lg font-sans font-bold uppercase tracking-widest text-[var(--primary)] text-glow-cyan">NÍVEL 2: PRO</h3>
-                  <p className="text-xs font-sans text-[var(--primary)]">Ideal para autônomos e freelancers</p>
+                  <h3 className="text-lg sm:text-xl font-sans font-bold uppercase tracking-widest text-[var(--primary)] text-glow-cyan">NÍVEL 2: PRO</h3>
+                  <p className="text-xs sm:text-sm font-sans text-[var(--primary)]">Ideal para autônomos e freelancers</p>
                 </div>
                 <div className="mb-8">
                   <div className="flex items-baseline gap-1 font-sans">
-                    <span className="text-base text-[var(--primary)]">R$</span>
-                    <span className="text-5xl font-black text-white text-glow-cyan">9,90</span>
-                    <span className="text-xs uppercase tracking-widest text-[var(--primary)] font-bold">/MÊS</span>
+                    <span className="text-base sm:text-lg text-[var(--primary)]">R$</span>
+                    <span className="text-5xl sm:text-6xl font-black text-white text-glow-cyan">9,90</span>
+                    <span className="text-xs sm:text-sm uppercase tracking-widest text-[var(--primary)] font-bold">/MÊS</span>
                   </div>
-                  <p className="mt-1 text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)]">Cobrança recorrente em cartão. Cancele quando quiser.</p>
+                  <p className="mt-1 text-xs sm:text-sm font-sans uppercase tracking-widest text-[var(--muted-foreground)]">Cobrança recorrente em cartão. Cancele quando quiser.</p>
                 </div>
                 <ul className="mb-8 space-y-4 font-sans">
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--primary)] shrink-0 mt-0.5" />
-                    <span className="text-xs uppercase tracking-wider text-[var(--muted-foreground)]">Lançamentos ilimitados</span>
+                    <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--muted-foreground)]">Lançamentos ilimitados</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--primary)] shrink-0 mt-0.5" />
-                    <span className="text-xs uppercase tracking-wider text-[var(--muted-foreground)]">Negócios e Pessoal separados</span>
+                    <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--muted-foreground)]">Negócios e Pessoal separados</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--primary)] shrink-0 mt-0.5" />
-                    <span className="text-xs uppercase tracking-wider text-[var(--muted-foreground)]">Lançamentos parcelados</span>
+                    <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--muted-foreground)]">Lançamentos parcelados</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--primary)] shrink-0 mt-0.5" />
-                    <span className="text-xs uppercase tracking-wider text-[var(--muted-foreground)]">Dashboard avançado com gráficos</span>
+                    <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--muted-foreground)]">Dashboard avançado com gráficos</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--primary)] shrink-0 mt-0.5" />
-                    <span className="text-xs uppercase tracking-wider text-[var(--muted-foreground)]">14 dias de trial grátis</span>
+                    <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--muted-foreground)]">14 dias de trial grátis</span>
                   </li>
                 </ul>
               </div>
@@ -607,13 +607,13 @@ export default function HomePage() {
         <div className="absolute inset-0 data-grid opacity-30 pointer-events-none" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[radial-gradient(circle_at_center,rgba(0,255,204,0.08),transparent_60%)] pointer-events-none" />
         <div className="relative mx-auto max-w-5xl px-6 text-center">
-          <h2 className="text-3xl font-extrabold text-white sm:text-5xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-space-grotesk)" }}>
+          <h2 className="text-3xl font-extrabold text-white sm:text-5xl lg:text-6xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-space-grotesk)" }}>
             PRONTO PARA INICIAR A <span className="text-[var(--primary)] text-glow-cyan">OPERAÇÃO?</span>
           </h2>
-          <p className="mt-6 text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] max-w-2xl mx-auto">
+          <p className="mt-6 text-xs sm:text-sm font-sans uppercase tracking-widest text-[var(--muted-foreground)] max-w-2xl mx-auto">
             Crie sua conta em 30 segundos. Organize seu caixa e gaste o seu tempo no que realmente importa: crescer o seu negócio.
           </p>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-xs font-sans font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-[var(--primary)]" />
               <span>10 lançamentos grátis/mês</span>
@@ -631,7 +631,7 @@ export default function HomePage() {
           </div>
           <Link
             href="/signup"
-            className="mt-12 btn-neon inline-flex items-center gap-2 border border-[var(--primary)] bg-[var(--primary)]/10 px-10 py-4 text-xs font-sans font-bold uppercase tracking-widest text-[var(--primary)] transition-all duration-300 hover:bg-[var(--primary)]/20 hover:shadow-[0_0_40px_rgba(0,255,204,0.4)]"
+            className="mt-12 btn-neon inline-flex items-center gap-2 border border-[var(--primary)] bg-[var(--primary)]/10 px-10 py-4 text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--primary)] transition-all duration-300 hover:bg-[var(--primary)]/20 hover:shadow-[0_0_40px_rgba(0,255,204,0.4)]"
           >
             [ COMEÇAR AGORA MESMO ]
             <ArrowRight className="h-4 w-4" />
@@ -647,38 +647,38 @@ export default function HomePage() {
               <Link href="/" className="flex items-center">
                 <Logo size="md" />
               </Link>
-              <p className="mt-6 text-xs font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
+              <p className="mt-6 text-xs sm:text-sm font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
                 A ferramenta mais simples e inteligente para separar as contas pessoais e corporativas de empreendedores individuais.
               </p>
             </div>
             <div>
-              <h4 className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--primary)]">Produto</h4>
+              <h4 className="text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--primary)]">Produto</h4>
               <ul className="mt-4 space-y-3">
-                <li><Link href="#como-funciona" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Como funciona</Link></li>
-                <li><Link href="#planos" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Preços</Link></li>
-                <li><Link href="/login" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Segurança</Link></li>
+                <li><Link href="#como-funciona" className="text-xs sm:text-sm font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Como funciona</Link></li>
+                <li><Link href="#planos" className="text-xs sm:text-sm font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Preços</Link></li>
+                <li><Link href="/login" className="text-xs sm:text-sm font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Segurança</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--primary)]">Suporte</h4>
+              <h4 className="text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--primary)]">Suporte</h4>
               <ul className="mt-4 space-y-3">
-                <li><Link href="/login" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Central de Ajuda</Link></li>
-                <li><Link href="/login" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Fale Conosco</Link></li>
+                <li><Link href="/login" className="text-xs sm:text-sm font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Central de Ajuda</Link></li>
+                <li><Link href="/login" className="text-xs sm:text-sm font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Fale Conosco</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--primary)]">Legal</h4>
+              <h4 className="text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--primary)]">Legal</h4>
               <ul className="mt-4 space-y-3">
-                <li><Link href="/login" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Termos de Uso</Link></li>
-                <li><Link href="/login" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Políticas de Privacidade</Link></li>
+                <li><Link href="/login" className="text-xs sm:text-sm font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Termos de Uso</Link></li>
+                <li><Link href="/login" className="text-xs sm:text-sm font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Políticas de Privacidade</Link></li>
               </ul>
             </div>
           </div>
           <div className="mt-16 border-t border-[var(--primary)]/20 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)]">
+            <p className="text-xs sm:text-sm font-sans uppercase tracking-widest text-[var(--muted-foreground)]">
               &copy; {new Date().getFullYear()} CertoFin. Todos os direitos reservados.
             </p>
-            <p className="text-xs font-sans uppercase tracking-widest text-[var(--primary)] font-bold text-glow-cyan pulse-dot">
+            <p className="text-xs sm:text-sm font-sans uppercase tracking-widest text-[var(--primary)] font-bold text-glow-cyan pulse-dot">
               SYS.STATUS = [ OPERATIONAL ]
             </p>
           </div>
