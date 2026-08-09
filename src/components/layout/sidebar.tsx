@@ -135,19 +135,23 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             className={cn(
               "group relative flex items-center gap-3 rounded-none px-3 py-2.5 text-xs uppercase tracking-widest font-bold transition-all duration-300",
               isActive("/personal/notifications")
-                ? "bg-[var(--primary)]/10 text-[var(--primary)] dark:text-glow-cyan border border-[var(--primary)]/30"
-                : "text-[var(--muted-foreground)] hover:bg-[var(--primary)]/5 hover:text-[var(--foreground)] border border-transparent hover:border-[var(--border)]"
+                ? "bg-[var(--destructive)]/10 text-[var(--destructive)] border border-[var(--destructive)]/30"
+                : "text-[var(--destructive)]/80 hover:bg-[var(--destructive)]/5 hover:text-[var(--destructive)] border border-transparent hover:border-[var(--destructive)]/30"
             )}
           >
             {isActive("/personal/notifications") && (
               <>
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--primary)] glow-cyan" />
-                <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-[var(--primary)]" />
-                <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-[var(--primary)]" />
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--destructive)] glow-red" />
+                <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-[var(--destructive)]" />
+                <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-[var(--destructive)]" />
               </>
             )}
-            <Bell className={cn("h-4 w-4", isActive("/personal/notifications") ? "text-[var(--primary)] drop-shadow-[0_0_5px_var(--primary)]" : "")} />
-            NOTIFICAÇÕES
+            <div className="relative">
+              <Bell className={cn("h-4 w-4 animate-pulse", isActive("/personal/notifications") ? "text-[var(--destructive)] drop-shadow-[0_0_8px_var(--destructive)]" : "text-[var(--destructive)] group-hover:drop-shadow-[0_0_5px_var(--destructive)]")} />
+              <span className="absolute -top-1 -right-1 h-2 w-2 bg-[var(--destructive)] rounded-full animate-ping shadow-[0_0_6px_var(--destructive)]" />
+              <span className="absolute -top-1 -right-1 h-2 w-2 bg-[var(--destructive)] rounded-full" />
+            </div>
+            <span className="animate-pulse">NOTIFICAÇÕES</span>
           </Link>
         </div>
 
