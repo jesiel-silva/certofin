@@ -98,10 +98,10 @@ export function Logo({
       {showText && (
         <div className="flex flex-col justify-center">
           <span className={cn("font-extrabold leading-none", textSizes[size])}>
-            <span className="text-[#054388] dark:text-slate-100" style={{ fontFamily: "var(--font-orbitron)" }}>
+            <span className="text-[#054388] dark:text-slate-100" style={{ fontFamily: "var(--font-space-grotesk)" }}>
               Certo
             </span>
-            <span className="text-[#009B9E] dark:text-[var(--primary)]" style={{ fontFamily: "var(--font-orbitron)" }}>
+            <span className="text-[#009B9E] dark:text-[var(--primary)]" style={{ fontFamily: "var(--font-space-grotesk)" }}>
               Fin
             </span>
           </span>

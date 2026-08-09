@@ -5,7 +5,7 @@
 @theme {
   --font-sans: var(--font-inter);
   --font-mono: var(--font-jetbrains-mono);
-  --font-display: var(--font-orbitron);
+  --font-display: var(--font-space-grotesk);
 }
 
 :root {
@@ -266,7 +266,7 @@ body {
   }
 
   .font-display {
-    font-family: var(--font-orbitron), sans-serif;
+    font-family: var(--font-space-grotesk), sans-serif;
   }
 
   /* ═══ Staggered delays ═══ */

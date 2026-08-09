@@ -183,7 +183,7 @@ export default function HomePage() {
               <span>SISTEMA ONLINE • PLANO GRÁTIS DISPONÍVEL</span>
             </div>
             
-            <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-7xl leading-tight" style={{ fontFamily: "var(--font-orbitron)" }}>
+            <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-7xl leading-tight" style={{ fontFamily: "var(--font-space-grotesk)" }}>
               Pare de misturar o dinheiro
               <span className="block mt-2 bg-gradient-to-r from-[var(--primary)] via-cyan-400 to-[var(--success)] bg-clip-text text-transparent text-glow-cyan">
                 da empresa com o seu
@@ -248,7 +248,7 @@ export default function HomePage() {
               {/* Dashboard Header inside Mockup */}
               <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-[var(--primary)]/20 pb-4">
                 <div>
-                  <h3 className="text-sm font-bold font-mono text-[var(--primary)] uppercase tracking-widest text-glow-cyan" style={{ fontFamily: "var(--font-orbitron)" }}>TERMINAL DE CONTROLE</h3>
+                  <h3 className="text-sm font-bold font-mono text-[var(--primary)] uppercase tracking-widest text-glow-cyan" style={{ fontFamily: "var(--font-space-grotesk)" }}>TERMINAL DE CONTROLE</h3>
                   <p className="text-xs font-mono text-[var(--muted-foreground)] uppercase mt-1">STATUS: ONLINE | SYNC: 100%</p>
                 </div>
                 <div className="flex items-center gap-2 border border-[var(--primary)]/30 bg-[var(--primary)]/10 px-3 py-1.5 glow-cyan">
@@ -356,7 +356,7 @@ export default function HomePage() {
               <Eye className="h-3.5 w-3.5" />
               <span>MÓDULOS DE INTELIGÊNCIA</span>
             </div>
-            <h2 className="text-3xl font-extrabold text-white sm:text-5xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-orbitron)" }}>
+            <h2 className="text-3xl font-extrabold text-white sm:text-5xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-space-grotesk)" }}>
               FEITO PARA FACILITAR A <span className="text-[var(--primary)] text-glow-cyan">SUA VIDA</span>
             </h2>
             <p className="mt-4 text-xs font-mono uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
@@ -397,7 +397,7 @@ export default function HomePage() {
               <Zap className="h-3.5 w-3.5" />
               <span>INICIALIZAÇÃO RÁPIDA</span>
             </div>
-            <h2 className="text-3xl font-extrabold text-white sm:text-5xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-orbitron)" }}>
+            <h2 className="text-3xl font-extrabold text-white sm:text-5xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-space-grotesk)" }}>
               SISTEMA EM <span className="text-[var(--primary)] text-glow-cyan">3 PASSOS</span>
             </h2>
             <p className="mt-4 text-xs font-mono uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
@@ -443,7 +443,7 @@ export default function HomePage() {
         <div className="absolute inset-0 data-grid opacity-30 pointer-events-none" />
         <div className="relative mx-auto max-w-6xl px-6">
           <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-3xl font-extrabold text-white sm:text-5xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-orbitron)" }}>
+            <h2 className="text-3xl font-extrabold text-white sm:text-5xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-space-grotesk)" }}>
               POR QUE O <span className="text-[var(--primary)] text-glow-cyan">CERTOFIN?</span>
             </h2>
             <p className="mt-4 text-xs font-mono uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
@@ -490,7 +490,7 @@ export default function HomePage() {
         <div className="absolute inset-0 data-grid opacity-50 pointer-events-none" />
         <div className="mx-auto max-w-6xl px-6 relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl font-extrabold text-white sm:text-5xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-orbitron)" }}>
+            <h2 className="text-3xl font-extrabold text-white sm:text-5xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-space-grotesk)" }}>
               PLANOS DE <span className="text-[var(--primary)] text-glow-cyan">ACESSO</span>
             </h2>
             <p className="mt-4 text-xs font-mono uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
@@ -607,7 +607,7 @@ export default function HomePage() {
         <div className="absolute inset-0 data-grid opacity-30 pointer-events-none" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[radial-gradient(circle_at_center,rgba(0,255,204,0.08),transparent_60%)] pointer-events-none" />
         <div className="relative mx-auto max-w-5xl px-6 text-center">
-          <h2 className="text-3xl font-extrabold text-white sm:text-5xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-orbitron)" }}>
+          <h2 className="text-3xl font-extrabold text-white sm:text-5xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-space-grotesk)" }}>
             PRONTO PARA INICIAR A <span className="text-[var(--primary)] text-glow-cyan">OPERAÇÃO?</span>
           </h2>
           <p className="mt-6 text-xs font-mono uppercase tracking-widest text-[var(--muted-foreground)] max-w-2xl mx-auto">
