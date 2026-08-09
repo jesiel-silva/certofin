@@ -115,7 +115,7 @@ export function KpiCards({
             </div>
           </CardHeader>
           <CardContent>
-            <p className={cn("text-lg sm:text-2xl font-mono font-bold tracking-tight", card.color, card.glowTextClass)}>
+            <p className={cn("text-lg sm:text-2xl font-sans font-bold tracking-tight", card.color, card.glowTextClass)}>
               {formatCurrency(card.value)}
             </p>
             {card.subtitle && (
