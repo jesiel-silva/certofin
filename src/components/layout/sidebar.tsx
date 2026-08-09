@@ -15,6 +15,7 @@ import {
   Settings,
   ChevronDown,
   User,
+  Bell,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -123,6 +124,30 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             )}>
               {userPlan === "pro" ? "PRO" : isTrial ? "TRIAL" : "FREE"}
             </span>
+          </Link>
+        </div>
+
+        {/* ═══════ NOTIFICAÇÕES ═══════ */}
+        <div className="mb-4">
+          <Link
+            href="/personal/notifications"
+            onClick={onClose}
+            className={cn(
+              "group relative flex items-center gap-3 rounded-none px-3 py-2.5 text-xs uppercase tracking-widest font-bold transition-all duration-300",
+              isActive("/personal/notifications")
+                ? "bg-[var(--primary)]/10 text-[var(--primary)] dark:text-glow-cyan border border-[var(--primary)]/30"
+                : "text-[var(--muted-foreground)] hover:bg-[var(--primary)]/5 hover:text-[var(--foreground)] border border-transparent hover:border-[var(--border)]"
+            )}
+          >
+            {isActive("/personal/notifications") && (
+              <>
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--primary)] glow-cyan" />
+                <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-[var(--primary)]" />
+                <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-[var(--primary)]" />
+              </>
+            )}
+            <Bell className={cn("h-4 w-4", isActive("/personal/notifications") ? "text-[var(--primary)] drop-shadow-[0_0_5px_var(--primary)]" : "")} />
+            NOTIFICAÇÕES
           </Link>
         </div>
 

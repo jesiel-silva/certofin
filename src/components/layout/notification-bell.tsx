@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Bell, Check, Trash2, AlertTriangle, Clock, TrendingUp, TrendingDown, Info, X, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNotifications, type Notification } from "@/lib/hooks/use-notifications";
+import Link from "next/link";
 
 const typeIcons: Record<string, typeof Bell> = {
   overdue: AlertTriangle,
@@ -45,9 +46,10 @@ function NotificationItem({
   };
 
   return (
-    <div
+    <Link
+      href="/personal/notifications"
       className={cn(
-        "group flex items-start gap-3 border-b border-[var(--border)] p-3 transition-colors hover:bg-[var(--accent)]/50",
+        "group flex items-start gap-3 border-b border-[var(--border)] p-3 transition-colors hover:bg-[var(--accent)]/50 block",
         !notification.is_read && "bg-[var(--primary)]/5"
       )}
     >
@@ -79,22 +81,23 @@ function NotificationItem({
             })}
           </span>
           {!notification.is_read && (
-            <button
-              onClick={() => onMarkAsRead(notification.id)}
-              className="text-[9px] text-[var(--primary)] hover:underline flex items-center gap-0.5"
-            >
+            <span className="text-[9px] text-[var(--primary)] flex items-center gap-0.5">
               <Check className="h-2.5 w-2.5" /> lida
-            </button>
+            </span>
           )}
         </div>
       </div>
       <button
-        onClick={() => onDelete(notification.id)}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onDelete(notification.id);
+        }}
         className="shrink-0 p-1 text-[var(--muted-foreground)]/40 hover:text-[var(--destructive)] opacity-0 group-hover:opacity-100 transition-all"
       >
         <Trash2 className="h-3 w-3" />
       </button>
-    </div>
+    </Link>
   );
 }
 
