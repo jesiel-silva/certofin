@@ -647,38 +647,38 @@ export default function HomePage() {
               <Link href="/" className="flex items-center">
                 <Logo size="md" />
               </Link>
-              <p className="mt-6 text-sm font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
+              <p className="mt-6 text-xs font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
                 A ferramenta mais simples e inteligente para separar as contas pessoais e corporativas de empreendedores individuais.
               </p>
             </div>
             <div>
               <h4 className="text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--primary)]">Produto</h4>
               <ul className="mt-4 space-y-3">
-                <li><Link href="#como-funciona" className="text-xs sm:text-sm font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Como funciona</Link></li>
-                <li><Link href="#planos" className="text-xs sm:text-sm font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Preços</Link></li>
-                <li><Link href="/login" className="text-xs sm:text-sm font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Segurança</Link></li>
+                <li><Link href="#como-funciona" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Como funciona</Link></li>
+                <li><Link href="#planos" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Preços</Link></li>
+                <li><Link href="/login" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Segurança</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--primary)]">Suporte</h4>
               <ul className="mt-4 space-y-3">
-                <li><Link href="/login" className="text-xs sm:text-sm font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Central de Ajuda</Link></li>
-                <li><Link href="/login" className="text-xs sm:text-sm font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Fale Conosco</Link></li>
+                <li><Link href="/login" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Central de Ajuda</Link></li>
+                <li><Link href="/login" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Fale Conosco</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--primary)]">Legal</h4>
               <ul className="mt-4 space-y-3">
-                <li><Link href="/login" className="text-xs sm:text-sm font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Termos de Uso</Link></li>
-                <li><Link href="/login" className="text-xs sm:text-sm font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Políticas de Privacidade</Link></li>
+                <li><Link href="/login" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Termos de Uso</Link></li>
+                <li><Link href="/login" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Políticas de Privacidade</Link></li>
               </ul>
             </div>
           </div>
           <div className="mt-16 border-t border-[var(--primary)]/20 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-xs sm:text-sm font-sans uppercase tracking-widest text-[var(--muted-foreground)]">
+            <p className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)]">
               &copy; {new Date().getFullYear()} CertoFin. Todos os direitos reservados.
             </p>
-            <p className="text-xs sm:text-sm font-sans uppercase tracking-widest text-[var(--primary)] font-bold text-glow-cyan pulse-dot">
+            <p className="text-xs font-sans uppercase tracking-widest text-[var(--primary)] font-bold text-glow-cyan pulse-dot">
               SYS.STATUS = [ OPERATIONAL ]
             </p>
           </div>
