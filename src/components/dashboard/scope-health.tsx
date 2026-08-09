@@ -37,7 +37,7 @@ export function ScopeHealth({
             <span className="flex items-center gap-2 text-xs sm:text-sm font-display font-bold uppercase tracking-widest text-[var(--primary)]">
               <TrendingUp className="h-3 w-3" /> FATURADO
             </span>
-            <span className="text-sm sm:text-base font-mono font-bold text-[var(--primary)] text-glow-cyan">
+            <span className="text-sm sm:text-base font-sans font-bold text-[var(--primary)] text-glow-cyan">
               {formatCurrency(businessIncome)}
             </span>
           </div>
@@ -45,16 +45,16 @@ export function ScopeHealth({
             <span className="flex items-center gap-2 text-xs sm:text-sm font-display font-bold uppercase tracking-widest text-[var(--warning)]">
               <TrendingDown className="h-3 w-3" /> CUSTOS
             </span>
-            <span className="text-sm sm:text-base font-mono font-bold text-[var(--warning)] text-glow-yellow">
+            <span className="text-sm sm:text-base font-sans font-bold text-[var(--warning)] text-glow-yellow">
               {formatCurrency(businessExpense)}
             </span>
           </div>
           <div className="border-t border-[var(--primary)]/20 pt-3 mt-1">
             <div className="flex items-center justify-between">
-              <span className="text-xs sm:text-sm font-mono font-bold uppercase tracking-widest text-[var(--foreground)] opacity-80">LUCRO LÍQUIDO</span>
+              <span className="text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--foreground)] opacity-80">LUCRO LÍQUIDO</span>
               <span
                 className={cn(
-                  "text-lg sm:text-xl font-mono font-bold",
+                  "text-lg sm:text-xl font-sans font-bold",
                   businessProfit >= 0
                     ? "text-[var(--success)] text-glow-green"
                     : "text-[var(--destructive)] text-glow-red"
@@ -81,7 +81,7 @@ export function ScopeHealth({
             <span className="flex items-center gap-2 text-xs sm:text-sm font-display font-bold uppercase tracking-widest text-[var(--success)]">
               <TrendingUp className="h-3 w-3" /> RENDA
             </span>
-            <span className="text-sm sm:text-base font-mono font-bold text-[var(--success)] text-glow-green">
+            <span className="text-sm sm:text-base font-sans font-bold text-[var(--success)] text-glow-green">
               {formatCurrency(personalIncome)}
             </span>
           </div>
@@ -89,7 +89,7 @@ export function ScopeHealth({
             <span className="flex items-center gap-2 text-xs sm:text-sm font-display font-bold uppercase tracking-widest text-[var(--destructive)]">
               <TrendingDown className="h-3 w-3" /> CUSTOS DOMÉSTICOS
             </span>
-            <span className="text-sm sm:text-base font-mono font-bold text-[var(--destructive)] text-glow-red">
+            <span className="text-sm sm:text-base font-sans font-bold text-[var(--destructive)] text-glow-red">
               {formatCurrency(personalExpense)}
             </span>
           </div>

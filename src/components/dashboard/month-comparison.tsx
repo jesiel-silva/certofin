@@ -63,7 +63,7 @@ export function MonthComparison({ data, userPlan = "free" }: MonthComparisonProp
           <CardTitle className="text-xs sm:text-sm font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
             COMPARAÇÃO COM MÊS ANTERIOR
           </CardTitle>
-          <p className="text-xs sm:text-sm font-mono text-[var(--muted-foreground)] mt-1">
+          <p className="text-xs sm:text-sm font-sans text-[var(--muted-foreground)] mt-1">
             {previousMonthLabel} <ArrowRight className="inline h-3 w-3" /> {currentMonthLabel}
           </p>
         </div>
@@ -81,12 +81,12 @@ export function MonthComparison({ data, userPlan = "free" }: MonthComparisonProp
               <div>
                 <p className="text-xs sm:text-sm text-[var(--muted-foreground)] mb-1">Receita</p>
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-base sm:text-lg font-mono font-bold text-[var(--foreground)]">
+                  <span className="text-base sm:text-lg font-sans font-bold text-[var(--foreground)]">
                     {formatCurrency(currentMonth.personal_income)}
                   </span>
                   <ComparisonBadge diff={personalDiff} noPreviousData={hasNoPersonalData} />
                 </div>
-                <p className="text-[10px] sm:text-xs font-mono text-[var(--muted-foreground)] mt-1">
+                <p className="text-[10px] sm:text-xs font-sans text-[var(--muted-foreground)] mt-1">
                   {hasNoPersonalData ? "Sem lançamentos anteriores" : `Mês anterior: ${formatCurrency(previousMonth.personal_income)}`}
                 </p>
               </div>
@@ -95,12 +95,12 @@ export function MonthComparison({ data, userPlan = "free" }: MonthComparisonProp
               <div>
                 <p className="text-xs sm:text-sm text-[var(--muted-foreground)] mb-1">Gastos</p>
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-base sm:text-lg font-mono font-bold text-[var(--foreground)]">
+                  <span className="text-base sm:text-lg font-sans font-bold text-[var(--foreground)]">
                     {formatCurrency(currentMonth.personal_expense)}
                   </span>
                   <ComparisonBadge diff={personalExpenseDiff} invertColors noPreviousData={hasNoPersonalData} />
                 </div>
-                <p className="text-[10px] sm:text-xs font-mono text-[var(--muted-foreground)] mt-1">
+                <p className="text-[10px] sm:text-xs font-sans text-[var(--muted-foreground)] mt-1">
                   {hasNoPersonalData ? "Sem lançamentos anteriores" : `Mês anterior: ${formatCurrency(previousMonth.personal_expense)}`}
                 </p>
               </div>
@@ -118,12 +118,12 @@ export function MonthComparison({ data, userPlan = "free" }: MonthComparisonProp
               <div>
                 <p className="text-xs sm:text-sm text-[var(--muted-foreground)] mb-1">Receita</p>
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-base sm:text-lg font-mono font-bold text-[var(--foreground)]">
+                  <span className="text-base sm:text-lg font-sans font-bold text-[var(--foreground)]">
                     {formatCurrency(currentMonth.business_income)}
                   </span>
                   <ComparisonBadge diff={businessDiff} noPreviousData={hasNoBusinessData} />
                 </div>
-                <p className="text-[10px] sm:text-xs font-mono text-[var(--muted-foreground)] mt-1">
+                <p className="text-[10px] sm:text-xs font-sans text-[var(--muted-foreground)] mt-1">
                   {hasNoBusinessData ? "Sem lançamentos anteriores" : `Mês anterior: ${formatCurrency(previousMonth.business_income)}`}
                 </p>
               </div>
@@ -132,12 +132,12 @@ export function MonthComparison({ data, userPlan = "free" }: MonthComparisonProp
               <div>
                 <p className="text-xs sm:text-sm text-[var(--muted-foreground)] mb-1">Gastos</p>
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-base sm:text-lg font-mono font-bold text-[var(--foreground)]">
+                  <span className="text-base sm:text-lg font-sans font-bold text-[var(--foreground)]">
                     {formatCurrency(currentMonth.business_expense)}
                   </span>
                   <ComparisonBadge diff={businessExpenseDiff} invertColors noPreviousData={hasNoBusinessData} />
                 </div>
-                <p className="text-[10px] sm:text-xs font-mono text-[var(--muted-foreground)] mt-1">
+                <p className="text-[10px] sm:text-xs font-sans text-[var(--muted-foreground)] mt-1">
                   {hasNoBusinessData ? "Sem lançamentos anteriores" : `Mês anterior: ${formatCurrency(previousMonth.business_expense)}`}
                 </p>
               </div>
@@ -152,7 +152,7 @@ export function MonthComparison({ data, userPlan = "free" }: MonthComparisonProp
 function ComparisonBadge({ diff, invertColors = false, noPreviousData = false }: { diff: number; invertColors?: boolean; noPreviousData?: boolean }) {
   if (noPreviousData) {
     return (
-      <span className="inline-flex items-center gap-1 rounded-full bg-[var(--muted)]/20 px-2 py-1 text-[10px] sm:text-xs font-mono font-bold text-[var(--muted-foreground)]">
+      <span className="inline-flex items-center gap-1 rounded-full bg-[var(--muted)]/20 px-2 py-1 text-[10px] sm:text-xs font-sans font-bold text-[var(--muted-foreground)]">
         <Minus className="h-3 w-3" />
         Sem dados
       </span>
@@ -163,7 +163,7 @@ function ComparisonBadge({ diff, invertColors = false, noPreviousData = false }:
 
   if (diff === 0) {
     return (
-      <span className="inline-flex items-center gap-1 rounded-full bg-[var(--muted)]/20 px-2 py-1 text-[10px] sm:text-xs font-mono font-bold text-[var(--muted-foreground)]">
+      <span className="inline-flex items-center gap-1 rounded-full bg-[var(--muted)]/20 px-2 py-1 text-[10px] sm:text-xs font-sans font-bold text-[var(--muted-foreground)]">
         <Minus className="h-3 w-3" />
         Igual
       </span>
@@ -172,7 +172,7 @@ function ComparisonBadge({ diff, invertColors = false, noPreviousData = false }:
 
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] sm:text-xs font-mono font-bold ${
+      className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] sm:text-xs font-sans font-bold ${
         isPositive
           ? "bg-[var(--success)]/10 text-[var(--success)]"
           : "bg-[var(--destructive)]/10 text-[var(--destructive)]"

@@ -46,7 +46,7 @@ function renderCustomLabel({
       textAnchor="middle"
       dominantBaseline="central"
       fontSize={10}
-      fontFamily="var(--font-jetbrains-mono)"
+      fontFamily="var(--font-inter)"
       fontWeight={700}
       style={{ textShadow: "0 0 5px rgba(0,0,0,0.8)" }}
     >
@@ -66,7 +66,7 @@ export function ExpenseChart({
           <CardTitle className="text-xs sm:text-sm font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">{title}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex h-[200px] sm:h-[250px] items-center justify-center text-xs sm:text-sm font-mono text-[var(--primary)]/40">
+          <div className="flex h-[200px] sm:h-[250px] items-center justify-center text-xs sm:text-sm font-sans text-[var(--primary)]/40">
             [ SEM DADOS ]
           </div>
         </CardContent>
@@ -81,7 +81,7 @@ export function ExpenseChart({
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between border-b border-[var(--primary)]/20 pb-2 mb-2">
           <CardTitle className="text-xs sm:text-sm font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">{title}</CardTitle>
-          <span className="text-xs sm:text-sm font-mono font-bold text-[var(--destructive)] text-glow-red">
+          <span className="text-xs sm:text-sm font-sans font-bold text-[var(--destructive)] text-glow-red">
             {formatCurrency(total)}
           </span>
         </div>
@@ -127,10 +127,10 @@ export function ExpenseChart({
                             {item.category_name}
                           </span>
                         </div>
-                        <p className="text-sm sm:text-base font-bold font-mono" style={{ color: item.category_color, textShadow: `0 0 5px ${item.category_color}80` }}>
+                        <p className="text-sm sm:text-base font-bold font-sans" style={{ color: item.category_color, textShadow: `0 0 5px ${item.category_color}80` }}>
                           {formatCurrency(item.total)}
                         </p>
-                        <p className="text-[10px] sm:text-xs font-mono text-[var(--muted-foreground)] mt-1">
+                        <p className="text-[10px] sm:text-xs font-sans text-[var(--muted-foreground)] mt-1">
                           {item.percentage.toFixed(1)}% DO TOTAL
                         </p>
                       </div>
@@ -157,10 +157,10 @@ export function ExpenseChart({
                   <span className="truncate text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[var(--foreground)] opacity-80">
                     {item.category_name}
                   </span>
-                  <span className="shrink-0 text-[9px] sm:text-[10px] font-bold font-mono text-[var(--foreground)]">
+                  <span className="shrink-0 text-[9px] sm:text-[10px] font-bold font-sans text-[var(--foreground)]">
                     {formatCurrency(item.total)}
                   </span>
-                  <span className="shrink-0 text-[9px] sm:text-[10px] font-bold font-mono text-[var(--primary)] opacity-80">
+                  <span className="shrink-0 text-[9px] sm:text-[10px] font-bold font-sans text-[var(--primary)] opacity-80">
                     {item.percentage.toFixed(0)}%
                   </span>
                 </div>
@@ -171,7 +171,7 @@ export function ExpenseChart({
                 {data.slice(6, 12).map((item) => (
                   <span
                     key={item.category_id}
-                    className="inline-flex items-center gap-1 rounded bg-[var(--accent)]/50 px-1.5 py-0.5 text-[8px] sm:text-[9px] font-mono font-bold text-[var(--muted-foreground)]"
+                    className="inline-flex items-center gap-1 rounded bg-[var(--accent)]/50 px-1.5 py-0.5 text-[8px] sm:text-[9px] font-sans font-bold text-[var(--muted-foreground)]"
                   >
                     <span
                       className="h-1.5 w-1.5 rounded-full shrink-0"
@@ -181,7 +181,7 @@ export function ExpenseChart({
                   </span>
                 ))}
                 {data.length > 12 && (
-                  <span className="inline-flex items-center rounded bg-[var(--accent)]/50 px-1.5 py-0.5 text-[8px] sm:text-[9px] font-mono font-bold text-[var(--muted-foreground)]">
+                  <span className="inline-flex items-center rounded bg-[var(--accent)]/50 px-1.5 py-0.5 text-[8px] sm:text-[9px] font-sans font-bold text-[var(--muted-foreground)]">
                     +{data.length - 12}
                   </span>
                 )}

@@ -56,7 +56,7 @@ export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex h-[250px] sm:h-[300px] items-center justify-center text-xs sm:text-sm font-mono text-[var(--primary)]/40">
+          <div className="flex h-[250px] sm:h-[300px] items-center justify-center text-xs sm:text-sm font-sans text-[var(--primary)]/40">
             [ SEM DADOS ]
           </div>
         </CardContent>
@@ -98,12 +98,12 @@ export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
           </CardTitle>
           <div className="flex gap-4">
             <div className="text-right">
-              <p className="text-[10px] sm:text-xs text-[var(--muted-foreground)] uppercase tracking-wider font-mono">TOTAL PESSOAL</p>
-              <p className="text-xs sm:text-sm font-mono font-bold text-[var(--success)] text-glow-green">{formatCurrency(totalPersonal)}</p>
+              <p className="text-[10px] sm:text-xs text-[var(--muted-foreground)] uppercase tracking-wider font-sans">TOTAL PESSOAL</p>
+              <p className="text-xs sm:text-sm font-sans font-bold text-[var(--success)] text-glow-green">{formatCurrency(totalPersonal)}</p>
             </div>
             <div className="text-right">
-              <p className="text-[10px] sm:text-xs text-[var(--muted-foreground)] uppercase tracking-wider font-mono">TOTAL NEGÓCIO</p>
-              <p className="text-xs sm:text-sm font-mono font-bold text-[var(--primary)] text-glow-cyan">{formatCurrency(totalBusiness)}</p>
+              <p className="text-[10px] sm:text-xs text-[var(--muted-foreground)] uppercase tracking-wider font-sans">TOTAL NEGÓCIO</p>
+              <p className="text-xs sm:text-sm font-sans font-bold text-[var(--primary)] text-glow-cyan">{formatCurrency(totalBusiness)}</p>
             </div>
           </div>
         </div>
@@ -135,13 +135,13 @@ export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
             />
             <XAxis
               dataKey="name"
-              tick={{ fontSize: 10, fill: "var(--muted-foreground)", fontFamily: "var(--font-jetbrains-mono)" }}
+              tick={{ fontSize: 10, fill: "var(--muted-foreground)", fontFamily: "var(--font-inter)" }}
               axisLine={{ stroke: "var(--border)", strokeWidth: 1 }}
               tickLine={false}
               dy={10}
             />
             <YAxis
-              tick={{ fontSize: 10, fill: "var(--muted-foreground)", fontFamily: "var(--font-jetbrains-mono)" }}
+              tick={{ fontSize: 10, fill: "var(--muted-foreground)", fontFamily: "var(--font-inter)" }}
               axisLine={{ stroke: "var(--border)", strokeWidth: 1 }}
               tickLine={false}
               tickFormatter={(v) =>
@@ -170,7 +170,7 @@ export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
                               <span className="h-2 w-2 rounded-full bg-[var(--success)]" />
                               Pessoal
                             </span>
-                            <span className="text-xs sm:text-sm font-mono font-bold text-[var(--success)]">
+                            <span className="text-xs sm:text-sm font-sans font-bold text-[var(--success)]">
                               {formatCurrency(personalIncome)}
                             </span>
                           </div>
@@ -185,7 +185,7 @@ export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
                               <span className="h-2 w-2 rounded-full bg-[var(--primary)]" />
                               Negócio
                             </span>
-                            <span className="text-xs sm:text-sm font-mono font-bold text-[var(--primary)]">
+                            <span className="text-xs sm:text-sm font-sans font-bold text-[var(--primary)]">
                               {formatCurrency(businessIncome)}
                             </span>
                           </div>
@@ -201,7 +201,7 @@ export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
               }}
             />
             <Legend
-              wrapperStyle={{ fontSize: '10px', fontFamily: 'var(--font-jetbrains-mono)', textTransform: 'uppercase', letterSpacing: '0.05em' }}
+              wrapperStyle={{ fontSize: '10px', fontFamily: 'var(--font-inter)', textTransform: 'uppercase', letterSpacing: '0.05em' }}
               content={({ payload }) => {
                 if (!payload) return null;
                 return (
@@ -259,21 +259,21 @@ function DiffBadge({ label, diff, color }: { label: string; diff: number; color:
 
   return (
     <div className={`flex items-center gap-2 rounded-lg border px-2 sm:px-3 py-1 sm:py-1.5 ${colorClasses[color]}`}>
-      <span className="text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider text-[var(--muted-foreground)]">
+      <span className="text-[10px] sm:text-xs font-sans font-bold uppercase tracking-wider text-[var(--muted-foreground)]">
         {label}
       </span>
       {diff > 0 ? (
-        <span className={`flex items-center gap-1 text-[10px] sm:text-xs font-mono font-bold ${textColor[color]}`}>
+        <span className={`flex items-center gap-1 text-[10px] sm:text-xs font-sans font-bold ${textColor[color]}`}>
           <TrendingUp className="h-3 w-3" />
           +{formatCurrency(diff)}
         </span>
       ) : diff < 0 ? (
-        <span className="flex items-center gap-1 text-[10px] sm:text-xs font-mono font-bold text-[var(--destructive)]">
+        <span className="flex items-center gap-1 text-[10px] sm:text-xs font-sans font-bold text-[var(--destructive)]">
           <TrendingDown className="h-3 w-3" />
           {formatCurrency(diff)}
         </span>
       ) : (
-        <span className="flex items-center gap-1 text-[10px] sm:text-xs font-mono font-bold text-[var(--muted-foreground)]">
+        <span className="flex items-center gap-1 text-[10px] sm:text-xs font-sans font-bold text-[var(--muted-foreground)]">
           <Minus className="h-3 w-3" />
           —
         </span>
@@ -285,14 +285,14 @@ function DiffBadge({ label, diff, color }: { label: string; diff: number; color:
 function DiffLine({ diff }: { diff: number }) {
   if (diff === 0) {
     return (
-      <p className="text-[9px] sm:text-[10px] font-mono text-[var(--muted-foreground)] pl-4">
+      <p className="text-[9px] sm:text-[10px] font-sans text-[var(--muted-foreground)] pl-4">
         Sem alteração vs mês anterior
       </p>
     );
   }
 
   return (
-    <p className={`text-[9px] sm:text-[10px] font-mono pl-4 ${diff > 0 ? "text-[var(--success)]" : "text-[var(--destructive)]"}`}>
+    <p className={`text-[9px] sm:text-[10px] font-sans pl-4 ${diff > 0 ? "text-[var(--success)]" : "text-[var(--destructive)]"}`}>
       {diff > 0 ? "▲" : "▼"} {diff > 0 ? "+" : ""}{formatCurrency(diff)} vs mês anterior
     </p>
   );

@@ -119,12 +119,12 @@ export function KpiCards({
               {formatCurrency(card.value)}
             </p>
             {card.subtitle && (
-              <p className="mt-1 text-xs sm:text-sm text-[var(--muted-foreground)] font-mono opacity-80">
+              <p className="mt-1 text-xs sm:text-sm text-[var(--muted-foreground)] font-sans opacity-80">
                 {card.subtitle}
               </p>
             )}
             {card.pending && (
-              <p className="mt-1 text-xs sm:text-sm text-[var(--muted-foreground)] font-mono opacity-80">
+              <p className="mt-1 text-xs sm:text-sm text-[var(--muted-foreground)] font-sans opacity-80">
                 {card.pending}
               </p>
             )}
