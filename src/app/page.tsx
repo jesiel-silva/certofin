@@ -95,21 +95,21 @@ export default function HomePage() {
             <nav className="hidden items-center gap-2 md:flex">
               <a
                 href="#funcionalidades"
-                className="group relative px-4 py-2 text-[10px] font-sans font-bold uppercase tracking-widest text-[var(--muted-foreground)] transition-all hover:text-[var(--primary)]"
+                className="group relative px-4 py-2 text-xs font-sans font-bold uppercase tracking-widest text-[var(--muted-foreground)] transition-all hover:text-[var(--primary)]"
               >
                 <span className="relative z-10">Funcionalidades</span>
                 <span className="absolute inset-0 bg-[var(--primary)]/0 transition-all group-hover:bg-[var(--primary)]/10" />
               </a>
               <a
                 href="#como-funciona"
-                className="group relative px-4 py-2 text-[10px] font-sans font-bold uppercase tracking-widest text-[var(--muted-foreground)] transition-all hover:text-[var(--primary)]"
+                className="group relative px-4 py-2 text-xs font-sans font-bold uppercase tracking-widest text-[var(--muted-foreground)] transition-all hover:text-[var(--primary)]"
               >
                 <span className="relative z-10">Como funciona</span>
                 <span className="absolute inset-0 bg-[var(--primary)]/0 transition-all group-hover:bg-[var(--primary)]/10" />
               </a>
               <a
                 href="#planos"
-                className="group relative px-4 py-2 text-[10px] font-sans font-bold uppercase tracking-widest text-[var(--muted-foreground)] transition-all hover:text-[var(--primary)]"
+                className="group relative px-4 py-2 text-xs font-sans font-bold uppercase tracking-widest text-[var(--muted-foreground)] transition-all hover:text-[var(--primary)]"
               >
                 <span className="relative z-10">Planos</span>
                 <span className="absolute inset-0 bg-[var(--primary)]/0 transition-all group-hover:bg-[var(--primary)]/10" />
@@ -118,7 +118,7 @@ export default function HomePage() {
             <div className="h-6 w-px bg-[var(--primary)]/30 hidden sm:block" />
             <Link
               href="/login"
-              className="hidden text-[10px] font-sans font-bold uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors sm:block"
+              className="hidden text-xs font-sans font-bold uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors sm:block"
             >
               ENTRAR
             </Link>
@@ -222,7 +222,7 @@ export default function HomePage() {
                 <div className="text-3xl font-extrabold text-white group-hover:scale-105 transition-transform duration-300 text-glow-cyan font-sans">
                   {stat.number}
                 </div>
-                <div className="mt-2 text-[10px] font-sans font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
+                <div className="mt-2 text-xs font-sans font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
                   {stat.label}
                 </div>
                 <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-[var(--primary)]/20 to-transparent blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -238,7 +238,7 @@ export default function HomePage() {
               <div className="h-2 w-2 bg-[var(--success)] shadow-[0_0_5px_var(--success)]" />
               <div className="ml-4 flex items-center gap-2 border border-[var(--primary)]/30 bg-[var(--primary)]/5 px-3 py-1">
                 <Lock className="h-3 w-3 text-[var(--primary)]" />
-                <span className="text-[10px] font-sans font-bold text-[var(--primary)] uppercase tracking-widest">
+                <span className="text-xs font-sans font-bold text-[var(--primary)] uppercase tracking-widest">
                   sys.certofin.com/dashboard
                 </span>
               </div>
@@ -253,7 +253,7 @@ export default function HomePage() {
                 </div>
                 <div className="flex items-center gap-2 border border-[var(--primary)]/30 bg-[var(--primary)]/10 px-3 py-1.5 glow-cyan">
                   <Calendar className="h-4 w-4 text-[var(--primary)]" />
-                  <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-[var(--primary)]">ESTE MÊS</span>
+                  <span className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--primary)]">ESTE MÊS</span>
                 </div>
               </div>
 
@@ -268,7 +268,7 @@ export default function HomePage() {
                   <div key={i} className="hud-border bg-[#0B1221]/80 p-5 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-8 h-8 bg-gradient-to-bl from-[currentColor] to-transparent opacity-10" style={{ color: kpi.color }} />
                     <div className="mb-3 flex items-center justify-between">
-                      <span className="text-[10px] font-bold font-sans uppercase tracking-widest text-[var(--muted-foreground)]">{kpi.label}</span>
+                      <span className="text-xs font-bold font-sans uppercase tracking-widest text-[var(--muted-foreground)]">{kpi.label}</span>
                       <div className="p-1.5 border border-[currentColor]/30 bg-[currentColor]/10" style={{ color: kpi.color }}>
                         <kpi.icon className="h-3 w-3" />
                       </div>
@@ -281,7 +281,7 @@ export default function HomePage() {
               {/* Chart placeholder */}
               <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                 <div className="hud-border bg-[#0B1221]/80 p-6 lg:col-span-2">
-                  <h4 className="mb-6 text-[10px] font-bold font-sans text-[var(--muted-foreground)] uppercase tracking-widest border-b border-white/5 pb-2">FLUXO DE CAIXA</h4>
+                  <h4 className="mb-6 text-xs font-bold font-sans text-[var(--muted-foreground)] uppercase tracking-widest border-b border-white/5 pb-2">FLUXO DE CAIXA</h4>
                   <div className="flex h-48 items-end gap-3 pb-2 pt-4 relative">
                     {/* Grid lines */}
                     <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
@@ -302,13 +302,13 @@ export default function HomePage() {
                       </div>
                     ))}
                   </div>
-                  <div className="mt-4 flex justify-between text-[9px] font-bold font-sans text-[var(--primary)] opacity-60 uppercase">
+                  <div className="mt-4 flex justify-between text-xs font-bold font-sans text-[var(--primary)] opacity-60 uppercase">
                     <span>Jan</span><span>Mar</span><span>Mai</span><span>Jul</span><span>Set</span><span>Nov</span>
                   </div>
                 </div>
 
                 <div className="hud-border bg-[#0B1221]/80 p-6 flex flex-col justify-between">
-                  <h4 className="mb-4 text-[10px] font-bold font-sans text-[var(--muted-foreground)] uppercase tracking-widest border-b border-white/5 pb-2">DISTRIBUIÇÃO</h4>
+                  <h4 className="mb-4 text-xs font-bold font-sans text-[var(--muted-foreground)] uppercase tracking-widest border-b border-white/5 pb-2">DISTRIBUIÇÃO</h4>
                   <div className="flex flex-1 items-center justify-center py-4">
                     <div className="relative h-32 w-32 drop-shadow-[0_0_10px_var(--primary)]">
                       <svg className="h-full w-full -rotate-90" viewBox="0 0 36 36">
@@ -326,11 +326,11 @@ export default function HomePage() {
                       </svg>
                       <div className="absolute inset-0 flex flex-col items-center justify-center">
                         <span className="text-xs font-bold font-sans text-[var(--foreground)]">50/50</span>
-                        <span className="text-[8px] font-sans text-[var(--primary)]">RATIO</span>
+                        <span className="text-xs font-sans text-[var(--primary)]">RATIO</span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex justify-center gap-4 text-[9px] font-bold font-sans uppercase tracking-widest">
+                  <div className="flex justify-center gap-4 text-xs font-bold font-sans uppercase tracking-widest">
                     <div className="flex items-center gap-1.5">
                       <div className="h-2 w-2 bg-[var(--primary)] glow-cyan animate-pulse-glow" />
                       <span className="text-[var(--primary)]">PESSOAL</span>
@@ -352,7 +352,7 @@ export default function HomePage() {
         <div className="absolute inset-0 data-grid opacity-50 pointer-events-none" />
         <div className="relative mx-auto max-w-6xl px-6">
           <div className="text-center max-w-3xl mx-auto">
-            <div className="mb-4 inline-flex items-center gap-2 border border-[var(--primary)]/30 bg-[var(--primary)]/10 px-4 py-1.5 text-[10px] font-sans font-bold uppercase tracking-widest text-[var(--primary)]">
+            <div className="mb-4 inline-flex items-center gap-2 border border-[var(--primary)]/30 bg-[var(--primary)]/10 px-4 py-1.5 text-xs font-sans font-bold uppercase tracking-widest text-[var(--primary)]">
               <Eye className="h-3.5 w-3.5" />
               <span>MÓDULOS DE INTELIGÊNCIA</span>
             </div>
@@ -373,7 +373,7 @@ export default function HomePage() {
                 <div className="mb-6 flex h-14 w-14 items-center justify-center border border-[var(--primary)]/30 bg-[var(--primary)]/10 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_15px_var(--primary)]">
                   <feature.icon className="h-6 w-6 text-[var(--primary)]" />
                 </div>
-                <h3 className="text-[10px] font-sans font-bold uppercase tracking-widest text-[var(--primary)]">
+                <h3 className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--primary)]">
                   {feature.title}
                 </h3>
                 <p className="mt-3 text-xs font-sans leading-relaxed text-[var(--muted-foreground)]">
@@ -393,7 +393,7 @@ export default function HomePage() {
         
         <div className="relative mx-auto max-w-6xl px-6">
           <div className="text-center max-w-3xl mx-auto">
-            <div className="mb-4 inline-flex items-center gap-2 border border-[var(--primary)]/30 bg-[var(--primary)]/10 px-4 py-1.5 text-[10px] font-sans font-bold uppercase tracking-widest text-[var(--primary)]">
+            <div className="mb-4 inline-flex items-center gap-2 border border-[var(--primary)]/30 bg-[var(--primary)]/10 px-4 py-1.5 text-xs font-sans font-bold uppercase tracking-widest text-[var(--primary)]">
               <Zap className="h-3.5 w-3.5" />
               <span>INICIALIZAÇÃO RÁPIDA</span>
             </div>
@@ -417,11 +417,11 @@ export default function HomePage() {
                   <div className="mx-auto flex h-20 w-20 items-center justify-center border border-[var(--primary)]/50 bg-[#0B1221] text-[var(--primary)] shadow-[0_0_20px_rgba(0,255,204,0.15)] transition-all duration-300 group-hover:scale-105 group-hover:bg-[var(--primary)]/10 group-hover:shadow-[0_0_30px_rgba(0,255,204,0.3)]">
                     <step.icon className="h-8 w-8" />
                   </div>
-                  <div className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center bg-[var(--primary)] text-[10px] font-sans font-black text-[#020617] shadow-[0_0_15px_var(--primary)]">
+                  <div className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center bg-[var(--primary)] text-xs font-sans font-black text-[#020617] shadow-[0_0_15px_var(--primary)]">
                     {step.step}
                   </div>
                 </div>
-                <h3 className="text-[10px] font-sans font-bold uppercase tracking-widest text-[var(--primary)] text-glow-cyan">
+                <h3 className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--primary)] text-glow-cyan">
                   {step.title}
                 </h3>
                 <p className="mt-3 text-xs font-sans leading-relaxed text-[var(--muted-foreground)]">
@@ -456,7 +456,7 @@ export default function HomePage() {
               <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center border border-[var(--success)]/30 bg-[var(--success)]/10 text-[var(--success)] transition-all group-hover:scale-105 group-hover:shadow-[0_0_15px_var(--success)]">
                 <Lock className="h-8 w-8" />
               </div>
-              <h3 className="text-[10px] font-sans font-bold uppercase tracking-widest text-[var(--success)] text-glow-green">Sua privacidade garantida</h3>
+              <h3 className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--success)] text-glow-green">Sua privacidade garantida</h3>
               <p className="mt-3 text-xs font-sans leading-relaxed text-[var(--muted-foreground)]">
                 Suas informações são blindadas. Nós não temos e nunca teremos acesso aos seus dados financeiros confidenciais.
               </p>
@@ -466,7 +466,7 @@ export default function HomePage() {
               <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center border border-[var(--primary)]/30 bg-[var(--primary)]/10 text-[var(--primary)] transition-all group-hover:scale-105 group-hover:shadow-[0_0_15px_var(--primary)]">
                 <Zap className="h-8 w-8" />
               </div>
-              <h3 className="text-[10px] font-sans font-bold uppercase tracking-widest text-[var(--primary)] text-glow-cyan">Agilidade e Sem Fricção</h3>
+              <h3 className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--primary)] text-glow-cyan">Agilidade e Sem Fricção</h3>
               <p className="mt-3 text-xs font-sans leading-relaxed text-[var(--muted-foreground)]">
                 Anote transações em poucos segundos de qualquer lugar. Interface mobile leve e focada na rapidez.
               </p>
@@ -476,7 +476,7 @@ export default function HomePage() {
               <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center border border-[var(--warning)]/30 bg-[var(--warning)]/10 text-[var(--warning)] transition-all group-hover:scale-105 group-hover:shadow-[0_0_15px_var(--warning)]">
                 <BarChart3 className="h-8 w-8" />
               </div>
-              <h3 className="text-[10px] font-sans font-bold uppercase tracking-widest text-[var(--warning)] text-glow-yellow">Relatórios Visuais</h3>
+              <h3 className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--warning)] text-glow-yellow">Relatórios Visuais</h3>
               <p className="mt-3 text-xs font-sans leading-relaxed text-[var(--muted-foreground)]">
                 Visualize na hora gráficos fáceis de ler que apontam gargalos de custos e mostram onde seu lucro está.
               </p>
@@ -504,41 +504,41 @@ export default function HomePage() {
               <div>
                 <div className="mb-6">
                   <h3 className="text-lg font-sans font-bold uppercase tracking-widest text-[var(--muted-foreground)]">NÍVEL 1: BÁSICO</h3>
-                  <p className="text-[10px] font-sans text-[var(--muted-foreground)]/60">Recursos fundamentais</p>
+                  <p className="text-xs font-sans text-[var(--muted-foreground)]/60">Recursos fundamentais</p>
                 </div>
                 <div className="mb-8">
                   <div className="flex items-baseline gap-1 font-sans">
                     <span className="text-base text-[var(--primary)]/40">R$</span>
                     <span className="text-5xl font-black text-white">0</span>
-                    <span className="text-[10px] uppercase tracking-widest text-[var(--primary)]/40 font-bold">/MÊS</span>
+                    <span className="text-xs uppercase tracking-widest text-[var(--primary)]/40 font-bold">/MÊS</span>
                   </div>
                 </div>
                 <ul className="mb-8 space-y-4 font-sans">
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--success)] shrink-0 mt-0.5" />
-                    <span className="text-[11px] uppercase tracking-wider text-[var(--muted-foreground)]">Até 10 lançamentos por mês</span>
+                    <span className="text-xs uppercase tracking-wider text-[var(--muted-foreground)]">Até 10 lançamentos por mês</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--success)] shrink-0 mt-0.5" />
-                    <span className="text-[11px] uppercase tracking-wider text-[var(--muted-foreground)]">Controle financeiro pessoal</span>
+                    <span className="text-xs uppercase tracking-wider text-[var(--muted-foreground)]">Controle financeiro pessoal</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--success)] shrink-0 mt-0.5" />
-                    <span className="text-[11px] uppercase tracking-wider text-[var(--muted-foreground)]">Agendamento de contas fixas</span>
+                    <span className="text-xs uppercase tracking-wider text-[var(--muted-foreground)]">Agendamento de contas fixas</span>
                   </li>
                   <li className="flex items-start gap-3 opacity-40">
                     <Lock className="h-4 w-4 text-[var(--destructive)] shrink-0 mt-0.5" />
-                    <span className="text-[11px] uppercase tracking-wider text-[var(--destructive)] line-through">Separação de negócio/pessoal</span>
+                    <span className="text-xs uppercase tracking-wider text-[var(--destructive)] line-through">Separação de negócio/pessoal</span>
                   </li>
                   <li className="flex items-start gap-3 opacity-40">
                     <Lock className="h-4 w-4 text-[var(--destructive)] shrink-0 mt-0.5" />
-                    <span className="text-[11px] uppercase tracking-wider text-[var(--destructive)] line-through">Lançamentos parcelados</span>
+                    <span className="text-xs uppercase tracking-wider text-[var(--destructive)] line-through">Lançamentos parcelados</span>
                   </li>
                 </ul>
               </div>
               <Link
                 href="/signup"
-                className="block w-full border border-[var(--border)] bg-transparent py-3.5 text-center text-[10px] font-sans font-bold uppercase tracking-widest text-[var(--foreground)] transition-all hover:bg-white/5 hover:border-[var(--primary)]/50 hover:shadow-[0_0_15px_rgba(0,255,204,0.1)]"
+                className="block w-full border border-[var(--border)] bg-transparent py-3.5 text-center text-xs font-sans font-bold uppercase tracking-widest text-[var(--foreground)] transition-all hover:bg-white/5 hover:border-[var(--primary)]/50 hover:shadow-[0_0_15px_rgba(0,255,204,0.1)]"
               >
                 CRIAR_CONTA_GRÁTIS
               </Link>
@@ -548,7 +548,7 @@ export default function HomePage() {
             <div className="relative flex flex-col justify-between hud-border border-[var(--primary)] bg-[#0B1221] p-8 shadow-[0_0_25px_rgba(0,255,204,0.15)]">
               <div className="absolute inset-0 pointer-events-none z-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(0,255,204,0.05)_2px,rgba(0,255,204,0.05)_4px)]" />
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-                <div className="flex items-center gap-1 border border-[var(--primary)] bg-[#0B1221] px-4 py-1 text-[9px] font-sans font-bold text-[var(--primary)] uppercase tracking-widest glow-cyan">
+                <div className="flex items-center gap-1 border border-[var(--primary)] bg-[#0B1221] px-4 py-1 text-xs font-sans font-bold text-[var(--primary)] uppercase tracking-widest glow-cyan">
                   <Crown className="h-3 w-3" />
                   MAIS ESCOLHIDO
                 </div>
@@ -556,42 +556,42 @@ export default function HomePage() {
               <div>
                 <div className="mb-6">
                   <h3 className="text-lg font-sans font-bold uppercase tracking-widest text-[var(--primary)] text-glow-cyan">NÍVEL 2: PRO</h3>
-                  <p className="text-[10px] font-sans text-[var(--primary)]">Ideal para autônomos e freelancers</p>
+                  <p className="text-xs font-sans text-[var(--primary)]">Ideal para autônomos e freelancers</p>
                 </div>
                 <div className="mb-8">
                   <div className="flex items-baseline gap-1 font-sans">
                     <span className="text-base text-[var(--primary)]">R$</span>
                     <span className="text-5xl font-black text-white text-glow-cyan">9,90</span>
-                    <span className="text-[10px] uppercase tracking-widest text-[var(--primary)] font-bold">/MÊS</span>
+                    <span className="text-xs uppercase tracking-widest text-[var(--primary)] font-bold">/MÊS</span>
                   </div>
-                  <p className="mt-1 text-[9px] font-sans uppercase tracking-widest text-[var(--muted-foreground)]">Cobrança recorrente em cartão. Cancele quando quiser.</p>
+                  <p className="mt-1 text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)]">Cobrança recorrente em cartão. Cancele quando quiser.</p>
                 </div>
                 <ul className="mb-8 space-y-4 font-sans">
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--primary)] shrink-0 mt-0.5" />
-                    <span className="text-[11px] uppercase tracking-wider text-[var(--muted-foreground)]">Lançamentos ilimitados</span>
+                    <span className="text-xs uppercase tracking-wider text-[var(--muted-foreground)]">Lançamentos ilimitados</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--primary)] shrink-0 mt-0.5" />
-                    <span className="text-[11px] uppercase tracking-wider text-[var(--muted-foreground)]">Negócios e Pessoal separados</span>
+                    <span className="text-xs uppercase tracking-wider text-[var(--muted-foreground)]">Negócios e Pessoal separados</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--primary)] shrink-0 mt-0.5" />
-                    <span className="text-[11px] uppercase tracking-wider text-[var(--muted-foreground)]">Lançamentos parcelados</span>
+                    <span className="text-xs uppercase tracking-wider text-[var(--muted-foreground)]">Lançamentos parcelados</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--primary)] shrink-0 mt-0.5" />
-                    <span className="text-[11px] uppercase tracking-wider text-[var(--muted-foreground)]">Dashboard avançado com gráficos</span>
+                    <span className="text-xs uppercase tracking-wider text-[var(--muted-foreground)]">Dashboard avançado com gráficos</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--primary)] shrink-0 mt-0.5" />
-                    <span className="text-[11px] uppercase tracking-wider text-[var(--muted-foreground)]">14 dias de trial grátis</span>
+                    <span className="text-xs uppercase tracking-wider text-[var(--muted-foreground)]">14 dias de trial grátis</span>
                   </li>
                 </ul>
               </div>
               <Link
                 href="/signup"
-                className="flex items-center justify-center gap-2 w-full border border-[var(--primary)] bg-[var(--primary)]/10 py-3.5 text-[10px] font-sans font-bold uppercase tracking-widest text-[var(--primary)] transition-all hover:bg-[var(--primary)]/20 hover:shadow-[0_0_25px_rgba(0,255,204,0.3)]"
+                className="flex items-center justify-center gap-2 w-full border border-[var(--primary)] bg-[var(--primary)]/10 py-3.5 text-xs font-sans font-bold uppercase tracking-widest text-[var(--primary)] transition-all hover:bg-[var(--primary)]/20 hover:shadow-[0_0_25px_rgba(0,255,204,0.3)]"
               >
                 ASSINAR_PLANO_PRO
                 <ArrowRight className="h-4 w-4" />
@@ -613,7 +613,7 @@ export default function HomePage() {
           <p className="mt-6 text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] max-w-2xl mx-auto">
             Crie sua conta em 30 segundos. Organize seu caixa e gaste o seu tempo no que realmente importa: crescer o seu negócio.
           </p>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-[10px] font-sans font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-xs font-sans font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-[var(--primary)]" />
               <span>10 lançamentos grátis/mês</span>
@@ -647,38 +647,38 @@ export default function HomePage() {
               <Link href="/" className="flex items-center">
                 <Logo size="md" />
               </Link>
-              <p className="mt-6 text-[10px] font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
+              <p className="mt-6 text-xs font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
                 A ferramenta mais simples e inteligente para separar as contas pessoais e corporativas de empreendedores individuais.
               </p>
             </div>
             <div>
-              <h4 className="text-[10px] font-sans font-bold uppercase tracking-widest text-[var(--primary)]">Produto</h4>
+              <h4 className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--primary)]">Produto</h4>
               <ul className="mt-4 space-y-3">
-                <li><Link href="#como-funciona" className="text-[10px] font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Como funciona</Link></li>
-                <li><Link href="#planos" className="text-[10px] font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Preços</Link></li>
-                <li><Link href="/login" className="text-[10px] font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Segurança</Link></li>
+                <li><Link href="#como-funciona" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Como funciona</Link></li>
+                <li><Link href="#planos" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Preços</Link></li>
+                <li><Link href="/login" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Segurança</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-[10px] font-sans font-bold uppercase tracking-widest text-[var(--primary)]">Suporte</h4>
+              <h4 className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--primary)]">Suporte</h4>
               <ul className="mt-4 space-y-3">
-                <li><Link href="/login" className="text-[10px] font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Central de Ajuda</Link></li>
-                <li><Link href="/login" className="text-[10px] font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Fale Conosco</Link></li>
+                <li><Link href="/login" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Central de Ajuda</Link></li>
+                <li><Link href="/login" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Fale Conosco</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-[10px] font-sans font-bold uppercase tracking-widest text-[var(--primary)]">Legal</h4>
+              <h4 className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--primary)]">Legal</h4>
               <ul className="mt-4 space-y-3">
-                <li><Link href="/login" className="text-[10px] font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Termos de Uso</Link></li>
-                <li><Link href="/login" className="text-[10px] font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Políticas de Privacidade</Link></li>
+                <li><Link href="/login" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Termos de Uso</Link></li>
+                <li><Link href="/login" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Políticas de Privacidade</Link></li>
               </ul>
             </div>
           </div>
           <div className="mt-16 border-t border-[var(--primary)]/20 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-[9px] font-sans uppercase tracking-widest text-[var(--muted-foreground)]">
+            <p className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)]">
               &copy; {new Date().getFullYear()} CertoFin. Todos os direitos reservados.
             </p>
-            <p className="text-[9px] font-sans uppercase tracking-widest text-[var(--primary)] font-bold text-glow-cyan pulse-dot">
+            <p className="text-xs font-sans uppercase tracking-widest text-[var(--primary)] font-bold text-glow-cyan pulse-dot">
               SYS.STATUS = [ OPERATIONAL ]
             </p>
           </div>
