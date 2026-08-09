@@ -359,7 +359,7 @@ export default function HomePage() {
             <h2 className="text-3xl font-extrabold text-white sm:text-5xl lg:text-6xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-space-grotesk)" }}>
               FEITO PARA FACILITAR A <span className="text-[var(--primary)] text-glow-cyan">SUA VIDA</span>
             </h2>
-            <p className="mt-4 text-xs font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
+            <p className="mt-4 text-sm font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
               Simplificamos o controle do seu dinheiro. Sem planilhas complexas, sem perda de tempo.
             </p>
           </div>
@@ -376,7 +376,7 @@ export default function HomePage() {
                 <h3 className="text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--primary)]">
                   {feature.title}
                 </h3>
-                <p className="mt-3 text-xs sm:text-sm font-sans leading-relaxed text-[var(--muted-foreground)]">
+                <p className="mt-3 text-sm font-sans leading-relaxed text-[var(--muted-foreground)]">
                   {feature.description}
                 </p>
                 <div className="absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl from-[var(--primary)]/20 to-transparent pointer-events-none" />
@@ -400,7 +400,7 @@ export default function HomePage() {
             <h2 className="text-3xl font-extrabold text-white sm:text-5xl lg:text-6xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-space-grotesk)" }}>
               SISTEMA EM <span className="text-[var(--primary)] text-glow-cyan">3 PASSOS</span>
             </h2>
-            <p className="mt-4 text-xs sm:text-sm font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
+            <p className="mt-4 text-sm font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
               Sincronize seus dados em menos de 1 minuto
             </p>
           </div>
@@ -424,7 +424,7 @@ export default function HomePage() {
                 <h3 className="text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--primary)] text-glow-cyan">
                   {step.title}
                 </h3>
-                <p className="mt-3 text-xs sm:text-sm font-sans leading-relaxed text-[var(--muted-foreground)]">
+                <p className="mt-3 text-sm font-sans leading-relaxed text-[var(--muted-foreground)]">
                   {step.description}
                 </p>
                 {index < steps.length - 1 && (
@@ -457,7 +457,7 @@ export default function HomePage() {
                 <Lock className="h-8 w-8" />
               </div>
               <h3 className="text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--success)] text-glow-green">Sua privacidade garantida</h3>
-              <p className="mt-3 text-xs sm:text-sm font-sans leading-relaxed text-[var(--muted-foreground)]">
+              <p className="mt-3 text-sm font-sans leading-relaxed text-[var(--muted-foreground)]">
                 Suas informações são blindadas. Nós não temos e nunca teremos acesso aos seus dados financeiros confidenciais.
               </p>
             </div>
@@ -467,7 +467,7 @@ export default function HomePage() {
                 <Zap className="h-8 w-8" />
               </div>
               <h3 className="text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--primary)] text-glow-cyan">Agilidade e Sem Fricção</h3>
-              <p className="mt-3 text-xs sm:text-sm font-sans leading-relaxed text-[var(--muted-foreground)]">
+              <p className="mt-3 text-sm font-sans leading-relaxed text-[var(--muted-foreground)]">
                 Anote transações em poucos segundos de qualquer lugar. Interface mobile leve e focada na rapidez.
               </p>
             </div>
@@ -477,7 +477,7 @@ export default function HomePage() {
                 <BarChart3 className="h-8 w-8" />
               </div>
               <h3 className="text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--warning)] text-glow-yellow">Relatórios Visuais</h3>
-              <p className="mt-3 text-xs sm:text-sm font-sans leading-relaxed text-[var(--muted-foreground)]">
+              <p className="mt-3 text-sm font-sans leading-relaxed text-[var(--muted-foreground)]">
                 Visualize na hora gráficos fáceis de ler que apontam gargalos de custos e mostram onde seu lucro está.
               </p>
             </div>
@@ -493,7 +493,7 @@ export default function HomePage() {
             <h2 className="text-3xl font-extrabold text-white sm:text-5xl lg:text-6xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-space-grotesk)" }}>
               PLANOS DE <span className="text-[var(--primary)] text-glow-cyan">ACESSO</span>
             </h2>
-            <p className="mt-4 text-xs sm:text-sm font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
+            <p className="mt-4 text-sm font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
               Comece sem gastar nada e aumente os recursos apenas quando o seu negócio pedir.
             </p>
           </div>
@@ -610,7 +610,7 @@ export default function HomePage() {
           <h2 className="text-3xl font-extrabold text-white sm:text-5xl lg:text-6xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-space-grotesk)" }}>
             PRONTO PARA INICIAR A <span className="text-[var(--primary)] text-glow-cyan">OPERAÇÃO?</span>
           </h2>
-          <p className="mt-6 text-xs sm:text-sm font-sans uppercase tracking-widest text-[var(--muted-foreground)] max-w-2xl mx-auto">
+          <p className="mt-6 text-sm font-sans uppercase tracking-widest text-[var(--muted-foreground)] max-w-2xl mx-auto">
             Crie sua conta em 30 segundos. Organize seu caixa e gaste o seu tempo no que realmente importa: crescer o seu negócio.
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
@@ -647,7 +647,7 @@ export default function HomePage() {
               <Link href="/" className="flex items-center">
                 <Logo size="md" />
               </Link>
-              <p className="mt-6 text-xs sm:text-sm font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
+              <p className="mt-6 text-sm font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
                 A ferramenta mais simples e inteligente para separar as contas pessoais e corporativas de empreendedores individuais.
               </p>
             </div>
