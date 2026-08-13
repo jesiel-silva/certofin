@@ -106,16 +106,13 @@ export default function DashboardPage() {
     return true;
   };
 
-  // Helper: check if a recurring template is paid for the current month
-  const isRecurringPaidForMonth = (t: Transaction): boolean => {
+  // Helper: check if a recurring template is paid for a specific month
+  const isRecurringPaidForMonth = (t: Transaction, targetMonth: string): boolean => {
     if (!t.is_recurring) return false;
-    const templateDateMonth = t.transaction_date?.substring(0, 7);
-    // Template moved to next month after being paid
-    // Check if last_paid_date covers the previous month (which is the current view month)
+    // Check if last_paid_date covers the target month
     if (t.last_paid_date) {
       const paidMonth = t.last_paid_date.substring(0, 7);
-      // The paid month should be the current month or later
-      if (paidMonth >= currentMonth) return true;
+      if (paidMonth >= targetMonth) return true;
     }
     return false;
   };
@@ -141,16 +138,16 @@ export default function DashboardPage() {
 
     // Recurring paid for current month (income + expense, separated by scope)
     const personalRecurringPaidIncome = allTransactions
-      .filter((t) => t.scope === "personal" && t.type === "income" && isRecurringPaidForMonth(t))
+      .filter((t) => t.scope === "personal" && t.type === "income" && isRecurringPaidForMonth(t, currentMonth))
       .reduce((sum, t) => sum + t.amount, 0);
     const personalRecurringPaidExpense = allTransactions
-      .filter((t) => t.scope === "personal" && t.type === "expense" && isRecurringPaidForMonth(t))
+      .filter((t) => t.scope === "personal" && t.type === "expense" && isRecurringPaidForMonth(t, currentMonth))
       .reduce((sum, t) => sum + t.amount, 0);
     const businessRecurringPaidIncome = allTransactions
-      .filter((t) => t.scope === "business" && t.type === "income" && isRecurringPaidForMonth(t))
+      .filter((t) => t.scope === "business" && t.type === "income" && isRecurringPaidForMonth(t, currentMonth))
       .reduce((sum, t) => sum + t.amount, 0);
     const businessRecurringPaidExpense = allTransactions
-      .filter((t) => t.scope === "business" && t.type === "expense" && isRecurringPaidForMonth(t))
+      .filter((t) => t.scope === "business" && t.type === "expense" && isRecurringPaidForMonth(t, currentMonth))
       .reduce((sum, t) => sum + t.amount, 0);
 
     // Pending: only regular pending in current month + recurring pending for current month
@@ -198,7 +195,7 @@ export default function DashboardPage() {
     const expenses = transactions.filter((t) => t.type === "expense" && t.status === "paid");
     // Add recurring expenses paid for the current month
     const recurringExpenses = allTransactions
-      .filter((t) => t.type === "expense" && isRecurringPaidForMonth(t));
+      .filter((t) => t.type === "expense" && isRecurringPaidForMonth(t, currentMonth));
     const allExpenses = [...expenses, ...recurringExpenses];
     const totalExpenses = allExpenses.reduce((sum, t) => sum + t.amount, 0);
     const categoryMap = new Map<string, { name: string; color: string; total: number }>();
@@ -238,6 +235,7 @@ export default function DashboardPage() {
     return Array.from(months.entries())
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([month, txns]) => {
+        // Regular paid transactions for this month
         const personalIncome = txns
           .filter((t) => t.scope === "personal" && t.type === "income" && t.status === "paid")
           .reduce((sum, t) => sum + t.amount, 0);
@@ -250,15 +248,30 @@ export default function DashboardPage() {
         const businessExpense = txns
           .filter((t) => t.scope === "business" && t.type === "expense" && t.status === "paid")
           .reduce((sum, t) => sum + t.amount, 0);
+
+        // Recurring paid for this month (consistent with dashboard summary)
+        const personalRecurringPaidIncome = allTransactions
+          .filter((t) => t.scope === "personal" && t.type === "income" && isRecurringPaidForMonth(t, month))
+          .reduce((sum, t) => sum + t.amount, 0);
+        const personalRecurringPaidExpense = allTransactions
+          .filter((t) => t.scope === "personal" && t.type === "expense" && isRecurringPaidForMonth(t, month))
+          .reduce((sum, t) => sum + t.amount, 0);
+        const businessRecurringPaidIncome = allTransactions
+          .filter((t) => t.scope === "business" && t.type === "income" && isRecurringPaidForMonth(t, month))
+          .reduce((sum, t) => sum + t.amount, 0);
+        const businessRecurringPaidExpense = allTransactions
+          .filter((t) => t.scope === "business" && t.type === "expense" && isRecurringPaidForMonth(t, month))
+          .reduce((sum, t) => sum + t.amount, 0);
+
         return {
           month,
-          total_income: personalIncome + businessIncome,
-          total_expense: personalExpense + businessExpense,
-          balance: personalIncome + businessIncome - personalExpense - businessExpense,
-          personal_income: personalIncome,
-          personal_expense: personalExpense,
-          business_income: businessIncome,
-          business_expense: businessExpense,
+          total_income: personalIncome + businessIncome + personalRecurringPaidIncome + businessRecurringPaidIncome,
+          total_expense: personalExpense + businessExpense + personalRecurringPaidExpense + businessRecurringPaidExpense,
+          balance: (personalIncome + personalRecurringPaidIncome) + (businessIncome + businessRecurringPaidIncome) - (personalExpense + personalRecurringPaidExpense) - (businessExpense + businessRecurringPaidExpense),
+          personal_income: personalIncome + personalRecurringPaidIncome,
+          personal_expense: personalExpense + personalRecurringPaidExpense,
+          business_income: businessIncome + businessRecurringPaidIncome,
+          business_expense: businessExpense + businessRecurringPaidExpense,
         };
       });
   };
