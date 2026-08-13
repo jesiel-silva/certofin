@@ -136,7 +136,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               "group relative flex items-center gap-3 rounded-none px-3 py-2.5 text-xs uppercase tracking-widest font-bold transition-all duration-300",
               isActive("/personal/notifications")
                 ? "bg-[var(--destructive)]/10 text-[var(--destructive)] border border-[var(--destructive)]/30"
-                : "text-[var(--destructive)]/70 hover:bg-[var(--destructive)]/10 hover:text-[var(--destructive)] border border-transparent hover:border-[var(--destructive)]/50 hover:shadow-[0_0_8px_var(--destructive)]"
+                : "text-[var(--destructive)]/70 transition-all hover:bg-[var(--destructive)]/10 hover:text-[var(--destructive)] border border-transparent hover:border-[var(--destructive)]/50 hover:shadow-[0_0_8px_var(--destructive)]"
             )}
           >
             {isActive("/personal/notifications") && (

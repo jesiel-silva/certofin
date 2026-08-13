@@ -121,6 +121,7 @@ export default function DashboardPage() {
   };
 
   const summary = useMemo(() => {
+    const { start, end } = getMonthRange(currentMonth);
     const personalTx = transactions.filter((t) => t.scope === "personal");
     const businessTx = transactions.filter((t) => t.scope === "business");
 
@@ -152,19 +153,27 @@ export default function DashboardPage() {
       .filter((t) => t.scope === "business" && t.type === "expense" && isRecurringPaidForMonth(t))
       .reduce((sum, t) => sum + t.amount, 0);
 
-    // Pending: normal pending + recurring pending for current month
+    // Pending: only regular pending in current month + recurring pending for current month
     const personalPendingIncome = allTransactions
-      .filter((t) => t.scope === "personal" && t.type === "income" && (t.status === "pending" || isRecurringPendingForMonth(t)))
+      .filter((t) => t.scope === "personal" && t.type === "income" && !t.is_recurring && t.status === "pending" && t.transaction_date >= start && t.transaction_date <= end)
+      .reduce((sum, t) => sum + t.amount, 0) + allTransactions
+      .filter((t) => t.scope === "personal" && t.type === "income" && isRecurringPendingForMonth(t))
       .reduce((sum, t) => sum + t.amount, 0);
     const personalPendingExpense = allTransactions
-      .filter((t) => t.scope === "personal" && t.type === "expense" && (t.status === "pending" || isRecurringPendingForMonth(t)))
+      .filter((t) => t.scope === "personal" && t.type === "expense" && !t.is_recurring && t.status === "pending" && t.transaction_date >= start && t.transaction_date <= end)
+      .reduce((sum, t) => sum + t.amount, 0) + allTransactions
+      .filter((t) => t.scope === "personal" && t.type === "expense" && isRecurringPendingForMonth(t))
       .reduce((sum, t) => sum + t.amount, 0);
 
     const businessPendingIncome = allTransactions
-      .filter((t) => t.scope === "business" && t.type === "income" && (t.status === "pending" || isRecurringPendingForMonth(t)))
+      .filter((t) => t.scope === "business" && t.type === "income" && !t.is_recurring && t.status === "pending" && t.transaction_date >= start && t.transaction_date <= end)
+      .reduce((sum, t) => sum + t.amount, 0) + allTransactions
+      .filter((t) => t.scope === "business" && t.type === "income" && isRecurringPendingForMonth(t))
       .reduce((sum, t) => sum + t.amount, 0);
     const businessPendingExpense = allTransactions
-      .filter((t) => t.scope === "business" && t.type === "expense" && (t.status === "pending" || isRecurringPendingForMonth(t)))
+      .filter((t) => t.scope === "business" && t.type === "expense" && !t.is_recurring && t.status === "pending" && t.transaction_date >= start && t.transaction_date <= end)
+      .reduce((sum, t) => sum + t.amount, 0) + allTransactions
+      .filter((t) => t.scope === "business" && t.type === "expense" && isRecurringPendingForMonth(t))
       .reduce((sum, t) => sum + t.amount, 0);
 
     return {
@@ -177,7 +186,7 @@ export default function DashboardPage() {
       businessPendingIncome,
       businessPendingExpense,
     };
-  }, [transactions, allTransactions]);
+  }, [transactions, allTransactions, currentMonth]);
 
   const getCategoryInfo = (categoryId: string | null) => {
     if (!categoryId) return { name: "Sem categoria", color: "#6b7280" };

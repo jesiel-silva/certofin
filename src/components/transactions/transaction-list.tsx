@@ -134,6 +134,16 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
             }
           }
 
+          // Apply status filter to virtual transactions
+          if (statusFilter !== "all" && virtualStatus !== statusFilter) {
+            continue;
+          }
+
+          // Apply type filter to virtual transactions
+          if (typeFilter !== "all" && template.type !== typeFilter) {
+            continue;
+          }
+
           virtualTransactions.push({
             ...template,
             id: `virtual_${template.id}_${year}_${month}`,
@@ -355,6 +365,16 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
           if (paidMonth >= currentMonth) {
             virtualStatus = "paid";
           }
+        }
+
+        // Apply status filter to virtual transactions
+        if (statusFilter !== "all" && virtualStatus !== statusFilter) {
+          continue;
+        }
+
+        // Apply type filter to virtual transactions
+        if (typeFilter !== "all" && template.type !== typeFilter) {
+          continue;
         }
 
         virtualTxs.push({
