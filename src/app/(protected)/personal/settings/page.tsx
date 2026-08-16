@@ -9,6 +9,9 @@ import { ArrowLeft, Camera, Loader2, Mail, Save, Shield, User } from "lucide-rea
 import Link from "next/link";
 import type { Profile } from "@/lib/types";
 
+import { CancellationSurveyModal } from "@/components/account/cancellation-survey-modal";
+import { AlertTriangle, Trash2 } from "lucide-react";
+
 export default function PersonalSettingsPage() {
   const supabase = createClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -31,6 +34,9 @@ export default function PersonalSettingsPage() {
   const [emailError, setEmailError] = useState("");
   const [passwordMsg, setPasswordMsg] = useState("");
   const [passwordError, setPasswordError] = useState("");
+
+  const [showSurveyModal, setShowSurveyModal] = useState(false);
+  const [surveyAction, setSurveyAction] = useState<"cancel_subscription" | "delete_account">("cancel_subscription");
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -430,15 +436,64 @@ export default function PersonalSettingsPage() {
                 })
               : "—"}
           </p>
-          <div>
+          <div className="flex flex-wrap gap-2 pt-2 border-t border-[var(--border)]">
             <Link href="/personal/planos">
               <Button size="sm" variant="outline" className="gap-2">
                 Gerenciar plano
               </Button>
             </Link>
+            {(isPro || trialActive) && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  setSurveyAction("cancel_subscription");
+                  setShowSurveyModal(true);
+                }}
+                className="gap-2 text-[var(--warning)] hover:bg-[var(--warning)]/10 border-[var(--warning)]/30"
+              >
+                Cancelar assinatura PRO
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
+
+      {/* ─── Zona de Perigo ─── */}
+      <Card className="border-[var(--destructive)]/40 bg-[var(--destructive)]/5">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-[var(--destructive)]">
+            <AlertTriangle className="h-4 w-4" />
+            Zona de Perigo
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-[var(--muted-foreground)]">
+            Ao excluir sua conta, todos os seus dados (lançamentos, categorias, histórico e configurações) serão permanentemente removidos.
+          </p>
+          <div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                setSurveyAction("delete_account");
+                setShowSurveyModal(true);
+              }}
+              className="gap-2 border-[var(--destructive)]/50 text-[var(--destructive)] hover:bg-[var(--destructive)]/20"
+            >
+              <Trash2 className="h-4 w-4" />
+              Excluir minha conta permanentemente
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <CancellationSurveyModal
+        isOpen={showSurveyModal}
+        onClose={() => setShowSurveyModal(false)}
+        actionType={surveyAction}
+        userEmail={email}
+      />
     </div>
   );
 }

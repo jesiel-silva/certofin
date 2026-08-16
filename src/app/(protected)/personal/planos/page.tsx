@@ -9,10 +9,13 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import type { Profile } from "@/lib/types";
 
+import { CancellationSurveyModal } from "@/components/account/cancellation-survey-modal";
+
 export default function PersonalPlanosPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [activatingTrial, setActivatingTrial] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
@@ -207,6 +210,19 @@ export default function PersonalPlanosPage() {
               </p>
             </div>
           )}
+
+          {(isPro || trialActive) && (
+            <div className="mt-6 pt-4 border-t border-[var(--border)] text-center">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowCancelModal(true)}
+                className="text-[var(--warning)] border-[var(--warning)]/30 hover:bg-[var(--warning)]/10"
+              >
+                Cancelar assinatura / plano atual
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -245,6 +261,12 @@ export default function PersonalPlanosPage() {
           </div>
         </CardContent>
       </Card>
+
+      <CancellationSurveyModal
+        isOpen={showCancelModal}
+        onClose={() => setShowCancelModal(false)}
+        actionType="cancel_subscription"
+      />
     </div>
   );
 }
