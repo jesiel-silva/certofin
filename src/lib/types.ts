@@ -9,6 +9,8 @@ export interface Profile {
   email: string;
   avatar_url: string | null;
   subscription_status: "free" | "pro";
+  trial_ends_at: string | null;
+  trial_used_at: string | null;
   created_at: string;
   updated_at: string;
 }

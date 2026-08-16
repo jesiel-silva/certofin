@@ -13,7 +13,6 @@ import {
   Briefcase,
   Crown,
   Settings,
-  ChevronDown,
   User,
   Bell,
 } from "lucide-react";
@@ -86,7 +85,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       <div className="px-5 py-5 border-b border-[var(--primary)]/30">
         <Link href="/personal/dashboard" className="flex items-center group" onClick={onClose}>
           <div className="group-hover:drop-shadow-[0_0_12px_var(--primary)] transition-all">
-            <Logo size="sm" showSubtitle={false} />
+            <Logo size="sm" showSubtitle={false} textClassName="text-2xl" />
           </div>
         </Link>
       </div>
@@ -115,7 +114,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             <LayoutDashboard className={cn("h-4 w-4", isActive("/personal/dashboard") ? "text-[var(--primary)] drop-shadow-[0_0_5px_var(--primary)]" : "")} />
             DASHBOARD
             <span className={cn(
-              "ml-auto rounded-full px-2 py-0.5 text-[8px] font-mono font-bold",
+              "ml-auto rounded-full px-2 py-0.5 text-[9px] font-mono font-bold",
               userPlan === "pro"
                 ? "bg-[var(--warning)]/20 text-[var(--warning)] border border-[var(--warning)]/40 text-glow-yellow"
                 : isTrial
@@ -148,6 +147,30 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             )}
             <Bell className="h-4 w-4" />
             NOTIFICAÇÕES
+          </Link>
+        </div>
+
+        {/* ═══════ AJUSTES ═══════ */}
+        <div className="mb-4">
+          <Link
+            href="/personal/settings"
+            onClick={onClose}
+            className={cn(
+              "group relative flex items-center gap-3 rounded-none px-3 py-2.5 text-xs uppercase tracking-widest font-bold transition-all duration-300",
+              isActive("/personal/settings")
+                ? "bg-[var(--primary)]/10 text-[var(--primary)] dark:text-glow-cyan border border-[var(--primary)]/30"
+                : "text-[var(--muted-foreground)] hover:bg-[var(--primary)]/5 hover:text-[var(--foreground)] border border-transparent hover:border-[var(--border)]"
+            )}
+          >
+            {isActive("/personal/settings") && (
+              <>
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--primary)] glow-cyan" />
+                <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-[var(--primary)]" />
+                <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-[var(--primary)]" />
+              </>
+            )}
+            <Settings className="h-4 w-4" />
+            AJUSTES
           </Link>
         </div>
 
@@ -250,7 +273,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               </div>
               <div className="flex-1">
                 <p className="font-bold text-[var(--warning)]">ATIVAR NEGÓCIO</p>
-                <p className="text-[9px] text-[var(--warning)]/70 tracking-widest">Requer Plano Pro</p>
+                <p className="text-[10px] text-[var(--warning)]/70 tracking-widest">Requer Plano Pro</p>
               </div>
             </Link>
           )}
@@ -260,17 +283,25 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       {/* ═══════ BOTTOM ═══════ */}
       <div className="border-t border-[var(--primary)]/30 p-3 bg-[#0B1221]/50 backdrop-blur-sm">
         <div className="flex items-center gap-3 px-2 py-2 hud-border border-[var(--primary)]/20">
-          <div className="avatar-ring flex h-8 w-8 items-center justify-center bg-[var(--primary)]/10 border border-[var(--primary)]/50 text-[10px] font-mono font-bold text-[var(--primary)] shadow-[0_0_10px_var(--primary)]">
-            {initials}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="truncate text-xs font-mono font-bold uppercase tracking-wider text-[var(--foreground)]">
-              {userName || "USUÁRIO"}
-            </p>
-            <p className="truncate text-[10px] font-mono text-[var(--muted-foreground)]">
-              {userEmail}
-            </p>
-          </div>
+          <Link
+            href="/personal/settings"
+            onClick={onClose}
+            className="group flex min-w-0 flex-1 items-center gap-3"
+            title="Perfil e Ajustes"
+          >
+            <div className="avatar-ring flex h-8 w-8 items-center justify-center bg-[var(--primary)]/10 border border-[var(--primary)]/50 text-xs font-mono font-bold text-[var(--primary)] shadow-[0_0_10px_var(--primary)]">
+              {initials}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-mono font-bold uppercase tracking-wider text-[var(--foreground)]">
+                {userName || "USUÁRIO"}
+              </p>
+              <p className="truncate text-xs font-mono text-[var(--muted-foreground)]">
+                {userEmail}
+              </p>
+            </div>
+            <User className="h-3.5 w-3.5 shrink-0 text-[var(--primary)]/60 transition-all group-hover:text-[var(--primary)] group-hover:drop-shadow-[0_0_5px_var(--primary)]" />
+          </Link>
           <button
             onClick={handleLogout}
             className="p-1.5 text-[var(--destructive)]/70 transition-all hover:bg-[var(--destructive)]/10 hover:text-[var(--destructive)] border border-transparent hover:border-[var(--destructive)]/50 hover:shadow-[0_0_8px_var(--destructive)]"

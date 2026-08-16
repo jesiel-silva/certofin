@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
@@ -33,6 +33,8 @@ import autoTable from "jspdf-autotable";
 import { usePlanLimits } from "@/lib/hooks/use-plan-limits";
 import { UpgradeModal } from "@/components/ui/upgrade-modal";
 
+import { useSearchParams } from "next/navigation";
+
 const ITEMS_PER_PAGE = 15;
 
 interface TransactionListProps {
@@ -41,6 +43,9 @@ interface TransactionListProps {
 
 export function TransactionList({ scope: fixedScope }: TransactionListProps) {
   const supabase = createClient();
+  const searchParams = useSearchParams();
+  const highlightId = searchParams.get("highlight");
+
   const { canUseInstallment } = usePlanLimits();
 
   const [transactions, setTransactions] = useState<TransactionWithCategory[]>([]);
@@ -58,12 +63,9 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
   const [allTransactions, setAllTransactions] = useState<TransactionWithCategory[]>([]);
   const [exportingPdf, setExportingPdf] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [highlightedId, setHighlightedId] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchTransactions();
-  }, [fixedScope, typeFilter, statusFilter, monthFilter, page, searchTerm]);
-
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     setLoading(true);
     setError("");
     const [year, month] = monthFilter.split("-");
@@ -112,7 +114,6 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
     if (recurringTemplates) {
       for (const template of recurringTemplates) {
         const dueDay = template.due_day || 1;
-        const targetDay = Math.min(dueDay, lastDay);
         const currentMonth = `${year}-${month}`;
         
         // Check if the due_day falls within the selected month's date range
@@ -172,15 +173,79 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
       return b.created_at.localeCompare(a.created_at);
     });
 
+    let activePage = page;
+    if (highlightId) {
+      const targetIndex = allTransactions.findIndex(
+        (t) => t.id === highlightId || t.template_id === highlightId || t.id.includes(highlightId)
+      );
+      if (targetIndex !== -1) {
+        const calculatedPage = Math.floor(targetIndex / ITEMS_PER_PAGE) + 1;
+        if (page !== calculatedPage) {
+          activePage = calculatedPage;
+          setPage(calculatedPage);
+        }
+        setHighlightedId(highlightId);
+      }
+    }
+
     // Apply pagination
-    const from = (page - 1) * ITEMS_PER_PAGE;
+    const from = (activePage - 1) * ITEMS_PER_PAGE;
     const to = from + ITEMS_PER_PAGE;
     const paginatedTransactions = allTransactions.slice(from, to);
 
     setTransactions(paginatedTransactions);
     setTotal((count || 0) + virtualTransactions.length);
     setLoading(false);
-  };
+  }, [supabase, fixedScope, typeFilter, statusFilter, monthFilter, page, searchTerm, highlightId]);
+
+  useEffect(() => {
+    if (!highlightId) return;
+
+    async function syncMonthForHighlight() {
+      const { data } = await supabase
+        .from("transactions")
+        .select("transaction_date")
+        .eq("id", highlightId)
+        .single();
+
+      if (data?.transaction_date) {
+        const targetMonth = data.transaction_date.substring(0, 7);
+        if (targetMonth && targetMonth !== monthFilter) {
+          setMonthFilter(targetMonth);
+        }
+      }
+    }
+
+    syncMonthForHighlight();
+  }, [highlightId, supabase, monthFilter]);
+
+  useEffect(() => {
+    if (!highlightedId || loading) return;
+
+    const scrollTimer = setTimeout(() => {
+      const el =
+        document.getElementById(`transaction-${highlightedId}`) ||
+        document.querySelector(`[data-transaction-id*="${highlightedId}"]`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 250);
+
+    const clearTimer = setTimeout(() => {
+      setHighlightedId(null);
+    }, 4500);
+
+    return () => {
+      clearTimeout(scrollTimer);
+      clearTimeout(clearTimer);
+    };
+  }, [highlightedId, loading]);
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      fetchTransactions();
+    });
+  }, [fetchTransactions]);
 
   const toggleStatus = async (id: string, currentStatus: string) => {
     // Handle virtual recurring transactions
@@ -207,12 +272,14 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
         const nextMonth = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, "0")}`;
         const lastDayOfNextMonth = new Date(nextDate.getFullYear(), nextDate.getMonth() + 1, 0).getDate();
         const targetDay = Math.min(dueDay, lastDayOfNextMonth);
+        const lastDayOfCurrentMonth = new Date(year, month, 0).getDate();
+        const currentTargetDay = Math.min(dueDay, lastDayOfCurrentMonth);
 
         // Update template: mark as paid, keep transaction_date in current month
         await supabase
           .from("transactions")
           .update({
-            last_paid_date: `${currentMonth}-28`,
+            last_paid_date: `${currentMonth}-${String(currentTargetDay).padStart(2, "0")}`,
             status: "paid",
           })
           .eq("id", templateId);
@@ -272,6 +339,108 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
     }
     
     const newStatus = currentStatus === "paid" ? "pending" : "paid";
+
+    // Fetch the transaction to check if it's an auto-generated recurring occurrence
+    const { data: tx } = await supabase
+      .from("transactions")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (tx) {
+      const autoMatch = tx.notes?.match(/\[auto_recurring:([^\]]+)\]/);
+      const templateId = autoMatch ? autoMatch[1] : null;
+
+      if (templateId) {
+        const currentMonth = tx.transaction_date?.substring(0, 7);
+        if (currentMonth) {
+          const [year, month] = currentMonth.split("-").map(Number);
+          const { data: template } = await supabase
+            .from("transactions")
+            .select("*")
+            .eq("id", templateId)
+            .single();
+
+          if (template) {
+            if (newStatus === "paid") {
+              // Update template: mark as paid for the current month (respecting due_day)
+              const dueDay = template.due_day || 1;
+              const lastDayOfCurrentMonth = new Date(year, month, 0).getDate();
+              const targetDay = Math.min(dueDay, lastDayOfCurrentMonth);
+
+              await supabase
+                .from("transactions")
+                .update({
+                  last_paid_date: `${currentMonth}-${String(targetDay).padStart(2, "0")}`,
+                  status: "paid",
+                })
+                .eq("id", templateId);
+
+              // Create next month's occurrence so the recurrence continues
+              if (template.recurring_active) {
+                const nextDate = new Date(year, month, 1);
+                const nextMonth = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, "0")}`;
+                const lastDayOfNextMonth = new Date(nextDate.getFullYear(), nextDate.getMonth() + 1, 0).getDate();
+                const nextTargetDay = Math.min(dueDay, lastDayOfNextMonth);
+
+                // Avoid duplicate occurrences
+                const { data: existingNext } = await supabase
+                  .from("transactions")
+                  .select("id")
+                  .eq("is_recurring", false)
+                  .ilike("notes", `%[auto_recurring:${templateId}]%`)
+                  .gte("transaction_date", `${nextMonth}-01`)
+                  .lte("transaction_date", `${nextMonth}-${String(lastDayOfNextMonth).padStart(2, "0")}`);
+
+                if (!existingNext || existingNext.length === 0) {
+                  await supabase.from("transactions").insert({
+                    user_id: template.user_id,
+                    description: template.description,
+                    amount: template.amount,
+                    type: template.type,
+                    scope: template.scope,
+                    frequency: "one_time",
+                    category_id: template.category_id,
+                    transaction_date: `${nextMonth}-${String(nextTargetDay).padStart(2, "0")}`,
+                    status: "pending",
+                    notes: `[auto_recurring:${templateId}]${template.notes ? " " + template.notes : ""}`,
+                    installment_current: null,
+                    installment_total: null,
+                    parent_transaction_id: null,
+                    due_date: null,
+                    due_day: null,
+                    is_recurring: false,
+                    recurring_active: false,
+                  });
+                }
+              }
+            } else if (template.last_paid_date && template.last_paid_date.substring(0, 7) === currentMonth) {
+              // Unmark: delete next month's auto-created occurrence and clear template payment
+              const nextDate = new Date(year, month, 1);
+              const nextMonth = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, "0")}`;
+              const lastDayOfNextMonth = new Date(nextDate.getFullYear(), nextDate.getMonth() + 1, 0).getDate();
+
+              await supabase
+                .from("transactions")
+                .delete()
+                .eq("is_recurring", false)
+                .ilike("notes", `%[auto_recurring:${templateId}]%`)
+                .gte("transaction_date", `${nextMonth}-01`)
+                .lte("transaction_date", `${nextMonth}-${String(lastDayOfNextMonth).padStart(2, "0")}`);
+
+              await supabase
+                .from("transactions")
+                .update({
+                  last_paid_date: null,
+                  status: "pending",
+                })
+                .eq("id", templateId);
+            }
+          }
+        }
+      }
+    }
+
     await supabase
       .from("transactions")
       .update({ status: newStatus })
@@ -787,10 +956,10 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--accent)]">
               <Receipt className="h-8 w-8 text-[var(--muted-foreground)]" />
             </div>
-            <p className="text-lg font-medium text-[var(--foreground)]">
+            <p className="text-xl font-medium text-[var(--foreground)]">
               Nenhum lançamento este mês
             </p>
-            <p className="mt-1 text-sm text-[var(--muted-foreground)] mb-4">
+            <p className="mt-1 text-base text-[var(--muted-foreground)] mb-4">
               Comece adicionando sua primeira receita ou despesa
             </p>
             <div className="flex justify-center gap-3">
@@ -811,11 +980,24 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
         ) : (
           <>
             <div className="space-y-2">
-              {transactions.map((t) => (
-                <div
-                  key={t.id}
-                  className="flex items-center gap-3 rounded-lg border border-[var(--border)] p-3 transition-colors hover:bg-[var(--accent)]/50"
-                >
+              {transactions.map((t) => {
+                const isHighlighted =
+                  highlightedId &&
+                  (t.id === highlightedId ||
+                    t.template_id === highlightedId ||
+                    t.id.includes(highlightedId));
+
+                return (
+                  <div
+                    key={t.id}
+                    id={`transaction-${t.id}`}
+                    data-transaction-id={t.id}
+                    className={cn(
+                      "flex items-center gap-3 rounded-lg border border-[var(--border)] p-3 transition-all duration-500 hover:bg-[var(--accent)]/50",
+                      isHighlighted &&
+                        "ring-2 ring-[var(--primary)] border-[var(--primary)] shadow-[0_0_20px_rgba(59,130,246,0.5)] bg-[var(--primary)]/10 scale-[1.01]"
+                    )}
+                  >
                   <div
                     className={cn(
                       "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
@@ -832,12 +1014,12 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="truncate text-sm font-medium">
+                      <p className="truncate text-base font-medium">
                         {t.description || "Sem descrição"}
                       </p>
                       <span
                         className={cn(
-                          "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
+                          "inline-flex items-center rounded-full px-2 py-0.5 text-sm font-medium",
                           t.scope === "business"
                             ? "bg-[var(--business)]/10 text-[var(--business)]"
                             : "bg-[var(--personal)]/10 text-[var(--personal)]"
@@ -846,12 +1028,12 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
                         {t.scope === "business" ? "Negócio" : "Pessoal"}
                       </span>
                       {t.is_recurring && (
-                        <span className="inline-flex items-center rounded-full bg-[var(--primary)]/10 px-2 py-0.5 text-xs font-medium text-[var(--primary)]">
+                        <span className="inline-flex items-center rounded-full bg-[var(--primary)]/10 px-2 py-0.5 text-sm font-medium text-[var(--primary)]">
                           Recorrente
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-[var(--muted-foreground)]">
+                    <p className="text-sm text-[var(--muted-foreground)]">
                       {formatDate(t.transaction_date)}
                       {t.categories?.name && ` • ${t.categories.name}`}
                       {t.is_recurring && t.due_day && ` • Dia ${t.due_day}`}
@@ -860,7 +1042,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
                   <div className="text-right">
                     <p
                       className={cn(
-                        "text-sm font-semibold",
+                        "text-base font-semibold",
                         t.type === "income"
                           ? "text-[var(--income)]"
                           : "text-[var(--expense)]"
@@ -875,7 +1057,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
                           <button
                             onClick={() => toggleStatus(t.id, t.status)}
                             className={cn(
-                              "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium transition-colors",
+                              "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-sm font-medium transition-colors",
                               t.status === "paid"
                                 ? "bg-[var(--success)]/10 text-[var(--success)] hover:bg-[var(--success)]/20"
                                 : "bg-[var(--warning)]/10 text-[var(--warning)] hover:bg-[var(--warning)]/20"
@@ -895,7 +1077,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
                           </button>
                           <button
                             onClick={() => pauseRecurring(t.id)}
-                            className="inline-flex items-center gap-1 rounded-full bg-[var(--muted-foreground)]/10 px-2 py-0.5 text-xs font-medium text-[var(--muted-foreground)] hover:bg-[var(--muted-foreground)]/20 transition-colors"
+                            className="inline-flex items-center gap-1 rounded-full bg-[var(--muted-foreground)]/10 px-2 py-0.5 text-sm font-medium text-[var(--muted-foreground)] hover:bg-[var(--muted-foreground)]/20 transition-colors"
                             title="Pausar recorrência"
                           >
                             <Pause className="h-3 w-3" />
@@ -904,7 +1086,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
                       ) : t.is_recurring && !t.recurring_active ? (
                         <button
                           onClick={() => pauseRecurring(t.id)}
-                          className="inline-flex items-center gap-1 rounded-full bg-[var(--primary)]/10 px-2 py-0.5 text-xs font-medium text-[var(--primary)] hover:bg-[var(--primary)]/20 transition-colors"
+                          className="inline-flex items-center gap-1 rounded-full bg-[var(--primary)]/10 px-2 py-0.5 text-sm font-medium text-[var(--primary)] hover:bg-[var(--primary)]/20 transition-colors"
                         >
                           <Play className="h-3 w-3" />
                           Ativar
@@ -913,7 +1095,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
                         <button
                           onClick={() => toggleStatus(t.id, t.status)}
                           className={cn(
-                            "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium transition-colors",
+                            "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-sm font-medium transition-colors",
                             t.status === "paid"
                               ? "bg-[var(--success)]/10 text-[var(--success)] hover:bg-[var(--success)]/20"
                               : "bg-[var(--warning)]/10 text-[var(--warning)] hover:bg-[var(--warning)]/20"
@@ -947,12 +1129,13 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
                     </div>
                   </div>
                 </div>
-              ))}
+              );
+            })}
             </div>
 
             {totalPages > 1 && (
               <div className="mt-4 flex items-center justify-between">
-                <p className="text-sm text-[var(--muted-foreground)]">
+                <p className="text-base text-[var(--muted-foreground)]">
                   {total} lançamentos • Página {page} de {totalPages}
                 </p>
                 <div className="flex gap-1">

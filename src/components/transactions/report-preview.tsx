@@ -141,10 +141,10 @@ export function ReportPreview({
                 <BarChart3 className="h-6 w-6 text-[var(--primary)]" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-[var(--foreground)] tracking-tight">
+                <h1 className="text-2xl font-bold text-[var(--foreground)] tracking-tight">
                   CERTOFIN
                 </h1>
-                <p className="text-xs font-medium text-[var(--muted-foreground)] uppercase tracking-widest">
+                <p className="text-sm font-medium text-[var(--muted-foreground)] uppercase tracking-widest">
                   Relatório Financeiro • {scope === "business" ? "Negócio" : "Pessoal"}
                 </p>
               </div>
@@ -177,7 +177,7 @@ export function ReportPreview({
               </button>
             </div>
           </div>
-          <div className="mt-4 flex items-center gap-6 text-xs text-[var(--muted-foreground)]">
+          <div className="mt-4 flex items-center gap-6 text-base text-[var(--muted-foreground)]">
             <span>Período: <strong className="text-[var(--foreground)]">{monthLabel}</strong></span>
             <span>Gerado em: <strong className="text-[var(--foreground)]">{generatedAt}</strong></span>
             <span>ID: <strong className="text-[var(--foreground)]">{crypto.randomUUID().slice(0, 8).toUpperCase()}</strong></span>
@@ -188,7 +188,7 @@ export function ReportPreview({
         <div className="overflow-y-auto p-8" style={{ maxHeight: "calc(90vh - 180px)" }}>
           {transactions.length === 0 ? (
             <div className="py-16 text-center text-[var(--muted-foreground)]">
-              <p className="text-lg">Nenhum lançamento encontrado para este período.</p>
+              <p className="text-xl">Nenhum lançamento encontrado para este período.</p>
             </div>
           ) : (
             <>
@@ -196,16 +196,16 @@ export function ReportPreview({
               <div className="mb-8 flex items-center justify-between border-b border-[var(--border)] pb-6">
                 <Logo size="sm" showSubtitle />
                 <div className="text-right">
-                  <p className="text-sm font-semibold text-[var(--foreground)]">{userName}</p>
-                  <p className="text-xs text-[var(--muted-foreground)]">Relatório {scope === "business" ? "Negócio" : "Pessoal"}</p>
-                  <p className="text-xs text-[var(--muted-foreground)]">{monthLabel}</p>
+                  <p className="text-base font-semibold text-[var(--foreground)]">{userName}</p>
+                  <p className="text-base text-[var(--muted-foreground)]">Relatório {scope === "business" ? "Negócio" : "Pessoal"}</p>
+                  <p className="text-base text-[var(--muted-foreground)]">{monthLabel}</p>
                 </div>
               </div>
 
               {/* 1. VISÃO GERAL DO MÊS */}
               <section className="mb-8">
-                <h2 className="mb-4 flex items-center gap-2 text-sm font-bold text-[var(--foreground)] uppercase tracking-wider border-b border-[var(--border)] pb-2">
-                  <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--primary)]/10 text-[10px] font-bold text-[var(--primary)]">1</span>
+                <h2 className="mb-4 flex items-center gap-2 text-base font-bold text-[var(--foreground)] uppercase tracking-wider border-b border-[var(--border)] pb-2">
+                  <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--primary)]/10 text-xs font-bold text-[var(--primary)]">1</span>
                   Visão Geral do Mês
                 </h2>
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
@@ -232,8 +232,8 @@ export function ReportPreview({
 
               {/* 2. INDICADORES CHAVE */}
               <section className="mb-8">
-                <h2 className="mb-4 flex items-center gap-2 text-sm font-bold text-[var(--foreground)] uppercase tracking-wider border-b border-[var(--border)] pb-2">
-                  <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--primary)]/10 text-[10px] font-bold text-[var(--primary)]">2</span>
+                <h2 className="mb-4 flex items-center gap-2 text-base font-bold text-[var(--foreground)] uppercase tracking-wider border-b border-[var(--border)] pb-2">
+                  <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--primary)]/10 text-xs font-bold text-[var(--primary)]">2</span>
                   INDICADORES IMPORTANTES
                   {isFree && <Lock className="h-3 w-3 text-[var(--warning)] ml-1" />}
                 </h2>
@@ -289,7 +289,7 @@ export function ReportPreview({
                     <p className="text-sm font-medium text-[var(--foreground)]">Indicadores detalhados são do plano Pro</p>
                     <Link
                       href="/personal/planos"
-                      className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-[var(--primary)] hover:underline"
+                      className="mt-2 inline-flex items-center gap-1 text-sm font-bold text-[var(--primary)] hover:underline"
                     >
                       Desbloquear com Trial Grátis
                     </Link>
@@ -307,8 +307,8 @@ export function ReportPreview({
               {/* 3. CATEGORIAS COM MAIS GASTOS */}
               {topCategories.length > 0 && (
                 <section className="mb-8">
-                  <h2 className="mb-4 flex items-center gap-2 text-sm font-bold text-[var(--foreground)] uppercase tracking-wider border-b border-[var(--border)] pb-2">
-                    <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--primary)]/10 text-[10px] font-bold text-[var(--primary)]">3</span>
+                  <h2 className="mb-4 flex items-center gap-2 text-base font-bold text-[var(--foreground)] uppercase tracking-wider border-b border-[var(--border)] pb-2">
+                    <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--primary)]/10 text-xs font-bold text-[var(--primary)]">3</span>
                     Categorias com Mais Gastos
                   </h2>
                   <div className="space-y-3">
@@ -323,13 +323,13 @@ export function ReportPreview({
                               </span>
                               <div className="flex items-center gap-2">
                                 <div className="h-3 w-3 rounded-full" style={{ backgroundColor: cat.color }} />
-                                <span className="text-sm font-medium text-[var(--foreground)]">
+                                <span className="text-base font-medium text-[var(--foreground)]">
                                   {cat.name}{cat.count > 1 ? ` - ${cat.count} ocorrências` : ""}
                                 </span>
                               </div>
                             </div>
                             <div className="text-right">
-                              <span className="text-sm font-semibold text-[var(--foreground)]">{formatCurrency(cat.total)}</span>
+                              <span className="text-base font-semibold text-[var(--foreground)]">{formatCurrency(cat.total)}</span>
                             </div>
                           </div>
                           <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--accent)]">
@@ -338,7 +338,7 @@ export function ReportPreview({
                               style={{ width: `${percentage}%`, backgroundColor: cat.color }}
                             />
                           </div>
-                          <p className="mt-1 text-xs text-[var(--muted-foreground)]">
+                          <p className="mt-1 text-base text-[var(--muted-foreground)]">
                             {percentage.toFixed(1)}% do total de despesas
                           </p>
                         </div>
@@ -350,8 +350,8 @@ export function ReportPreview({
 
               {/* 4. STATUS DOS LANÇAMENTOS */}
               <section className="mb-8">
-                <h2 className="mb-4 flex items-center gap-2 text-sm font-bold text-[var(--foreground)] uppercase tracking-wider border-b border-[var(--border)] pb-2">
-                  <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--primary)]/10 text-[10px] font-bold text-[var(--primary)]">4</span>
+                <h2 className="mb-4 flex items-center gap-2 text-base font-bold text-[var(--foreground)] uppercase tracking-wider border-b border-[var(--border)] pb-2">
+                  <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--primary)]/10 text-xs font-bold text-[var(--primary)]">4</span>
                   Status dos Lançamentos
                 </h2>
                 <div className="grid grid-cols-2 gap-4">
@@ -361,20 +361,20 @@ export function ReportPreview({
                     </h3>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
+                        <span className="flex items-center gap-2 text-base text-[var(--muted-foreground)]">
                           <CheckCircle2 className="h-4 w-4 text-[var(--success)]" />
                           Recebido
                         </span>
-                        <span className="text-sm font-semibold text-[var(--success)]">
+                        <span className="text-base font-semibold text-[var(--success)]">
                           {formatCurrency(paidIncome.reduce((s, t) => s + t.amount, 0))}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
+                        <span className="flex items-center gap-2 text-base text-[var(--muted-foreground)]">
                           <Clock className="h-4 w-4 text-[var(--warning)]" />
                           A receber
                         </span>
-                        <span className="text-sm font-semibold text-[var(--warning)]">
+                        <span className="text-base font-semibold text-[var(--warning)]">
                           {formatCurrency(totalPendingIncome)}
                         </span>
                       </div>
@@ -386,20 +386,20 @@ export function ReportPreview({
                     </h3>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
+                        <span className="flex items-center gap-2 text-base text-[var(--muted-foreground)]">
                           <CheckCircle2 className="h-4 w-4 text-[var(--success)]" />
                           Pago
                         </span>
-                        <span className="text-sm font-semibold text-[var(--success)]">
+                        <span className="text-base font-semibold text-[var(--success)]">
                           {formatCurrency(paidExpense.reduce((s, t) => s + t.amount, 0))}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
+                        <span className="flex items-center gap-2 text-base text-[var(--muted-foreground)]">
                           <AlertTriangle className="h-4 w-4 text-[var(--destructive)]" />
                           A pagar
                         </span>
-                        <span className="text-sm font-semibold text-[var(--destructive)]">
+                        <span className="text-base font-semibold text-[var(--destructive)]">
                           {formatCurrency(totalPendingExpense)}
                         </span>
                       </div>
@@ -411,8 +411,8 @@ export function ReportPreview({
               {/* 5. DETALHAMENTO - RECEITAS */}
               {incomeByDate.length > 0 && (
                 <section className="mb-8">
-                  <h2 className="mb-4 flex items-center gap-2 text-sm font-bold text-[var(--foreground)] uppercase tracking-wider border-b border-[var(--border)] pb-2">
-                    <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--success)]/10 text-[10px] font-bold text-[var(--success)]">5</span>
+                  <h2 className="mb-4 flex items-center gap-2 text-base font-bold text-[var(--foreground)] uppercase tracking-wider border-b border-[var(--border)] pb-2">
+                    <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--success)]/10 text-xs font-bold text-[var(--success)]">5</span>
                     Detalhamento — Receitas
                   </h2>
                   <div className="rounded-xl border border-[var(--border)] overflow-hidden">
@@ -430,13 +430,13 @@ export function ReportPreview({
                         {incomeByDate.map(([date, txs]) =>
                           txs.map((t) => (
                             <tr key={t.id} className="border-b border-[var(--border)] last:border-b-0 hover:bg-[var(--accent)]/30">
-                              <td className="px-4 py-3 text-xs text-[var(--muted-foreground)]">
+                              <td className="px-4 py-3 text-base text-[var(--muted-foreground)]">
                                 {formatDate(date)}
                               </td>
                               <td className="px-4 py-3 font-medium text-[var(--foreground)]">{t.description || "Sem descrição"}{t.is_recurring ? " (Recorrente)" : ""}</td>
                               <td className="px-4 py-3 text-[var(--muted-foreground)]">{t.categories?.name || "—"}</td>
                               <td className="px-4 py-3 text-center">
-                                <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${t.status === "paid" ? "bg-[var(--success)]/10 text-[var(--success)]" : "bg-[var(--warning)]/10 text-[var(--warning)]"}`}>
+                                <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-sm font-medium ${t.status === "paid" ? "bg-[var(--success)]/10 text-[var(--success)]" : "bg-[var(--warning)]/10 text-[var(--warning)]"}`}>
                                   {t.status === "paid" ? "Pago" : "Pendente"}
                                 </span>
                               </td>
@@ -461,8 +461,8 @@ export function ReportPreview({
               {/* 6. DETALHAMENTO - DESPESAS */}
               {expenseByDate.length > 0 && (
                 <section className="mb-8">
-                  <h2 className="mb-4 flex items-center gap-2 text-sm font-bold text-[var(--foreground)] uppercase tracking-wider border-b border-[var(--border)] pb-2">
-                    <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--destructive)]/10 text-[10px] font-bold text-[var(--destructive)]">6</span>
+                  <h2 className="mb-4 flex items-center gap-2 text-base font-bold text-[var(--foreground)] uppercase tracking-wider border-b border-[var(--border)] pb-2">
+                    <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--destructive)]/10 text-xs font-bold text-[var(--destructive)]">6</span>
                     Detalhamento — Despesas
                   </h2>
                   <div className="rounded-xl border border-[var(--border)] overflow-hidden">
@@ -480,13 +480,13 @@ export function ReportPreview({
                         {expenseByDate.map(([date, txs]) =>
                           txs.map((t) => (
                             <tr key={t.id} className="border-b border-[var(--border)] last:border-b-0 hover:bg-[var(--accent)]/30">
-                              <td className="px-4 py-3 text-xs text-[var(--muted-foreground)]">
+                              <td className="px-4 py-3 text-base text-[var(--muted-foreground)]">
                                 {formatDate(date)}
                               </td>
                               <td className="px-4 py-3 font-medium text-[var(--foreground)]">{t.description || "Sem descrição"}{t.is_recurring ? " (Recorrente)" : ""}</td>
                               <td className="px-4 py-3 text-[var(--muted-foreground)]">{t.categories?.name || "—"}</td>
                               <td className="px-4 py-3 text-center">
-                                <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${t.status === "paid" ? "bg-[var(--success)]/10 text-[var(--success)]" : "bg-[var(--warning)]/10 text-[var(--warning)]"}`}>
+                                <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-sm font-medium ${t.status === "paid" ? "bg-[var(--success)]/10 text-[var(--success)]" : "bg-[var(--warning)]/10 text-[var(--warning)]"}`}>
                                   {t.status === "paid" ? "Pago" : "Pendente"}
                                 </span>
                               </td>
@@ -515,8 +515,8 @@ export function ReportPreview({
                   <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--primary)]/10">
                     <Crown className="h-7 w-7 text-[var(--primary)]" />
                   </div>
-                  <h3 className="text-lg font-bold text-[var(--foreground)]">Desbloqueie o relatório completo</h3>
-                  <p className="mt-2 text-sm text-[var(--muted-foreground)] max-w-md mx-auto">
+                  <h3 className="text-xl font-bold text-[var(--foreground)]">Desbloqueie o relatório completo</h3>
+                  <p className="mt-2 text-base text-[var(--muted-foreground)] max-w-md mx-auto">
                     Com o plano Pro você acesso a indicadores detalhados, categorias, status dos lançamentos e exportação em PDF.
                   </p>
                   <div className="mt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -529,7 +529,7 @@ export function ReportPreview({
                     </Link>
                     <button
                       onClick={onClose}
-                      className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+                      className="text-base text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
                     >
                       Depois
                     </button>
@@ -539,7 +539,7 @@ export function ReportPreview({
 
               {/* FOOTER */}
               <section className="border-t border-[var(--border)] pt-4">
-                <div className="flex items-center justify-between text-xs text-[var(--muted-foreground)]">
+                <div className="flex items-center justify-between text-base text-[var(--muted-foreground)]">
                   <div className="flex items-center gap-4">
                     <span>CertoFin v1.0</span>
                     <span>•</span>
@@ -551,7 +551,7 @@ export function ReportPreview({
                     <span>{generatedAt}</span>
                   </div>
                 </div>
-                <p className="mt-2 text-center text-[10px] text-[var(--muted-foreground)]/60">
+                <p className="mt-2 text-center text-xs text-[var(--muted-foreground)]/60">
                   Este relatório é gerado automaticamente e não substitui consultoria financeira profissional.
                 </p>
               </section>
@@ -579,9 +579,9 @@ function MetricCard({ label, value, sub, color }: { label: string; value: string
 
   return (
     <div className={`rounded-xl border p-6 ${colorClasses[color] || colorClasses.primary}`}>
-      <p className={`text-sm font-medium ${textColors[color] || textColors.primary}`}>{label}</p>
-      <p className={`mt-2 text-2xl font-bold ${textColors[color] || textColors.primary}`}>{value}</p>
-      <p className="mt-1 text-sm text-[var(--muted-foreground)]">{sub}</p>
+      <p className={`text-base font-medium ${textColors[color] || textColors.primary}`}>{label}</p>
+      <p className={`mt-2 text-3xl font-bold ${textColors[color] || textColors.primary}`}>{value}</p>
+      <p className="mt-1 text-base text-[var(--muted-foreground)]">{sub}</p>
     </div>
   );
 }
@@ -598,10 +598,10 @@ function IndicatorCard({ icon, label, value, detail, color }: { icon: React.Reac
     <div className={`rounded-lg border p-3 ${colorClasses[color] || colorClasses.primary}`}>
       <div className="flex items-center gap-2 mb-2">
         {icon}
-        <span className="text-xs font-medium text-[var(--muted-foreground)]">{label}</span>
+        <span className="text-sm font-medium text-[var(--muted-foreground)]">{label}</span>
       </div>
-      <p className="text-base font-bold text-[var(--foreground)]">{value}</p>
-      <p className="text-xs text-[var(--muted-foreground)]">{detail}</p>
+      <p className="text-lg font-bold text-[var(--foreground)]">{value}</p>
+      <p className="text-base text-[var(--muted-foreground)]">{detail}</p>
     </div>
   );
 }

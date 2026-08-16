@@ -5,6 +5,7 @@ interface LogoProps {
   size?: "sm" | "md" | "lg";
   showText?: boolean;
   showSubtitle?: boolean;
+  textClassName?: string;
 }
 
 export function Logo({
@@ -12,6 +13,7 @@ export function Logo({
   size = "md",
   showText = true,
   showSubtitle,
+  textClassName,
 }: LogoProps) {
   const iconSizes = {
     sm: "h-10 w-10",
@@ -97,7 +99,7 @@ export function Logo({
 
       {showText && (
         <div className="flex flex-col justify-center">
-          <span className={cn("font-extrabold leading-none", textSizes[size])}>
+          <span className={cn("font-extrabold leading-none", textSizes[size], textClassName)}>
             <span className="text-[#054388] dark:text-slate-100" style={{ fontFamily: "var(--font-space-grotesk)" }}>
               Certo
             </span>

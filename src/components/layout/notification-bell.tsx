@@ -25,17 +25,27 @@ const scopeColors: Record<string, string> = {
   business: "text-[var(--primary)]",
 };
 
+import { useRouter } from "next/navigation";
+
 function NotificationItem({
   notification,
   onMarkAsRead,
   onDelete,
+  onClose,
 }: {
   notification: Notification;
   onMarkAsRead: (id: string) => void;
   onDelete: (id: string) => void;
+  onClose?: () => void;
 }) {
+  const router = useRouter();
   const Icon = typeIcons[notification.type] || Bell;
   const colorClass = typeColors[notification.type] || typeColors.system;
+
+  const transactionId = notification.metadata?.transaction_id;
+  const hasTransactionLink =
+    (notification.type === "overdue" || notification.type === "due_soon") &&
+    Boolean(transactionId);
 
   const getTrendIcon = () => {
     if (notification.type !== "comparison") return null;
@@ -45,9 +55,25 @@ function NotificationItem({
     return null;
   };
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (!notification.is_read) onMarkAsRead(notification.id);
+    if (onClose) onClose();
+
+    if (hasTransactionLink) {
+      e.preventDefault();
+      const targetScope = notification.scope === "business" ? "business" : "personal";
+      router.push(`/${targetScope}/transactions?highlight=${transactionId}`);
+    }
+  };
+
+  const targetHref = hasTransactionLink
+    ? `/${notification.scope === "business" ? "business" : "personal"}/transactions?highlight=${transactionId}`
+    : "/personal/notifications";
+
   return (
     <Link
-      href="/personal/notifications"
+      href={targetHref}
+      onClick={handleClick}
       className={cn(
         "group flex items-start gap-3 border-b border-[var(--border)] p-3 transition-colors hover:bg-[var(--accent)]/50 block",
         !notification.is_read && "bg-[var(--primary)]/5"
@@ -63,7 +89,7 @@ function NotificationItem({
           </p>
           {getTrendIcon()}
           {notification.scope && (
-            <span className={cn("text-[9px] font-mono uppercase", scopeColors[notification.scope] || "")}>
+            <span className={cn("text-[10px] font-mono uppercase", scopeColors[notification.scope] || "")}>
               {notification.scope === "business" ? "NEG" : "PESS"}
             </span>
           )}
@@ -72,7 +98,7 @@ function NotificationItem({
           {notification.message}
         </p>
         <div className="mt-1 flex items-center gap-2">
-          <span className="text-[9px] text-[var(--muted-foreground)]/60">
+          <span className="text-[10px] text-[var(--muted-foreground)]/60">
             {new Date(notification.created_at).toLocaleDateString("pt-BR", {
               day: "2-digit",
               month: "2-digit",
@@ -81,7 +107,7 @@ function NotificationItem({
             })}
           </span>
           {!notification.is_read && (
-            <span className="text-[9px] text-[var(--primary)] flex items-center gap-0.5">
+            <span className="text-[10px] text-[var(--primary)] flex items-center gap-0.5">
               <Check className="h-2.5 w-2.5" /> lida
             </span>
           )}
@@ -147,7 +173,7 @@ export function NotificationBell() {
       >
         <Bell className="h-4 w-4 text-[var(--primary)]" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--destructive)] text-[8px] font-bold text-white shadow-[0_0_8px_var(--destructive)]">
+          <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--destructive)] text-[9px] font-bold text-white shadow-[0_0_8px_var(--destructive)]">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
@@ -160,7 +186,7 @@ export function NotificationBell() {
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-bold text-[var(--foreground)]">Notificações</h3>
               {unreadCount > 0 && (
-                <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[var(--primary)] px-1.5 text-[10px] font-bold text-white">
+                <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[var(--primary)] px-1.5 text-xs font-bold text-white">
                   {unreadCount}
                 </span>
               )}
@@ -177,7 +203,7 @@ export function NotificationBell() {
               {unreadCount > 0 && (
                 <button
                   onClick={markAllAsRead}
-                  className="rounded p-1 text-[10px] text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-colors"
+                  className="rounded p-1 text-xs text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-colors"
                   title="Marcar todas como lidas"
                 >
                   <Check className="h-3.5 w-3.5" />
@@ -206,6 +232,7 @@ export function NotificationBell() {
                   notification={n}
                   onMarkAsRead={markAsRead}
                   onDelete={deleteNotification}
+                  onClose={() => setIsOpen(false)}
                 />
               ))
             )}
@@ -216,7 +243,7 @@ export function NotificationBell() {
             <div className="border-t border-[var(--border)] px-4 py-2">
               <button
                 onClick={clearAll}
-                className="w-full text-center text-[10px] text-[var(--muted-foreground)] hover:text-[var(--destructive)] transition-colors"
+                className="w-full text-center text-xs text-[var(--muted-foreground)] hover:text-[var(--destructive)] transition-colors"
               >
                 Limpar todas
               </button>

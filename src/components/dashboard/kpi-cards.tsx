@@ -86,10 +86,10 @@ export function KpiCards({
     return (
       <div className="hud-border p-8 text-center scanline-overlay animate-fade-in-up">
         <Wallet className="mx-auto h-10 w-10 text-[var(--primary)]/40 animate-pulse-glow" />
-        <p className="mt-3 text-sm sm:text-base font-mono font-medium text-[var(--muted-foreground)]">
+        <p className="mt-3 text-base sm:text-lg font-mono font-medium text-[var(--muted-foreground)]">
           NENHUM LANÇAMENTO DETECTADO
         </p>
-        <p className="mt-1 text-xs sm:text-sm font-mono text-[var(--muted-foreground)]/70">
+        <p className="mt-1 text-sm sm:text-base font-mono text-[var(--muted-foreground)]/70">
           [ AGUARDANDO DADOS... ]
         </p>
       </div>
@@ -107,7 +107,7 @@ export function KpiCards({
           )}
         >
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs sm:text-sm font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
+            <CardTitle className="text-sm sm:text-base font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
               {card.title}
             </CardTitle>
             <div className={cn("rounded-none p-2 border border-[currentColor]/30 bg-[currentColor]/10 transition-all duration-300", card.bg, card.iconGlow)}>
@@ -115,16 +115,16 @@ export function KpiCards({
             </div>
           </CardHeader>
           <CardContent>
-            <p className={cn("text-lg sm:text-2xl font-sans font-bold tracking-tight", card.color, card.glowTextClass)}>
+            <p className={cn("text-xl sm:text-3xl font-sans font-bold tracking-tight", card.color, card.glowTextClass)}>
               {formatCurrency(card.value)}
             </p>
             {card.subtitle && (
-              <p className="mt-1 text-xs sm:text-sm text-[var(--muted-foreground)] font-sans opacity-80">
+              <p className="mt-1 text-sm sm:text-base text-[var(--muted-foreground)] font-sans opacity-80">
                 {card.subtitle}
               </p>
             )}
             {card.pending && (
-              <p className="mt-1 text-xs sm:text-sm text-[var(--muted-foreground)] font-sans opacity-80">
+              <p className="mt-1 text-sm sm:text-base text-[var(--muted-foreground)] font-sans opacity-80">
                 {card.pending}
               </p>
             )}

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect, Suspense } from "react";
+import { useState, Suspense } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,15 +18,13 @@ function LoginFormContent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [success, setSuccess] = useState(() =>
+    searchParams.get("verified") === "true"
+      ? "Conta criada! Verifique seu e-mail e clique no link de confirmação para ativar sua conta."
+      : ""
+  );
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
-
-  useEffect(() => {
-    if (searchParams.get("verified") === "true") {
-      setSuccess("Conta criada! Verifique seu e-mail e clique no link de confirmação para ativar sua conta.");
-    }
-  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +39,7 @@ function LoginFormContent() {
 
     if (error) {
       const msg = error.message?.toLowerCase() || "";
-      const code = (error as any).code?.toLowerCase() || "";
+      const code = error.code?.toLowerCase() || "";
       
       if (msg.includes("email not confirmed") || 
           msg.includes("email_not_confirmed") ||

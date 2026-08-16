@@ -72,7 +72,7 @@ BEGIN
         'overdue',
         'personal',
         'Conta vencida',
-        format('"%s" está vencido(a) depuis %s — R$ %s',
+        format('"%s" está vencido(a) desde %s — R$ %s',
           COALESCE(tx.description, 'Lançamento'),
           to_char(tx.transaction_date, 'DD/MM/YYYY'),
           to_char(tx.amount, 'FM999G990D99')

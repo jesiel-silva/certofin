@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { KpiCards } from "@/components/dashboard/kpi-cards";
 import { ExpenseChart } from "@/components/dashboard/expense-chart";
@@ -23,6 +23,30 @@ import type {
   CategorySummary,
 } from "@/lib/types";
 
+// Helper: check if a recurring template is pending for a specific month
+function isRecurringPendingForMonth(t: Transaction, month: string): boolean {
+  if (!t.is_recurring) return false;
+  const templateDateMonth = t.transaction_date?.substring(0, 7);
+  if (templateDateMonth !== month) return false;
+  // If last_paid_date covers the current month, it's paid
+  if (t.last_paid_date) {
+    const paidMonth = t.last_paid_date.substring(0, 7);
+    if (paidMonth >= month) return false;
+  }
+  return true;
+}
+
+// Helper: check if a recurring template is paid for a specific month
+function isRecurringPaidForMonth(t: Transaction, targetMonth: string): boolean {
+  if (!t.is_recurring) return false;
+  // Check if last_paid_date covers the target month
+  if (t.last_paid_date) {
+    const paidMonth = t.last_paid_date.substring(0, 7);
+    if (paidMonth >= targetMonth) return true;
+  }
+  return false;
+}
+
 export default function DashboardPage() {
   const supabase = createClient();
   const [currentMonth, setCurrentMonth] = useState(getCurrentMonth());
@@ -33,11 +57,7 @@ export default function DashboardPage() {
   const [userName, setUserName] = useState("");
   const [userPlan, setUserPlan] = useState<"free" | "pro" | "trial">("free");
 
-  useEffect(() => {
-    fetchAllData();
-  }, []);
-
-  const fetchAllData = async () => {
+  const fetchAllData = useCallback(async () => {
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
     const startDate = sixMonthsAgo.toISOString().split("T")[0];
@@ -84,7 +104,13 @@ export default function DashboardPage() {
     setAllTransactions(txData);
     setCategories((catResult.data as Category[]) || []);
     setLoading(false);
-  };
+  }, [supabase]);
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      fetchAllData();
+    });
+  }, [fetchAllData]);
 
   const transactions = useMemo(() => {
     const { start, end } = getMonthRange(currentMonth);
@@ -92,30 +118,6 @@ export default function DashboardPage() {
       .filter((t) => t.transaction_date >= start && t.transaction_date <= end && !t.is_recurring)
       .map((t) => ({ ...t, amount: Number(t.amount) }));
   }, [currentMonth, allTransactions]);
-
-  // Helper: check if a recurring template is pending for the current month
-  const isRecurringPendingForMonth = (t: Transaction): boolean => {
-    if (!t.is_recurring) return false;
-    const templateDateMonth = t.transaction_date?.substring(0, 7);
-    if (templateDateMonth !== currentMonth) return false;
-    // If last_paid_date covers the current month, it's paid
-    if (t.last_paid_date) {
-      const paidMonth = t.last_paid_date.substring(0, 7);
-      if (paidMonth >= currentMonth) return false;
-    }
-    return true;
-  };
-
-  // Helper: check if a recurring template is paid for a specific month
-  const isRecurringPaidForMonth = (t: Transaction, targetMonth: string): boolean => {
-    if (!t.is_recurring) return false;
-    // Check if last_paid_date covers the target month
-    if (t.last_paid_date) {
-      const paidMonth = t.last_paid_date.substring(0, 7);
-      if (paidMonth >= targetMonth) return true;
-    }
-    return false;
-  };
 
   const summary = useMemo(() => {
     const { start, end } = getMonthRange(currentMonth);
@@ -154,23 +156,23 @@ export default function DashboardPage() {
     const personalPendingIncome = allTransactions
       .filter((t) => t.scope === "personal" && t.type === "income" && !t.is_recurring && t.status === "pending" && t.transaction_date >= start && t.transaction_date <= end)
       .reduce((sum, t) => sum + t.amount, 0) + allTransactions
-      .filter((t) => t.scope === "personal" && t.type === "income" && isRecurringPendingForMonth(t))
+      .filter((t) => t.scope === "personal" && t.type === "income" && isRecurringPendingForMonth(t, currentMonth))
       .reduce((sum, t) => sum + t.amount, 0);
     const personalPendingExpense = allTransactions
       .filter((t) => t.scope === "personal" && t.type === "expense" && !t.is_recurring && t.status === "pending" && t.transaction_date >= start && t.transaction_date <= end)
       .reduce((sum, t) => sum + t.amount, 0) + allTransactions
-      .filter((t) => t.scope === "personal" && t.type === "expense" && isRecurringPendingForMonth(t))
+      .filter((t) => t.scope === "personal" && t.type === "expense" && isRecurringPendingForMonth(t, currentMonth))
       .reduce((sum, t) => sum + t.amount, 0);
 
     const businessPendingIncome = allTransactions
       .filter((t) => t.scope === "business" && t.type === "income" && !t.is_recurring && t.status === "pending" && t.transaction_date >= start && t.transaction_date <= end)
       .reduce((sum, t) => sum + t.amount, 0) + allTransactions
-      .filter((t) => t.scope === "business" && t.type === "income" && isRecurringPendingForMonth(t))
+      .filter((t) => t.scope === "business" && t.type === "income" && isRecurringPendingForMonth(t, currentMonth))
       .reduce((sum, t) => sum + t.amount, 0);
     const businessPendingExpense = allTransactions
       .filter((t) => t.scope === "business" && t.type === "expense" && !t.is_recurring && t.status === "pending" && t.transaction_date >= start && t.transaction_date <= end)
       .reduce((sum, t) => sum + t.amount, 0) + allTransactions
-      .filter((t) => t.scope === "business" && t.type === "expense" && isRecurringPendingForMonth(t))
+      .filter((t) => t.scope === "business" && t.type === "expense" && isRecurringPendingForMonth(t, currentMonth))
       .reduce((sum, t) => sum + t.amount, 0);
 
     return {
@@ -317,8 +319,8 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-          <p className="text-sm text-[var(--muted-foreground)]">
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <p className="text-base text-[var(--muted-foreground)]">
             Visão geral das suas finanças
           </p>
         </div>

@@ -33,10 +33,10 @@ export function WelcomeCard({ scope = "personal", userName = "", userPlan = "fre
                 <User className="h-5 w-5 text-[var(--primary)]" />
               </div>
               <div>
-                <p className="text-sm sm:text-base font-mono font-bold text-[var(--foreground)]">
+                <p className="text-base sm:text-lg font-mono font-bold text-[var(--foreground)]">
                   Olá, {userName.split(" ")[0]}!
                 </p>
-                <p className="text-[10px] sm:text-xs font-mono text-[var(--muted-foreground)]">
+                <p className="text-xs sm:text-sm font-mono text-[var(--muted-foreground)]">
                   Bem-vindo ao seu painel
                 </p>
               </div>
@@ -54,10 +54,10 @@ export function WelcomeCard({ scope = "personal", userName = "", userPlan = "fre
             <Sparkles className="h-6 w-6 text-[var(--primary)]" />
           </div>
           <div>
-            <h2 className="text-lg sm:text-xl font-display font-bold text-[var(--foreground)] uppercase tracking-wider">
+            <h2 className="text-xl sm:text-2xl font-display font-bold text-[var(--foreground)] uppercase tracking-wider">
               NENHUM LANÇAMENTO {scopeLabel.toUpperCase()} NESTE MÊS
             </h2>
-            <p className="text-xs sm:text-sm font-mono text-[var(--muted-foreground)] mt-1">
+            <p className="text-sm sm:text-base font-mono text-[var(--muted-foreground)] mt-1">
               [ AGUARDANDO DADOS... ]
             </p>
           </div>
@@ -74,10 +74,10 @@ export function WelcomeCard({ scope = "personal", userName = "", userPlan = "fre
                   <ArrowDownLeft className="h-5 w-5 text-[var(--income)]" />
                 </div>
                 <div className="text-left">
-                  <p className="font-mono font-semibold text-[var(--foreground)] uppercase text-xs sm:text-sm">
+                  <p className="font-mono font-semibold text-[var(--foreground)] uppercase text-sm sm:text-base">
                     ADICIONAR RECEITA
                   </p>
-                  <p className="text-[10px] sm:text-xs font-mono text-[var(--muted-foreground)] uppercase">
+                  <p className="text-xs sm:text-sm font-mono text-[var(--muted-foreground)] uppercase">
                     {scope === "business" ? "VENDA, SERVIÇO, CLIENTE..." : "SALÁRIO, FREELANCER, VENDAS..."}
                   </p>
                 </div>
@@ -95,10 +95,10 @@ export function WelcomeCard({ scope = "personal", userName = "", userPlan = "fre
                   <ArrowUpRight className="h-5 w-5 text-[var(--expense)]" />
                 </div>
                 <div className="text-left">
-                  <p className="font-mono font-semibold text-[var(--foreground)] uppercase text-xs sm:text-sm">
+                  <p className="font-mono font-semibold text-[var(--foreground)] uppercase text-sm sm:text-base">
                     ADICIONAR DESPESA
                   </p>
-                  <p className="text-[10px] sm:text-xs font-mono text-[var(--muted-foreground)] uppercase">
+                  <p className="text-xs sm:text-sm font-mono text-[var(--muted-foreground)] uppercase">
                     {scope === "business" ? "INSUMO, COMBUSTÍVEL, ALUGUEL..." : "CONTA DE LUZ, ALUGUEL, MERCADO..."}
                   </p>
                 </div>
@@ -108,24 +108,24 @@ export function WelcomeCard({ scope = "personal", userName = "", userPlan = "fre
         </div>
 
         <div className="hud-border bg-[#020617]/50 p-4">
-          <p className="text-[10px] sm:text-xs font-display font-bold text-[var(--primary)] mb-2 uppercase tracking-widest">
+          <p className="text-xs sm:text-sm font-display font-bold text-[var(--primary)] mb-2 uppercase tracking-widest">
             COMECE POR AQUI
           </p>
           <div className="grid gap-2 sm:grid-cols-3">
-            <div className="flex items-center gap-2 text-[10px] sm:text-xs font-mono text-[var(--muted-foreground)]">
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center bg-[var(--income)]/10 border border-[var(--income)]/30 text-[10px] sm:text-xs font-bold text-[var(--income)]">
+            <div className="flex items-center gap-2 text-xs sm:text-sm font-mono text-[var(--muted-foreground)]">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center bg-[var(--income)]/10 border border-[var(--income)]/30 text-xs sm:text-sm font-bold text-[var(--income)]">
                 01
               </div>
               <span>CADASTRE SUA RECEITA</span>
             </div>
-            <div className="flex items-center gap-2 text-[10px] sm:text-xs font-mono text-[var(--muted-foreground)]">
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center bg-[var(--expense)]/10 border border-[var(--expense)]/30 text-[10px] sm:text-xs font-bold text-[var(--expense)]">
+            <div className="flex items-center gap-2 text-xs sm:text-sm font-mono text-[var(--muted-foreground)]">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center bg-[var(--expense)]/10 border border-[var(--expense)]/30 text-xs sm:text-sm font-bold text-[var(--expense)]">
                 02
               </div>
               <span>REGISTRE SUAS DESPESAS</span>
             </div>
-            <div className="flex items-center gap-2 text-[10px] sm:text-xs font-mono text-[var(--muted-foreground)]">
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center bg-[var(--primary)]/10 border border-[var(--primary)]/30 text-[10px] sm:text-xs font-bold text-[var(--primary)]">
+            <div className="flex items-center gap-2 text-xs sm:text-sm font-mono text-[var(--muted-foreground)]">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center bg-[var(--primary)]/10 border border-[var(--primary)]/30 text-xs sm:text-sm font-bold text-[var(--primary)]">
                 03
               </div>
               <span>ACOMPANHE SEU SALDO</span>

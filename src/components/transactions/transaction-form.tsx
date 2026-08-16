@@ -339,10 +339,13 @@ export function TransactionForm({
       const targetDay = Math.min(dueDayNum, lastDayOfNextMonth);
 
       // Update template: mark as paid, keep transaction_date in current month
+      const lastDayOfCurrentMonth = new Date(year, month, 0).getDate();
+      const currentTargetDay = Math.min(dueDayNum, lastDayOfCurrentMonth);
+
       await supabase
         .from("transactions")
         .update({
-          last_paid_date: `${currentMonth}-28`,
+          last_paid_date: `${currentMonth}-${String(currentTargetDay).padStart(2, "0")}`,
           status: "paid",
         })
         .eq("id", initialData.id);
@@ -591,12 +594,11 @@ export function TransactionForm({
                 <button
                   type="button"
                   onClick={() => handleScopeChange("personal")}
-                  disabled={scope === "business"}
                   className={cn(
                     "flex-1 flex items-center justify-center gap-2 rounded-lg border-2 px-4 py-3 text-sm font-semibold transition-all",
                     scope === "personal"
                       ? "border-[var(--personal)] bg-[var(--personal)]/10 text-[var(--personal)]"
-                      : "border-[var(--border)] text-[var(--muted-foreground)] opacity-50 cursor-not-allowed"
+                      : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--personal)]/50"
                   )}
                 >
                   <Home className="h-4 w-4" />
@@ -617,7 +619,7 @@ export function TransactionForm({
                   <Briefcase className="h-4 w-4" />
                   Negócio
                   {!canUseBusinessScope && (
-                    <span className="rounded bg-[var(--primary)] px-1.5 py-0.5 text-[10px] font-bold text-white">
+                    <span className="rounded bg-[var(--primary)] px-1.5 py-0.5 text-xs font-bold text-white">
                       Pro
                     </span>
                   )}
@@ -644,7 +646,7 @@ export function TransactionForm({
                   <div className="flex flex-col items-center gap-1">
                     <ArrowDownLeft className="h-5 w-5" />
                     <span>Receita</span>
-                    <span className="text-[10px] opacity-70">Entrada de R$</span>
+                    <span className="text-xs opacity-70">Entrada de R$</span>
                   </div>
                 </button>
                 <button
@@ -660,7 +662,7 @@ export function TransactionForm({
                   <div className="flex flex-col items-center gap-1">
                     <ArrowUpRight className="h-5 w-5" />
                     <span>Despesa</span>
-                    <span className="text-[10px] opacity-70">Saída de R$</span>
+                    <span className="text-xs opacity-70">Saída de R$</span>
                   </div>
                 </button>
               </div>
@@ -919,9 +921,9 @@ export function TransactionForm({
                     >
                       <div className="flex flex-col items-center">
                         <span>{option.label}</span>
-                        <span className="text-[10px] opacity-70">{option.desc}</span>
+                        <span className="text-xs opacity-70">{option.desc}</span>
                         {isDisabled && (
-                          <span className="mt-1 text-[8px] font-bold uppercase tracking-wider text-[var(--warning)]">
+                          <span className="mt-1 text-[10px] font-bold uppercase tracking-wider text-[var(--warning)]">
                             PRO
                           </span>
                         )}

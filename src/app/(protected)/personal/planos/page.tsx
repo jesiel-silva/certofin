@@ -53,12 +53,36 @@ export default function PersonalPlanosPage() {
       // Verificar se já tem trial ativo
       const { data: currentProfile } = await supabase
         .from("profiles")
-        .select("trial_ends_at")
+        .select("trial_ends_at, trial_used_at")
         .eq("id", user.id)
         .single();
 
       if (currentProfile?.trial_ends_at && new Date(currentProfile.trial_ends_at) > new Date()) {
         alert("Você já tem um trial ativo!");
+        setActivatingTrial(false);
+        return;
+      }
+
+      // Backfill: se o trial expirou mas trial_used_at nunca foi registrado,
+      // marca como usado (evita reativação indefinida de usuários antigos)
+      if (
+        currentProfile?.trial_ends_at &&
+        !currentProfile.trial_used_at &&
+        new Date(currentProfile.trial_ends_at) <= new Date()
+      ) {
+        await supabase
+          .from("profiles")
+          .update({ trial_used_at: currentProfile.trial_ends_at })
+          .eq("id", user.id);
+        alert("Você já utilizou seu período de teste grátis.");
+        setActivatingTrial(false);
+        window.location.reload();
+        return;
+      }
+
+      // Verificar se o trial já foi utilizado alguma vez
+      if (currentProfile?.trial_used_at) {
+        alert("Você já utilizou seu período de teste grátis. Faça upgrade para o plano Pro!");
         setActivatingTrial(false);
         return;
       }
@@ -69,7 +93,10 @@ export default function PersonalPlanosPage() {
 
       const { data, error } = await supabase
         .from("profiles")
-        .update({ trial_ends_at: trialEnd.toISOString() })
+        .update({
+          trial_ends_at: trialEnd.toISOString(),
+          trial_used_at: new Date().toISOString(),
+        })
         .eq("id", user.id)
         .select("trial_ends_at")
         .single();
@@ -98,8 +125,8 @@ export default function PersonalPlanosPage() {
     }
   };
 
-  const isPro = (profile as unknown as { subscription_status?: string })?.subscription_status === "pro";
-  const hasTrial = (profile as unknown as { trial_ends_at?: string })?.trial_ends_at;
+  const isPro = profile?.subscription_status === "pro";
+  const hasTrial = profile?.trial_ends_at;
   const trialActive = hasTrial ? new Date(hasTrial) > new Date() : false;
 
   if (loading) {
@@ -120,8 +147,8 @@ export default function PersonalPlanosPage() {
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-[var(--foreground)]">Planos</h1>
-          <p className="text-sm text-[var(--muted-foreground)]">
+          <h1 className="text-3xl font-bold text-[var(--foreground)]">Planos</h1>
+          <p className="text-base text-[var(--muted-foreground)]">
             Escolha o plano ideal para suas necessidades
           </p>
         </div>
@@ -154,7 +181,7 @@ export default function PersonalPlanosPage() {
                 ) : null}
                 Testar PRO grátis por 14 dias
               </Button>
-              <p className="mt-2 text-xs text-[var(--muted-foreground)]">
+              <p className="mt-2 text-sm text-[var(--muted-foreground)]">
                 Acesso completo a todos os recursos do plano Pro
               </p>
             </div>
@@ -164,11 +191,11 @@ export default function PersonalPlanosPage() {
             <div className="mt-6 text-center">
               <div className="inline-flex items-center gap-2 rounded-lg border border-[var(--success)]/30 bg-[var(--success)]/10 px-4 py-2">
                 <div className="h-2 w-2 rounded-full bg-[var(--success)] animate-pulse" />
-                <span className="text-sm font-medium text-[var(--success)]">
+                <span className="text-base font-medium text-[var(--success)]">
                   Trial PRO ativo
                 </span>
               </div>
-              <p className="mt-2 text-xs text-[var(--muted-foreground)]">
+              <p className="mt-2 text-sm text-[var(--muted-foreground)]">
                 Seu trial expira em{" "}
                 {new Date(hasTrial!).toLocaleDateString("pt-BR", {
                   day: "2-digit",
@@ -192,7 +219,7 @@ export default function PersonalPlanosPage() {
             <h3 className="font-medium text-[var(--foreground)]">
               O que acontece se eu ultrapassar os 10 lançamentos?
             </h3>
-            <p className="text-sm text-[var(--muted-foreground)]">
+            <p className="text-base text-[var(--muted-foreground)]">
               O sistema não permitirá criar novos lançamentos até o próximo mês,
               ou você pode fazer upgrade para o plano Pro e ter lançamentos
               ilimitados.
@@ -202,7 +229,7 @@ export default function PersonalPlanosPage() {
             <h3 className="font-medium text-[var(--foreground)]">
               Posso cancelar o plano Pro a qualquer momento?
             </h3>
-            <p className="text-sm text-[var(--muted-foreground)]">
+            <p className="text-base text-[var(--muted-foreground)]">
               Sim! Você pode cancelar sua assinatura a qualquer momento. O acesso
               ao plano Pro permanece até o final do período já pago.
             </p>
@@ -211,7 +238,7 @@ export default function PersonalPlanosPage() {
             <h3 className="font-medium text-[var(--foreground)]">
               Como funciona o pagamento?
             </h3>
-            <p className="text-sm text-[var(--muted-foreground)]">
+            <p className="text-base text-[var(--muted-foreground)]">
               O pagamento é feito mensalmente via Cartão de Crédito. Não
               trabalhamos com PIX ou planos anuais.
             </p>

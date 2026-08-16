@@ -110,7 +110,9 @@ export function usePlanLimits(): PlanLimits {
   }, [supabase]);
 
   useEffect(() => {
-    fetchPlanInfo();
+    queueMicrotask(() => {
+      fetchPlanInfo();
+    });
   }, [fetchPlanInfo]);
 
   const canCreateTransaction = planInfo

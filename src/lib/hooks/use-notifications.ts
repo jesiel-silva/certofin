@@ -56,7 +56,7 @@ export function useNotifications(): UseNotificationsReturn {
       }
 
       setNotifications(data || []);
-    } catch (err) {
+    } catch {
       // Erro geral — ignora silenciosamente
       setNotifications([]);
     } finally {
@@ -65,7 +65,9 @@ export function useNotifications(): UseNotificationsReturn {
   }, [supabase]);
 
   useEffect(() => {
-    fetchNotifications();
+    queueMicrotask(() => {
+      fetchNotifications();
+    });
 
     // Refresh a cada 5 minutos
     const interval = setInterval(fetchNotifications, 5 * 60 * 1000);

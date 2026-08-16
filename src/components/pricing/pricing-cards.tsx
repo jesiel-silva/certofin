@@ -64,7 +64,7 @@ export function PricingCards({ currentPlan, onSelectPlan }: PricingCardsProps) {
         >
           {plan.isRecommended && (
             <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-              <div className="flex items-center gap-1 rounded-full bg-[var(--primary)] px-3 py-1 text-xs font-semibold text-white">
+              <div className="flex items-center gap-1 rounded-full bg-[var(--primary)] px-3 py-1 text-sm font-semibold text-white">
                 <Crown className="h-3 w-3" />
                 Recomendado
               </div>
@@ -73,35 +73,35 @@ export function PricingCards({ currentPlan, onSelectPlan }: PricingCardsProps) {
 
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-1">
-              <h3 className="text-xl font-bold text-[var(--foreground)]">
+              <h3 className="text-2xl font-bold text-[var(--foreground)]">
                 {plan.name}
               </h3>
               {currentPlan === plan.id && (
-                <span className="rounded-full bg-[var(--accent)] px-2 py-0.5 text-xs font-medium text-[var(--muted-foreground)]">
+                <span className="rounded-full bg-[var(--accent)] px-2 py-0.5 text-sm font-medium text-[var(--muted-foreground)]">
                   Atual
                 </span>
               )}
             </div>
-            <p className="text-sm text-[var(--muted-foreground)]">
+            <p className="text-base text-[var(--muted-foreground)]">
               {plan.subtitle}
             </p>
           </div>
 
           <div className="mb-6">
             <div className="flex items-baseline gap-1">
-              <span className="text-sm text-[var(--muted-foreground)]">R$</span>
+              <span className="text-base text-[var(--muted-foreground)]">R$</span>
               <span className="text-4xl font-bold text-[var(--foreground)]">
                 {plan.price}
               </span>
-              <span className="text-sm text-[var(--muted-foreground)]">
+              <span className="text-base text-[var(--muted-foreground)]">
                 {plan.period}
               </span>
             </div>
-            <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+            <p className="mt-1 text-base text-[var(--muted-foreground)]">
               {plan.description}
             </p>
             {plan.id === "pro" && (
-              <p className="mt-1 text-xs text-[var(--muted-foreground)]">
+              <p className="mt-1 text-sm text-[var(--muted-foreground)]">
                 Assinatura mensal no Cartão de Crédito
               </p>
             )}
