@@ -43,6 +43,7 @@ BEGIN
   DELETE FROM cancellation_feedback WHERE user_id = target_user_id;
   DELETE FROM profiles WHERE id = target_user_id;
 
-  -- Nota: auth.users é gerenciado pelo Supabase Auth.
+  -- Apagar da tabela de autenticação do Supabase (libera o e-mail para cadastrar uma nova conta)
+  DELETE FROM auth.users WHERE id = target_user_id;
 END;
 $$;
