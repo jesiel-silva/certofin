@@ -53,8 +53,82 @@ function renderBarTopLabel(props: any) {
 }
 import { formatCurrency } from "@/lib/utils";
 import type { CategorySummary } from "@/lib/types";
-import { BarChart2, PieChart as PieIcon } from "lucide-react";
+import { BarChart2, PieChart as PieIcon, Wallet, TrendingDown, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+function getScopeLabel(item: CategorySummary): string {
+  const arr = (item as any)._scopeArr as string[] | undefined;
+  if (arr && arr.length === 2) return "Pessoal & Negócio";
+  if (item.scope === "business") return "Negócio";
+  if (item.scope === "personal") return "Pessoal";
+  return "—";
+}
+
+function getTypeLabel(item: CategorySummary): string {
+  const arr = (item as any)._typeArr as string[] | undefined;
+  if (arr && arr.length === 2) return "Despesa & Receita";
+  if (item.type === "expense") return "Despesa";
+  if (item.type === "income") return "Receita";
+  return "—";
+}
+
+function ChartTooltipContent({ item }: { item: CategorySummary }) {
+  const scopeLabel = getScopeLabel(item);
+  const typeLabel = getTypeLabel(item);
+  const isExpense = item.type === "expense" || typeLabel === "Despesa";
+  const TypeIcon = isExpense ? TrendingDown : TrendingUp;
+  const typeColor = isExpense ? "var(--destructive)" : "var(--success)";
+
+  return (
+    <div className="hud-border bg-[#0B1221]/95 p-3.5 shadow-2xl backdrop-blur-md min-w-[180px] rounded-lg">
+      {/* Categoria */}
+      <div className="flex items-center gap-2 mb-3 pb-2.5 border-b border-white/10">
+        <div
+          className="h-2.5 w-2.5 rounded-full shrink-0"
+          style={{
+            backgroundColor: item.category_color,
+            boxShadow: `0 0 8px ${item.category_color}`,
+          }}
+        />
+        <span className="text-xs font-bold uppercase tracking-widest text-[var(--foreground)] opacity-90">
+          {item.category_name}
+        </span>
+      </div>
+
+      {/* Valor */}
+      <p
+        className="text-base font-bold font-sans mb-0.5"
+        style={{
+          color: item.category_color,
+          textShadow: `0 0 8px ${item.category_color}60`,
+        }}
+      >
+        {formatCurrency(item.total)}
+      </p>
+
+      {/* Percentual */}
+      <p className="text-xs font-mono text-[var(--muted-foreground)] mb-3">
+        {item.percentage.toFixed(1)}% do total
+      </p>
+
+      {/* Divider */}
+      <div className="border-t border-white/10 pt-2.5 space-y-1.5">
+        {/* Carteira */}
+        <div className="flex items-center gap-2">
+          <Wallet className="h-3 w-3 text-[var(--primary)] shrink-0" />
+          <span className="text-[10px] text-[var(--muted-foreground)] uppercase tracking-wider">Carteira</span>
+          <span className="ml-auto text-xs font-bold text-[var(--foreground)]">{scopeLabel}</span>
+        </div>
+        {/* Tipo */}
+        <div className="flex items-center gap-2">
+          <TypeIcon className="h-3 w-3 shrink-0" style={{ color: typeColor }} />
+          <span className="text-[10px] text-[var(--muted-foreground)] uppercase tracking-wider">Tipo</span>
+          <span className="ml-auto text-xs font-bold" style={{ color: typeColor }}>{typeLabel}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 interface ExpenseChartProps {
   data: CategorySummary[];
@@ -208,34 +282,7 @@ export function ExpenseChart({
                   content={({ active, payload }) => {
                     if (active && payload && payload.length) {
                       const item = payload[0].payload as CategorySummary;
-                      return (
-                        <div className="hud-border bg-[#0B1221]/95 p-3 shadow-xl backdrop-blur-md min-w-[150px]">
-                          <div className="flex items-center gap-2 mb-2 pb-2 border-b border-white/10">
-                            <div
-                              className="h-2 w-2"
-                              style={{
-                                backgroundColor: item.category_color,
-                                boxShadow: `0 0 8px ${item.category_color}`,
-                              }}
-                            />
-                            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[var(--foreground)] opacity-90">
-                              {item.category_name}
-                            </span>
-                          </div>
-                          <p
-                            className="text-sm sm:text-base font-bold font-sans"
-                            style={{
-                              color: item.category_color,
-                              textShadow: `0 0 5px ${item.category_color}80`,
-                            }}
-                          >
-                            {formatCurrency(item.total)}
-                          </p>
-                          <p className="text-[10px] sm:text-xs font-sans text-[var(--muted-foreground)] mt-1">
-                            {item.percentage.toFixed(1)}% DO TOTAL
-                          </p>
-                        </div>
-                      );
+                      return <ChartTooltipContent item={item} />;
                     }
                     return null;
                   }}
@@ -285,34 +332,7 @@ export function ExpenseChart({
                   content={({ active, payload }) => {
                     if (active && payload && payload.length) {
                       const item = payload[0].payload as CategorySummary;
-                      return (
-                        <div className="hud-border bg-[#0B1221]/95 p-3 shadow-xl backdrop-blur-md min-w-[150px]">
-                          <div className="flex items-center gap-2 mb-2 pb-2 border-b border-white/10">
-                            <div
-                              className="h-2 w-2"
-                              style={{
-                                backgroundColor: item.category_color,
-                                boxShadow: `0 0 8px ${item.category_color}`,
-                              }}
-                            />
-                            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[var(--foreground)] opacity-90">
-                              {item.category_name}
-                            </span>
-                          </div>
-                          <p
-                            className="text-sm sm:text-base font-bold font-sans"
-                            style={{
-                              color: item.category_color,
-                              textShadow: `0 0 5px ${item.category_color}80`,
-                            }}
-                          >
-                            {formatCurrency(item.total)}
-                          </p>
-                          <p className="text-[10px] sm:text-xs font-sans text-[var(--muted-foreground)] mt-1">
-                            {item.percentage.toFixed(1)}% DO TOTAL
-                          </p>
-                        </div>
-                      );
+                      return <ChartTooltipContent item={item} />;
                     }
                     return null;
                   }}

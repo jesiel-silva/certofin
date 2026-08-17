@@ -73,6 +73,8 @@ export interface CategorySummary {
   category_color: string;
   total: number;
   percentage: number;
+  scope?: "personal" | "business";
+  type?: "expense" | "income";
 }
 
 export interface DashboardData {

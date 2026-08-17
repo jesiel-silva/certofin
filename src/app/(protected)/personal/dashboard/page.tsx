@@ -200,7 +200,7 @@ export default function DashboardPage() {
       .filter((t) => t.type === "expense" && isRecurringPaidForMonth(t, currentMonth));
     const allExpenses = [...expenses, ...recurringExpenses];
     const totalExpenses = allExpenses.reduce((sum, t) => sum + t.amount, 0);
-    const categoryMap = new Map<string, { name: string; color: string; total: number }>();
+    const categoryMap = new Map<string, { name: string; color: string; total: number; scopes: Set<string>; types: Set<string> }>();
 
     allExpenses.forEach((t) => {
       const key = t.category_id || "uncategorized";
@@ -208,20 +208,41 @@ export default function DashboardPage() {
       const existing = categoryMap.get(key);
       if (existing) {
         existing.total += t.amount;
+        if (t.scope) existing.scopes.add(t.scope);
+        if (t.type) existing.types.add(t.type);
       } else {
-        categoryMap.set(key, { name: info.name, color: info.color, total: t.amount });
+        const scopes = new Set<string>();
+        const types = new Set<string>();
+        if (t.scope) scopes.add(t.scope);
+        if (t.type) types.add(t.type);
+        categoryMap.set(key, { name: info.name, color: info.color, total: t.amount, scopes, types });
       }
     });
 
     return Array.from(categoryMap.entries())
-      .map(([id, data]) => ({
-        category_id: id,
-        category_name: data.name,
-        category_color: data.color,
-        total: data.total,
-        percentage: totalExpenses > 0 ? (data.total / totalExpenses) * 100 : 0,
-      }))
-      .sort((a, b) => b.total - a.total);
+      .map(([id, data]) => {
+        const scopeArr = Array.from(data.scopes);
+        const typeArr = Array.from(data.types);
+        // Se a categoria tem lançamentos de ambos os escopos, exibe "Ambas"
+        const scope = scopeArr.length === 2
+          ? undefined // ambos — será tratado como "Pessoal & Negócio" no tooltip
+          : (scopeArr[0] as "personal" | "business" | undefined);
+        const type = typeArr.length === 2
+          ? undefined
+          : (typeArr[0] as "expense" | "income" | undefined);
+        return {
+          category_id: id,
+          category_name: data.name,
+          category_color: data.color,
+          total: data.total,
+          percentage: totalExpenses > 0 ? (data.total / totalExpenses) * 100 : 0,
+          scope,
+          type,
+          _scopeArr: scopeArr,
+          _typeArr: typeArr,
+        };
+      })
+      .sort((a, b) => b.total - a.total) as CategorySummary[];
   };
 
   const calcMonthlyHistory = (): MonthlySummary[] => {
