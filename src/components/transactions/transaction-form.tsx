@@ -120,7 +120,7 @@ export function TransactionForm({
     "#ec4899", "#f43f5e", "#ef4444", "#f97316",
     "#f59e0b", "#eab308", "#84cc16", "#22c55e",
     "#10b981", "#14b8a6", "#06b6d4", "#0ea5e9",
-    "#3b82f6", "#6366f1",
+    "#3b82f6", "#4f46e5",
   ];
 
   useEffect(() => {
@@ -788,9 +788,9 @@ export function TransactionForm({
                   <div>
                     <p className="mb-2 text-xs text-[var(--muted-foreground)]">Cor</p>
                     <div className="flex flex-wrap gap-2">
-                      {categoryColors.map((color) => (
+                      {categoryColors.map((color, idx) => (
                         <button
-                          key={color}
+                          key={`${color}-${idx}`}
                           type="button"
                           onClick={() => setNewCategoryColor(color)}
                           className={cn(
@@ -865,9 +865,9 @@ export function TransactionForm({
                   <div>
                     <p className="mb-2 text-xs text-[var(--muted-foreground)]">Cor</p>
                     <div className="flex flex-wrap gap-2">
-                      {categoryColors.map((color) => (
+                      {categoryColors.map((color, idx) => (
                         <button
-                          key={color}
+                          key={`${color}-${idx}`}
                           type="button"
                           onClick={() => setEditCategoryColor(color)}
                           className={cn(
