@@ -41,6 +41,20 @@ export default function SignupPage() {
 
     setLoading(true);
 
+    const { data: existingProfile } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("email", email)
+      .single();
+
+    if (existingProfile) {
+      setError(
+        "Este e-mail já possui uma conta ativa no sistema. Faça login ou utilize outro e-mail."
+      );
+      setLoading(false);
+      return;
+    }
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
