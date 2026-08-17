@@ -26,7 +26,7 @@ export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
       <Card className="hud-border overflow-hidden bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay opacity-60">
         <CardHeader>
           <CardTitle className="text-sm sm:text-base font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
-            COMPARATIVO MENSAL
+            COMPARATIVO MENSAL RECEITAS
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -51,7 +51,7 @@ export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
       <Card className="hud-border overflow-hidden bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay">
         <CardHeader>
           <CardTitle className="text-sm sm:text-base font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
-            COMPARATIVO MENSAL
+            COMPARATIVO MENSAL RECEITAS
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -93,7 +93,7 @@ export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between border-b border-[var(--primary)]/20 pb-2 mb-2">
           <CardTitle className="text-sm sm:text-base font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
-            COMPARATIVO MENSAL
+            COMPARATIVO MENSAL RECEITAS
           </CardTitle>
           <div className="flex gap-4">
             <div className="text-right">
