@@ -37,7 +37,14 @@ export function useNotifications(): UseNotificationsReturn {
       } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Buscar notificações (sem regenerar automaticamente)
+      // Regenerar e atualizar estado das notificações no banco antes de buscar
+      try {
+        await supabase.rpc("refresh_notifications", { user_uuid: user.id });
+      } catch {
+        // Ignora caso a RPC não esteja instalada no banco
+      }
+
+      // Buscar notificações
       const { data, error } = await supabase
         .from("notifications")
         .select("*")

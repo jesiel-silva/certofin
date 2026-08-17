@@ -75,30 +75,30 @@ function NotificationItem({
       href={targetHref}
       onClick={handleClick}
       className={cn(
-        "group flex items-start gap-3 border-b border-[var(--border)] p-3 transition-colors hover:bg-[var(--accent)]/50 block",
+        "group flex items-start gap-3 border-b border-[var(--border)] p-3.5 transition-colors hover:bg-[var(--accent)]/50 block",
         !notification.is_read && "bg-[var(--primary)]/5"
       )}
     >
-      <div className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-lg", colorClass)}>
-        <Icon className="h-4 w-4" />
+      <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg mt-0.5", colorClass)}>
+        <Icon className="h-4.5 w-4.5" />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <p className={cn("text-xs font-semibold truncate", !notification.is_read ? "text-[var(--foreground)]" : "text-[var(--muted-foreground)]")}>
+        <div className="flex items-center gap-2 flex-wrap">
+          <p className={cn("text-sm font-bold truncate", !notification.is_read ? "text-[var(--foreground)]" : "text-[var(--muted-foreground)]")}>
             {notification.title}
           </p>
           {getTrendIcon()}
           {notification.scope && (
-            <span className={cn("text-[10px] font-mono uppercase", scopeColors[notification.scope] || "")}>
+            <span className={cn("text-xs font-mono uppercase px-1 py-0.5 rounded", scopeColors[notification.scope] || "")}>
               {notification.scope === "business" ? "NEG" : "PESS"}
             </span>
           )}
         </div>
-        <p className="mt-0.5 text-[11px] text-[var(--muted-foreground)] line-clamp-2">
+        <p className="mt-1 text-xs text-[var(--muted-foreground)] leading-snug line-clamp-2">
           {notification.message}
         </p>
-        <div className="mt-1 flex items-center gap-2">
-          <span className="text-[10px] text-[var(--muted-foreground)]/60">
+        <div className="mt-1.5 flex items-center gap-2">
+          <span className="text-xs text-[var(--muted-foreground)]/70">
             {new Date(notification.created_at).toLocaleDateString("pt-BR", {
               day: "2-digit",
               month: "2-digit",
@@ -107,8 +107,8 @@ function NotificationItem({
             })}
           </span>
           {!notification.is_read && (
-            <span className="text-[10px] text-[var(--primary)] flex items-center gap-0.5">
-              <Check className="h-2.5 w-2.5" /> lida
+            <span className="text-xs text-[var(--primary)] font-medium flex items-center gap-0.5">
+              <Check className="h-3 w-3" /> lida
             </span>
           )}
         </div>
@@ -121,7 +121,7 @@ function NotificationItem({
         }}
         className="shrink-0 p-1 text-[var(--muted-foreground)]/40 hover:text-[var(--destructive)] opacity-0 group-hover:opacity-100 transition-all"
       >
-        <Trash2 className="h-3 w-3" />
+        <Trash2 className="h-3.5 w-3.5" />
       </button>
     </Link>
   );
@@ -180,7 +180,7 @@ export function NotificationBell() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-80 max-h-[70vh] overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--background)] shadow-2xl z-50">
+        <div className="absolute right-0 top-full mt-2 w-88 sm:w-[380px] max-h-[70vh] overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--background)] shadow-2xl z-50">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
             <div className="flex items-center gap-2">
