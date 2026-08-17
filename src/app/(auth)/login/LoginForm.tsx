@@ -87,11 +87,47 @@ function LoginFormContent() {
     <div className="flex min-h-screen bg-[var(--background)]">
       {/* Lado Esquerdo - Branding */}
       <div className="relative hidden w-0 lg:block lg:w-1/2 overflow-hidden lg:flex lg:flex-col lg:justify-center lg:px-12 xl:px-20">
-        <div className="absolute inset-0 bg-gradient-to-br from-[var(--primary)] via-[var(--primary)]/90 to-[var(--primary)]/70" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#020C18] via-[#041E2D] to-[#062E3F]" />
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
 
-        <div className="absolute top-20 left-20 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
-        <div className="absolute bottom-20 right-20 h-96 w-96 rounded-full bg-white/5 blur-3xl" />
+        <div className="absolute top-20 left-20 h-72 w-72 rounded-full bg-[var(--primary)]/10 blur-3xl" />
+        <div className="absolute bottom-20 right-20 h-96 w-96 rounded-full bg-[var(--primary)]/5 blur-3xl" />
+
+        {/* Logo Watermark */}
+        <div className="absolute inset-0 pointer-events-none select-none" style={{ zIndex: 0 }}>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center opacity-[0.07]">
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-[700px] w-[700px]">
+              <defs>
+                <linearGradient id="login-wm-left-wing" x1="15" y1="45" x2="35" y2="65" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stopColor="#0073BC" />
+                  <stop offset="100%" stopColor="#054388" />
+                </linearGradient>
+                <linearGradient id="login-wm-bottom-fold" x1="20" y1="70" x2="45" y2="55" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stopColor="#031F44" />
+                  <stop offset="100%" stopColor="#005A9C" />
+                </linearGradient>
+                <linearGradient id="login-wm-arrow" x1="30" y1="80" x2="90" y2="20" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stopColor="#054388" />
+                  <stop offset="35%" stopColor="#0073BC" />
+                  <stop offset="70%" stopColor="#00A0E3" />
+                  <stop offset="100%" stopColor="#009B9E" />
+                </linearGradient>
+                <filter id="login-wm-glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="1.5" result="blur" />
+                  <feFlood floodColor="#00ffcc" floodOpacity="0.3" result="color" />
+                  <feComposite in="color" in2="blur" operator="in" result="shadow" />
+                  <feMerge>
+                    <feMergeNode in="shadow" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+              <path d="M 12 55 L 26 69 L 38 57 L 24 43 Z" fill="url(#login-wm-left-wing)" filter="url(#login-wm-glow)" />
+              <path d="M 26 69 L 41 84 L 53 72 L 38 57 Z" fill="url(#login-wm-bottom-fold)" filter="url(#login-wm-glow)" />
+              <path d="M 33 76 L 73 36 L 68 31 L 90 22 L 90 44 L 85 39 L 45 79 Z" fill="url(#login-wm-arrow)" filter="url(#login-wm-glow)" />
+            </svg>
+          </div>
+        </div>
 
         <div className="relative z-10">
           <Link href="/" className="mb-12 inline-flex items-center">
