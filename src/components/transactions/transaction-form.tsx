@@ -28,6 +28,7 @@ import { formatMonthYear } from "@/lib/utils";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { UpgradeModal } from "@/components/ui/upgrade-modal";
 import { usePlanLimits } from "@/lib/hooks/use-plan-limits";
+import { categoryIconOptions, getCategoryIcon } from "@/components/ui/category-icon";
 
 interface TransactionFormProps {
   initialData?: Transaction;
@@ -95,25 +96,6 @@ export function TransactionForm({
   // Excluir categoria
   const [deletingCategory, setDeletingCategory] = useState<Category | null>(null);
   const [confirmDeleteCategory, setConfirmDeleteCategory] = useState(false);
-
-  const categoryIcons = [
-    { value: "tag", label: "Etiqueta" },
-    { value: "shopping-cart", label: "Carrinho" },
-    { value: "home", label: "Casa" },
-    { value: "car", label: "Carro" },
-    { value: "utensils", label: "Alimentação" },
-    { value: "heart", label: "Saúde" },
-    { value: "briefcase", label: "Trabalho" },
-    { value: "zap", label: "Energia" },
-    { value: "wifi", label: "Internet" },
-    { value: "gift", label: "Presente" },
-    { value: "plane", label: "Viagem" },
-    { value: "book", label: "Educação" },
-    { value: "music", label: "Lazer" },
-    { value: "dumbbell", label: "Academia" },
-    { value: "coffee", label: "Café" },
-    { value: "trending-up", label: "Investimento" },
-  ];
 
   const categoryColors = [
     "#6366f1", "#8b5cf6", "#a855f7", "#d946ef",
@@ -766,22 +748,25 @@ export function TransactionForm({
                   <div>
                     <p className="mb-2 text-xs text-[var(--muted-foreground)]">Ícone</p>
                     <div className="flex flex-wrap gap-2">
-                      {categoryIcons.map((icon) => (
-                        <button
-                          key={icon.value}
-                          type="button"
-                          onClick={() => setNewCategoryIcon(icon.value)}
-                          className={cn(
-                            "h-8 w-8 rounded-lg border-2 flex items-center justify-center text-xs transition-all",
-                            newCategoryIcon === icon.value
-                              ? "border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]"
-                              : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--primary)]/50"
-                          )}
-                          title={icon.label}
-                        >
-                          {icon.value.charAt(0).toUpperCase()}
-                        </button>
-                      ))}
+                      {categoryIconOptions.map((icon) => {
+                        const Icon = getCategoryIcon(icon.value);
+                        return (
+                          <button
+                            key={icon.value}
+                            type="button"
+                            onClick={() => setNewCategoryIcon(icon.value)}
+                            className={cn(
+                              "h-8 w-8 rounded-lg border-2 flex items-center justify-center transition-all",
+                              newCategoryIcon === icon.value
+                                ? "border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]"
+                                : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--primary)]/50"
+                            )}
+                            title={icon.label}
+                          >
+                            <Icon className="h-4 w-4" />
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -843,22 +828,25 @@ export function TransactionForm({
                   <div>
                     <p className="mb-2 text-xs text-[var(--muted-foreground)]">Ícone</p>
                     <div className="flex flex-wrap gap-2">
-                      {categoryIcons.map((icon) => (
-                        <button
-                          key={icon.value}
-                          type="button"
-                          onClick={() => setEditCategoryIcon(icon.value)}
-                          className={cn(
-                            "h-8 w-8 rounded-lg border-2 flex items-center justify-center text-xs transition-all",
-                            editCategoryIcon === icon.value
-                              ? "border-[var(--business)] bg-[var(--business)]/10 text-[var(--business)]"
-                              : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--business)]/50"
-                          )}
-                          title={icon.label}
-                        >
-                          {icon.value.charAt(0).toUpperCase()}
-                        </button>
-                      ))}
+                      {categoryIconOptions.map((icon) => {
+                        const Icon = getCategoryIcon(icon.value);
+                        return (
+                          <button
+                            key={icon.value}
+                            type="button"
+                            onClick={() => setEditCategoryIcon(icon.value)}
+                            className={cn(
+                              "h-8 w-8 rounded-lg border-2 flex items-center justify-center transition-all",
+                              editCategoryIcon === icon.value
+                                ? "border-[var(--business)] bg-[var(--business)]/10 text-[var(--business)]"
+                                : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--business)]/50"
+                            )}
+                            title={icon.label}
+                          >
+                            <Icon className="h-4 w-4" />
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 

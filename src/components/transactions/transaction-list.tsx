@@ -28,6 +28,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { ReportPreview } from "./report-preview";
+import { CategoryIcon } from "@/components/ui/category-icon";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { usePlanLimits } from "@/lib/hooks/use-plan-limits";
@@ -1035,7 +1036,19 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
                     </div>
                     <p className="text-sm text-[var(--muted-foreground)]">
                       {formatDate(t.transaction_date)}
-                      {t.categories?.name && ` • ${t.categories.name}`}
+                      {t.categories?.name && (
+                        <>
+                          {" • "}
+                          <span className="inline-flex items-center gap-1">
+                            <CategoryIcon
+                              icon={t.categories.icon}
+                              color={t.categories.color}
+                              className="h-3 w-3 inline"
+                            />
+                            {t.categories.name}
+                          </span>
+                        </>
+                      )}
                       {t.is_recurring && t.due_day && ` • Dia ${t.due_day}`}
                     </p>
                   </div>
