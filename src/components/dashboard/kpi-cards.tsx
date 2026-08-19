@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+import { Tooltip } from "@/components/ui/tooltip";
 
 interface KpiCardsProps {
   personalIncome: number;
@@ -38,6 +39,7 @@ export function KpiCards({
   const cards = [
     {
       title: "Receita Pessoal",
+      tooltip: "Quanto você ganhou de pessoal, já tirando os gastos. Se estiver no positivo, sobrou dinheiro no final do mês.",
       value: personalNet,
       icon: TrendingUp,
       color: personalNet >= 0 ? "text-[var(--success)]" : "text-[var(--destructive)]",
@@ -46,9 +48,11 @@ export function KpiCards({
       iconGlow: personalNet >= 0 ? "animate-pulse-glow" : "",
       subtitle: null,
       pending: personalPendingIncome > 0 ? `A receber - ${formatCurrency(personalPendingIncome)}` : null,
+      pendingTooltip: "Valores que você ainda não confirmou que recebeu. É só clicar no lançamento para atualizar.",
     },
     {
       title: "Gastos Pessoal",
+      tooltip: "Tudo o que você gastou do seu bolso pessoal neste período.",
       value: personalExpense,
       icon: TrendingDown,
       color: "text-[var(--destructive)]",
@@ -57,9 +61,11 @@ export function KpiCards({
       iconGlow: "animate-pulse-glow",
       subtitle: null,
       pending: personalPendingExpense > 0 ? `A pagar - ${formatCurrency(personalPendingExpense)}` : null,
+      pendingTooltip: "Contas que ainda não foram pagas. Clique no lançamento para marcar como pago.",
     },
     {
       title: "Receita Negócio",
+      tooltip: "Quanto seu negócio ganhou, já tirando os gastos. Se estiver no positivo, seu negócio está lucrando.",
       value: businessNet,
       icon: TrendingUp,
       color: businessNet >= 0 ? "text-[var(--primary)]" : "text-[var(--destructive)]",
@@ -68,9 +74,11 @@ export function KpiCards({
       iconGlow: businessNet >= 0 ? "animate-pulse-glow" : "",
       subtitle: null,
       pending: businessPendingIncome > 0 ? `A receber - ${formatCurrency(businessPendingIncome)}` : null,
+      pendingTooltip: "Valores que seu negócio ainda não confirmou que recebeu.",
     },
     {
       title: "Gastos Negócio",
+      tooltip: "Tudo o que seu negócio gastou neste período.",
       value: businessExpense,
       icon: TrendingDown,
       color: "text-[var(--warning)]",
@@ -79,6 +87,7 @@ export function KpiCards({
       iconGlow: "animate-pulse-glow",
       subtitle: null,
       pending: businessPendingExpense > 0 ? `A pagar - ${formatCurrency(businessPendingExpense)}` : null,
+      pendingTooltip: "Contas do negócio que ainda não foram pagas.",
     },
   ];
 
@@ -107,9 +116,12 @@ export function KpiCards({
           )}
         >
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm sm:text-base font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
-              {card.title}
-            </CardTitle>
+            <div className="flex items-center gap-1.5">
+              <CardTitle className="text-sm sm:text-base font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
+                {card.title}
+              </CardTitle>
+              <Tooltip content={card.tooltip} />
+            </div>
             <div className={cn("rounded-none p-2 border border-[currentColor]/30 bg-[currentColor]/10 transition-all duration-300", card.bg, card.iconGlow)}>
               <card.icon className={cn("h-4 w-4 sm:h-5 sm:w-5", card.color)} />
             </div>
@@ -124,9 +136,12 @@ export function KpiCards({
               </p>
             )}
             {card.pending && (
-              <p className="mt-1 text-sm sm:text-base text-[var(--muted-foreground)] font-sans opacity-80">
-                {card.pending}
-              </p>
+              <div className="mt-1 flex items-center gap-1">
+                <p className="text-sm sm:text-base text-[var(--muted-foreground)] font-sans opacity-80">
+                  {card.pending}
+                </p>
+                {card.pendingTooltip && <Tooltip content={card.pendingTooltip} />}
+              </div>
             )}
           </CardContent>
         </Card>

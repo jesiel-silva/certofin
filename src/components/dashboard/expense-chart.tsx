@@ -14,6 +14,7 @@ import {
   ResponsiveContainer,
   LabelList,
 } from "recharts";
+import { Tooltip as HelpTooltip } from "@/components/ui/tooltip";
 
 function renderBarTopLabel(props: any) {
   const { x, y, width, value, payload } = props;
@@ -114,13 +115,13 @@ function ChartTooltipContent({ item }: { item: CategorySummary }) {
       {/* Divider */}
       <div className="border-t border-white/10 pt-2.5 space-y-1.5">
         {/* Carteira */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2" title="Mostra se esse gasto é pessoal, do negócio ou dos dois.">
           <Wallet className="h-3 w-3 text-[var(--primary)] shrink-0" />
           <span className="text-[10px] text-[var(--muted-foreground)] uppercase tracking-wider">Carteira</span>
           <span className="ml-auto text-xs font-bold text-[var(--foreground)]">{scopeLabel}</span>
         </div>
         {/* Tipo */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2" title="Mostra se é dinheiro que saiu (despesa) ou que entrou (receita).">
           <TypeIcon className="h-3 w-3 shrink-0" style={{ color: typeColor }} />
           <span className="text-[10px] text-[var(--muted-foreground)] uppercase tracking-wider">Tipo</span>
           <span className="ml-auto text-xs font-bold" style={{ color: typeColor }}>{typeLabel}</span>
@@ -207,9 +208,12 @@ export function ExpenseChart({
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between border-b border-[var(--primary)]/20 pb-2 mb-2">
           <div className="flex items-center gap-3">
-            <CardTitle className="text-sm sm:text-base font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
-              {title}
-            </CardTitle>
+            <div className="flex items-center gap-1.5">
+              <CardTitle className="text-sm sm:text-base font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
+                {title}
+              </CardTitle>
+              <HelpTooltip content="Mostra onde seu dinheiro está sendo gasto, separado por tipo (alimentação, transporte, etc)." />
+            </div>
             <div className="flex items-center gap-1 rounded-md border border-[var(--primary)]/20 bg-[var(--background)]/60 p-0.5">
               <button
                 onClick={() => setChartType("bar")}
@@ -219,7 +223,7 @@ export function ExpenseChart({
                     ? "bg-[var(--primary)]/20 text-[var(--primary)] border border-[var(--primary)]/40 shadow-[0_0_8px_var(--primary)]"
                     : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                 )}
-                title="Gráfico de Barras"
+                title="Exibe o gráfico em barras para comparar visualmente o valor de cada categoria lado a lado."
               >
                 <BarChart2 className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Barras</span>
@@ -232,16 +236,19 @@ export function ExpenseChart({
                     ? "bg-[var(--primary)]/20 text-[var(--primary)] border border-[var(--primary)]/40 shadow-[0_0_8px_var(--primary)]"
                     : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                 )}
-                title="Gráfico de Rosca"
+                title="Exibe o gráfico em rosca para ver a proporção percentual de cada categoria."
               >
                 <PieIcon className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Rosca</span>
               </button>
             </div>
           </div>
-          <span className="text-sm sm:text-base font-sans font-bold text-[var(--destructive)] text-glow-red">
-            {formatCurrency(total)}
-          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm sm:text-base font-sans font-bold text-[var(--destructive)] text-glow-red">
+              {formatCurrency(total)}
+            </span>
+            <HelpTooltip content="Valor total de todas as despesas mostradas no gráfico." />
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -348,6 +355,7 @@ export function ExpenseChart({
                 <div
                   key={item.category_id}
                   className="flex items-center gap-1.5 rounded border border-[var(--border)] bg-[var(--background)]/50 px-2 py-1 min-w-0"
+                  title={`${item.category_name}: ${formatCurrency(item.total)} (${item.percentage.toFixed(1)}% do total)`}
                 >
                   <div
                     className="h-2 w-2 shrink-0 rounded-full"

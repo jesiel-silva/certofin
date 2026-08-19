@@ -2,18 +2,20 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  BarChart,
-  Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
   Legend,
+  ReferenceLine,
 } from "recharts";
 import { formatCurrency, getMonthLabel } from "@/lib/utils";
 import type { MonthlySummary } from "@/lib/types";
-import { TrendingUp, TrendingDown, Minus, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
+import { Tooltip as HelpTooltip } from "@/components/ui/tooltip";
 
 interface MonthlyChartProps {
   data: MonthlySummary[];
@@ -26,7 +28,7 @@ export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
       <Card className="hud-border overflow-hidden bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay opacity-60">
         <CardHeader>
           <CardTitle className="text-sm sm:text-base font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
-            COMPARATIVO MENSAL RECEITAS
+            EVOLUÇÃO DO SALDO
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -38,7 +40,7 @@ export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
               Gráfico disponível no Plano Pro
             </p>
             <p className="text-xs text-[var(--muted-foreground)] mt-1">
-              Faça upgrade para ver o comparativo mensal
+              Faça upgrade para ver a evolução do seu saldo
             </p>
           </div>
         </CardContent>
@@ -51,7 +53,7 @@ export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
       <Card className="hud-border overflow-hidden bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay">
         <CardHeader>
           <CardTitle className="text-sm sm:text-base font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
-            COMPARATIVO MENSAL RECEITAS
+            EVOLUÇÃO DO SALDO
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -63,69 +65,59 @@ export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
     );
   }
 
-  // Calculate differences from previous month
-  const chartData = data.map((d, index) => {
-    const prev = index > 0 ? data[index - 1] : null;
-    const personalDiff = prev ? d.personal_income - prev.personal_income : 0;
-    const businessDiff = prev ? d.business_income - prev.business_income : 0;
+  const chartData = data.map((d) => {
+    const personalBalance = d.personal_income - d.personal_expense;
+    const businessBalance = d.business_income - d.business_expense;
+    const totalBalance = personalBalance + businessBalance;
 
     return {
       name: getMonthLabel(d.month),
-      "Receita Pessoal": d.personal_income,
-      "Receita Negócio": d.business_income,
-      personalDiff,
-      businessDiff,
-      hasPrev: index > 0,
+      "Pessoal": personalBalance,
+      "Negócio": businessBalance,
+      "Total": totalBalance,
     };
   });
 
-  const totalPersonal = data.reduce((sum, d) => sum + d.personal_income, 0);
-  const totalBusiness = data.reduce((sum, d) => sum + d.business_income, 0);
-
-  // Last month comparison
-  const lastMonth = data[data.length - 1];
-  const prevMonth = data.length > 1 ? data[data.length - 2] : null;
-  const lastMonthPersonalDiff = prevMonth ? lastMonth.personal_income - prevMonth.personal_income : 0;
-  const lastMonthBusinessDiff = prevMonth ? lastMonth.business_income - prevMonth.business_income : 0;
+  const currentMonth = data[data.length - 1];
+  const currentPersonalBalance = currentMonth.personal_income - currentMonth.personal_expense;
+  const currentBusinessBalance = currentMonth.business_income - currentMonth.business_expense;
+  const currentTotalBalance = currentPersonalBalance + currentBusinessBalance;
 
   return (
     <Card className="hud-border overflow-hidden bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay">
       <CardHeader className="pb-2">
-        <div className="flex items-center justify-between border-b border-[var(--primary)]/20 pb-2 mb-2">
-          <CardTitle className="text-sm sm:text-base font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
-            COMPARATIVO MENSAL RECEITAS
-          </CardTitle>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-[var(--primary)]/20 pb-2 mb-2 gap-2">
+          <div className="flex items-center gap-1.5">
+            <CardTitle className="text-sm sm:text-base font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
+              EVOLUÇÃO DO SALDO
+            </CardTitle>
+            <HelpTooltip content="Mostra como seu saldo (o que sobrou) foi mudando mês a mês, tanto pessoal quanto do negócio." />
+          </div>
           <div className="flex gap-4">
             <div className="text-right">
-              <p className="text-xs sm:text-sm text-[var(--muted-foreground)] uppercase tracking-wider font-sans">TOTAL PESSOAL</p>
-              <p className="text-sm sm:text-base font-sans font-bold text-[var(--success)] text-glow-green">{formatCurrency(totalPersonal)}</p>
+              <p className="text-[10px] sm:text-xs text-[var(--muted-foreground)] uppercase tracking-wider font-sans">Pessoal</p>
+              <p className={`text-sm sm:text-base font-sans font-bold ${currentPersonalBalance >= 0 ? "text-[var(--success)] text-glow-green" : "text-[var(--destructive)] text-glow-red"}`}>
+                {formatCurrency(currentPersonalBalance)}
+              </p>
             </div>
             <div className="text-right">
-              <p className="text-xs sm:text-sm text-[var(--muted-foreground)] uppercase tracking-wider font-sans">TOTAL NEGÓCIO</p>
-              <p className="text-sm sm:text-base font-sans font-bold text-[var(--primary)] text-glow-cyan">{formatCurrency(totalBusiness)}</p>
+              <p className="text-[10px] sm:text-xs text-[var(--muted-foreground)] uppercase tracking-wider font-sans">Negócio</p>
+              <p className={`text-sm sm:text-base font-sans font-bold ${currentBusinessBalance >= 0 ? "text-[var(--primary)] text-glow-cyan" : "text-[var(--destructive)] text-glow-red"}`}>
+                {formatCurrency(currentBusinessBalance)}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] sm:text-xs text-[var(--muted-foreground)] uppercase tracking-wider font-sans">Total</p>
+              <p className={`text-sm sm:text-base font-sans font-bold ${currentTotalBalance >= 0 ? "text-[var(--warning)] text-glow-yellow" : "text-[var(--destructive)] text-glow-red"}`}>
+                {formatCurrency(currentTotalBalance)}
+              </p>
             </div>
           </div>
         </div>
-
-        {/* Last month comparison badges */}
-        {prevMonth && (
-          <div className="flex flex-wrap gap-2 sm:gap-3 mb-2">
-            <DiffBadge
-              label="Pessoal"
-              diff={lastMonthPersonalDiff}
-              color="success"
-            />
-            <DiffBadge
-              label="Negócio"
-              diff={lastMonthBusinessDiff}
-              color="primary"
-            />
-          </div>
-        )}
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={280}>
-          <BarChart data={chartData} margin={{ top: 15, right: 5, left: -10, bottom: 5 }}>
+          <LineChart data={chartData} margin={{ top: 15, right: 5, left: -10, bottom: 5 }}>
             <CartesianGrid
               strokeDasharray="2 4"
               stroke="var(--primary)"
@@ -150,47 +142,47 @@ export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
                 }).format(v)
               }
             />
+            <ReferenceLine y={0} stroke="var(--muted-foreground)" strokeDasharray="4 4" opacity={0.3} />
             <Tooltip
-              cursor={{ fill: "var(--primary)", opacity: 0.05 }}
+              cursor={{ stroke: "var(--primary)", strokeWidth: 1, opacity: 0.3 }}
               content={({ active, payload, label }) => {
                 if (active && payload && payload.length) {
-                  const item = chartData.find((d) => d.name === label);
-                  const personalIncome = Number(payload.find((p) => p.dataKey === "Receita Pessoal")?.value || 0);
-                  const businessIncome = Number(payload.find((p) => p.dataKey === "Receita Negócio")?.value || 0);
+                  const pessoal = Number(payload.find((p) => p.dataKey === "Pessoal")?.value || 0);
+                  const negocio = Number(payload.find((p) => p.dataKey === "Negócio")?.value || 0);
+                  const total = pessoal + negocio;
 
                   return (
                     <div className="hud-border bg-[#0B1221]/95 p-4 shadow-xl shadow-[var(--primary)]/10 min-w-[200px] backdrop-blur-md">
                       <p className="mb-3 text-xs sm:text-sm font-bold uppercase tracking-widest text-[var(--primary)] border-b border-[var(--primary)]/30 pb-1">{label}</p>
-
-                      <div className="space-y-3">
-                        <div>
-                          <div className="flex items-center justify-between gap-4 mb-1">
-                            <span className="flex items-center gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[var(--success)]">
-                              <span className="h-2 w-2 rounded-full bg-[var(--success)]" />
-                              Pessoal
-                            </span>
-                            <span className="text-xs sm:text-sm font-sans font-bold text-[var(--success)]">
-                              {formatCurrency(personalIncome)}
-                            </span>
-                          </div>
-                          {item?.hasPrev && (
-                            <DiffLine diff={item.personalDiff} />
-                          )}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between gap-4">
+                          <span className="flex items-center gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[var(--success)]">
+                            <span className="h-2 w-2 rounded-full bg-[var(--success)]" />
+                            Pessoal
+                          </span>
+                          <span className={`text-xs sm:text-sm font-sans font-bold ${pessoal >= 0 ? "text-[var(--success)]" : "text-[var(--destructive)]"}`}>
+                            {pessoal >= 0 ? "+" : ""}{formatCurrency(pessoal)}
+                          </span>
                         </div>
-
-                        <div>
-                          <div className="flex items-center justify-between gap-4 mb-1">
-                            <span className="flex items-center gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[var(--primary)]">
-                              <span className="h-2 w-2 rounded-full bg-[var(--primary)]" />
-                              Negócio
+                        <div className="flex items-center justify-between gap-4">
+                          <span className="flex items-center gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[var(--primary)]">
+                            <span className="h-2 w-2 rounded-full bg-[var(--primary)]" />
+                            Negócio
+                          </span>
+                          <span className={`text-xs sm:text-sm font-sans font-bold ${negocio >= 0 ? "text-[var(--primary)]" : "text-[var(--destructive)]"}`}>
+                            {negocio >= 0 ? "+" : ""}{formatCurrency(negocio)}
+                          </span>
+                        </div>
+                        <div className="border-t border-[var(--primary)]/20 pt-2 mt-1">
+                          <div className="flex items-center justify-between gap-4">
+                            <span className="flex items-center gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[var(--warning)]">
+                              <span className="h-2 w-2 rounded-full bg-[var(--warning)]" />
+                              Total
                             </span>
-                            <span className="text-xs sm:text-sm font-sans font-bold text-[var(--primary)]">
-                              {formatCurrency(businessIncome)}
+                            <span className={`text-xs sm:text-sm font-sans font-bold ${total >= 0 ? "text-[var(--warning)]" : "text-[var(--destructive)]"}`}>
+                              {total >= 0 ? "+" : ""}{formatCurrency(total)}
                             </span>
                           </div>
-                          {item?.hasPrev && (
-                            <DiffLine diff={item.businessDiff} />
-                          )}
                         </div>
                       </div>
                     </div>
@@ -220,79 +212,34 @@ export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
                 );
               }}
             />
-            <Bar
-              dataKey="Receita Pessoal"
-              fill="var(--success)"
-              fillOpacity={0.8}
+            <Line
+              type="monotone"
+              dataKey="Pessoal"
               stroke="var(--success)"
-              strokeWidth={1}
-              radius={[3, 3, 0, 0]}
+              strokeWidth={2}
+              dot={{ fill: "var(--success)", strokeWidth: 0, r: 3 }}
+              activeDot={{ r: 5, strokeWidth: 0 }}
             />
-            <Bar
-              dataKey="Receita Negócio"
-              fill="var(--primary)"
-              fillOpacity={0.8}
+            <Line
+              type="monotone"
+              dataKey="Negócio"
               stroke="var(--primary)"
-              strokeWidth={1}
-              radius={[3, 3, 0, 0]}
+              strokeWidth={2}
+              dot={{ fill: "var(--primary)", strokeWidth: 0, r: 3 }}
+              activeDot={{ r: 5, strokeWidth: 0 }}
             />
-          </BarChart>
+            <Line
+              type="monotone"
+              dataKey="Total"
+              stroke="var(--warning)"
+              strokeWidth={2.5}
+              strokeDasharray="6 3"
+              dot={{ fill: "var(--warning)", strokeWidth: 0, r: 3 }}
+              activeDot={{ r: 5, strokeWidth: 0 }}
+            />
+          </LineChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>
-  );
-}
-
-function DiffBadge({ label, diff, color }: { label: string; diff: number; color: string }) {
-  const colorClasses: Record<string, string> = {
-    success: "bg-[var(--success)]/10 border-[var(--success)]/30 text-[var(--success)]",
-    primary: "bg-[var(--primary)]/10 border-[var(--primary)]/30 text-[var(--primary)]",
-    destructive: "bg-[var(--destructive)]/10 border-[var(--destructive)]/30 text-[var(--destructive)]",
-  };
-
-  const textColor: Record<string, string> = {
-    success: "text-[var(--success)]",
-    primary: "text-[var(--primary)]",
-    destructive: "text-[var(--destructive)]",
-  };
-
-  return (
-    <div className={`flex items-center gap-2 rounded-lg border px-2 sm:px-3 py-1 sm:py-1.5 ${colorClasses[color]}`}>
-      <span className="text-xs sm:text-sm font-sans font-bold uppercase tracking-wider text-[var(--muted-foreground)]">
-        {label}
-      </span>
-      {diff > 0 ? (
-        <span className={`flex items-center gap-1 text-xs sm:text-sm font-sans font-bold ${textColor[color]}`}>
-          <TrendingUp className="h-3 w-3" />
-          +{formatCurrency(diff)}
-        </span>
-      ) : diff < 0 ? (
-        <span className="flex items-center gap-1 text-xs sm:text-sm font-sans font-bold text-[var(--destructive)]">
-          <TrendingDown className="h-3 w-3" />
-          {formatCurrency(diff)}
-        </span>
-      ) : (
-        <span className="flex items-center gap-1 text-xs sm:text-sm font-sans font-bold text-[var(--muted-foreground)]">
-          <Minus className="h-3 w-3" />
-          —
-        </span>
-      )}
-    </div>
-  );
-}
-
-function DiffLine({ diff }: { diff: number }) {
-  if (diff === 0) {
-    return (
-      <p className="text-[10px] sm:text-xs font-sans text-[var(--muted-foreground)] pl-4">
-        Sem alteração vs mês anterior
-      </p>
-    );
-  }
-
-  return (
-    <p className={`text-[10px] sm:text-xs font-sans pl-4 ${diff > 0 ? "text-[var(--success)]" : "text-[var(--destructive)]"}`}>
-      {diff > 0 ? "▲" : "▼"} {diff > 0 ? "+" : ""}{formatCurrency(diff)} vs mês anterior
-    </p>
   );
 }

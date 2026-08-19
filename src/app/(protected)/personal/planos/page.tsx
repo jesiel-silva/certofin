@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import type { Profile } from "@/lib/types";
+import { Tooltip } from "@/components/ui/tooltip";
 
 import { CancellationSurveyModal } from "@/components/account/cancellation-survey-modal";
 
@@ -150,7 +151,10 @@ export default function PersonalPlanosPage() {
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div>
-          <h1 className="text-3xl font-bold text-[var(--foreground)]">Planos</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-3xl font-bold text-[var(--foreground)]">Planos</h1>
+            <Tooltip content="Veja seus planos, teste o Pro grátis ou cancele sua assinatura." />
+          </div>
           <p className="text-base text-[var(--muted-foreground)]">
             Escolha o plano ideal para suas necessidades
           </p>
@@ -174,16 +178,19 @@ export default function PersonalPlanosPage() {
           {/* Botão de Trial */}
           {!isPro && !trialActive && (
             <div className="mt-6 text-center">
-              <Button
-                onClick={handleStartTrial}
-                disabled={activatingTrial}
-                className="bg-[var(--success)]/10 border border-[var(--success)]/30 text-[var(--success)] hover:bg-[var(--success)]/20"
-              >
-                {activatingTrial ? (
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                ) : null}
-                Testar PRO grátis por 14 dias
-              </Button>
+              <div className="flex items-center justify-center gap-1.5">
+                <Button
+                  onClick={handleStartTrial}
+                  disabled={activatingTrial}
+                  className="bg-[var(--success)]/10 border border-[var(--success)]/30 text-[var(--success)] hover:bg-[var(--success)]/20"
+                >
+                  {activatingTrial ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : null}
+                  Testar PRO grátis por 14 dias
+                </Button>
+                <Tooltip content="Teste o plano Pro por 14 dias sem pagar nada. Ao final, se não cancelar, volta para o plano Free." />
+              </div>
               <p className="mt-2 text-sm text-[var(--muted-foreground)]">
                 Acesso completo a todos os recursos do plano Pro
               </p>
@@ -213,14 +220,17 @@ export default function PersonalPlanosPage() {
 
           {(isPro || trialActive) && (
             <div className="mt-6 pt-4 border-t border-[var(--border)] text-center">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowCancelModal(true)}
-                className="text-[var(--warning)] border-[var(--warning)]/30 hover:bg-[var(--warning)]/10"
-              >
-                Cancelar assinatura / plano atual
-              </Button>
+              <div className="flex items-center justify-center gap-1.5">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowCancelModal(true)}
+                  className="text-[var(--warning)] border-[var(--warning)]/30 hover:bg-[var(--warning)]/10"
+                >
+                  Cancelar assinatura / plano atual
+                </Button>
+                <Tooltip content="Cancele sua assinatura. Você continua com acesso Pro até o dia que já pagou." />
+              </div>
             </div>
           )}
         </CardContent>

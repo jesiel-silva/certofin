@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency, getMonthLabel } from "@/lib/utils";
 import type { MonthlySummary } from "@/lib/types";
 import { TrendingUp, TrendingDown, Minus, ArrowRight, Lock } from "lucide-react";
+import { Tooltip } from "@/components/ui/tooltip";
 
 interface MonthComparisonProps {
   data: MonthlySummary[];
@@ -16,9 +17,12 @@ export function MonthComparison({ data, userPlan = "free" }: MonthComparisonProp
       <Card className="hud-border overflow-hidden bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay opacity-60">
         <CardHeader className="pb-2">
           <div className="border-b border-[var(--primary)]/20 pb-2 mb-2">
-            <CardTitle className="text-sm sm:text-base font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
-              COMPARAÇÃO COM MÊS ANTERIOR
-            </CardTitle>
+            <div className="flex items-center gap-1.5">
+              <CardTitle className="text-sm sm:text-base font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
+                COMPARAÇÃO COM MÊS ANTERIOR
+              </CardTitle>
+              <Tooltip content="Compara o que você ganhou e gastou entre o mês passado e o mês atual, para ver se melhorou ou piorou." />
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -72,9 +76,12 @@ export function MonthComparison({ data, userPlan = "free" }: MonthComparisonProp
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Pessoal */}
           <div className="rounded-lg border border-[var(--success)]/20 bg-[var(--success)]/5 p-4">
-            <p className="text-sm sm:text-base font-bold uppercase tracking-widest text-[var(--success)] mb-3">
-              PESSOAL
-            </p>
+            <div className="flex items-center gap-1.5">
+              <p className="text-sm sm:text-base font-bold uppercase tracking-widest text-[var(--success)] mb-3">
+                PESSOAL
+              </p>
+              <Tooltip content="Dados só da sua vida pessoal." />
+            </div>
             
             <div className="space-y-3">
               {/* Receita */}
@@ -109,9 +116,12 @@ export function MonthComparison({ data, userPlan = "free" }: MonthComparisonProp
 
           {/* Negócio */}
           <div className="rounded-lg border border-[var(--primary)]/20 bg-[var(--primary)]/5 p-4">
-            <p className="text-sm sm:text-base font-bold uppercase tracking-widest text-[var(--primary)] mb-3">
-              NEGÓCIO
-            </p>
+            <div className="flex items-center gap-1.5">
+              <p className="text-sm sm:text-base font-bold uppercase tracking-widest text-[var(--primary)] mb-3">
+                NEGÓCIO
+              </p>
+              <Tooltip content="Dados só do seu negócio." />
+            </div>
             
             <div className="space-y-3">
               {/* Receita */}

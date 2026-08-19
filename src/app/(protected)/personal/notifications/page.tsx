@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { useNotifications, type Notification } from "@/lib/hooks/use-notifications";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { Tooltip } from "@/components/ui/tooltip";
 
 import { useRouter } from "next/navigation";
 
@@ -93,9 +94,22 @@ function NotificationCard({
             {notification.title}
           </p>
           {getTrendIcon()}
-          <span className={cn("text-xs font-mono uppercase px-1.5 py-0.5 rounded", typeColors[notification.type])}>
-            {typeLabels[notification.type]}
-          </span>
+          <div className="flex items-center gap-1">
+            <span className={cn("text-xs font-mono uppercase px-1.5 py-0.5 rounded", typeColors[notification.type])}>
+              {typeLabels[notification.type]}
+            </span>
+            <Tooltip
+              content={
+                notification.type === "overdue"
+                  ? "Essa conta já passou do prazo. É bom resolver o quanto antes."
+                  : notification.type === "due_soon"
+                  ? "Essa conta está perto de vencer. Fique de olho!"
+                  : notification.type === "comparison"
+                  ? "Comparação automática entre o que você ganhou e gastou de um mês para o outro."
+                  : "Aviso importante do CertoFin."
+              }
+            />
+          </div>
           {notification.scope && (
             <span className={cn("text-xs font-mono uppercase", scopeColors[notification.scope])}>
               {notification.scope === "business" ? "Negócio" : "Pessoal"}
@@ -169,7 +183,10 @@ export default function NotificationsPage() {
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div>
-            <h1 className="text-3xl font-bold">Notificações</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-3xl font-bold">Notificações</h1>
+              <Tooltip content="Aqui aparece quando algo precisa da sua atenção: contas atrasadas, comparativos e avisos." />
+            </div>
             <p className="text-base text-[var(--muted-foreground)]">
               {unreadCount > 0 ? `${unreadCount} não lida${unreadCount > 1 ? "s" : ""}` : "Todas lidas"}
             </p>

@@ -29,6 +29,7 @@ import { cn } from "@/lib/utils";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { ReportPreview } from "./report-preview";
 import { CategoryIcon } from "@/components/ui/category-icon";
+import { Tooltip } from "@/components/ui/tooltip";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { usePlanLimits } from "@/lib/hooks/use-plan-limits";
@@ -852,6 +853,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
               variant="outline"
               onClick={handleOpenReport}
               className="gap-2"
+              title="Ver um resumo dos seus lançamentos"
             >
               <FileText className="h-4 w-4" />
               <span className="hidden sm:inline">Visualizar</span>
@@ -867,6 +869,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
               }}
               disabled={!canUseInstallment || exportingPdf}
               className="gap-2"
+              title="Baixar seus lançamentos em PDF (precisa do plano Pro)"
             >
               <Download className="h-4 w-4" />
               <span className="hidden sm:inline">{exportingPdf ? "Gerando..." : "Exportar PDF"}</span>
@@ -883,6 +886,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
               }}
               disabled={!canUseInstallment}
               className="gap-2"
+              title="Baixar seus lançamentos em planilha (precisa do plano Pro)"
             >
               <FileSpreadsheet className="h-4 w-4" />
               <span className="hidden sm:inline">CSV</span>
@@ -1075,6 +1079,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
                                 ? "bg-[var(--success)]/10 text-[var(--success)] hover:bg-[var(--success)]/20"
                                 : "bg-[var(--warning)]/10 text-[var(--warning)] hover:bg-[var(--warning)]/20"
                             )}
+                            title={t.status === "paid" ? "Clique para voltar para pendente" : "Clique para marcar como pago"}
                           >
                             {t.status === "paid" ? (
                               <>
@@ -1113,6 +1118,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
                               ? "bg-[var(--success)]/10 text-[var(--success)] hover:bg-[var(--success)]/20"
                               : "bg-[var(--warning)]/10 text-[var(--warning)] hover:bg-[var(--warning)]/20"
                           )}
+                          title={t.status === "paid" ? "Clique para voltar para pendente" : "Clique para marcar como pago"}
                         >
                           {t.status === "paid" ? (
                             <>
@@ -1130,12 +1136,14 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
                       <Link
                         href={t.scope === "business" ? `/business/transactions/${t.template_id || t.id}/edit` : `/personal/transactions/${t.template_id || t.id}/edit`}
                         className="rounded p-1 text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:text-[var(--foreground)] transition-colors"
+                        title="Editar esse lançamento"
                       >
                         <Pencil className="h-3.5 w-3.5" />
                       </Link>
                       <button
                         onClick={() => setDeleteId(t.id)}
                         className="rounded p-1 text-[var(--muted-foreground)] hover:bg-[var(--destructive)]/10 hover:text-[var(--destructive)] transition-colors"
+                        title="Apagar esse lançamento pra sempre"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
