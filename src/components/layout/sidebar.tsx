@@ -15,6 +15,7 @@ import {
   Settings,
   User,
   Bell,
+  HelpCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -171,6 +172,30 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             )}
             <Settings className="h-4 w-4" />
             AJUSTES
+          </Link>
+        </div>
+
+        {/* ═══════ SUPORTE ═══════ */}
+        <div className="mb-4">
+          <Link
+            href="/personal/ajuda"
+            onClick={onClose}
+            className={cn(
+              "group relative flex items-center gap-3 rounded-none px-3 py-2.5 text-xs uppercase tracking-widest font-bold transition-all duration-300",
+              isActive("/personal/ajuda")
+                ? "bg-[var(--success)]/10 text-[var(--success)] dark:text-glow-green border border-[var(--success)]/30"
+                : "text-[var(--success)]/70 hover:bg-[var(--success)]/5 hover:text-[var(--success)] border border-transparent hover:border-[var(--success)]/30"
+            )}
+          >
+            {isActive("/personal/ajuda") && (
+              <>
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--success)] glow-green" />
+                <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-[var(--success)]" />
+                <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-[var(--success)]" />
+              </>
+            )}
+            <HelpCircle className={cn("h-4 w-4", isActive("/personal/ajuda") ? "text-[var(--success)] drop-shadow-[0_0_5px_var(--success)]" : "")} />
+            AJUDA
           </Link>
         </div>
 
