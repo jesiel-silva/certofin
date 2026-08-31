@@ -55,20 +55,22 @@ export function Tooltip({ content, children, className, iconClassName, side = "t
   return (
     <div
       ref={triggerRef}
-      className={cn("relative inline-flex", className)}
+      className={cn("relative inline-flex items-center", className)}
       onMouseEnter={() => calcPosition()}
       onMouseLeave={() => setCoords(null)}
       onFocus={() => calcPosition()}
       onBlur={() => setCoords(null)}
     >
       {children || (
-        <HelpCircle
-          className={cn(
-            "h-3.5 w-3.5 text-[var(--muted-foreground)]/50 hover:text-[var(--muted-foreground)] cursor-help transition-colors shrink-0",
-            iconClassName
-          )}
-          tabIndex={0}
-        />
+        <span className="p-0.5 rounded-full hover:bg-[var(--primary)]/10 transition-colors inline-flex items-center justify-center cursor-help">
+          <HelpCircle
+            className={cn(
+              "h-3.5 w-3.5 text-[var(--muted-foreground)]/60 hover:text-[var(--primary)] transition-colors shrink-0",
+              iconClassName
+            )}
+            tabIndex={0}
+          />
+        </span>
       )}
       {coords !== null &&
         createPortal(

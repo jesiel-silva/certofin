@@ -206,48 +206,52 @@ export function ExpenseChart({
   return (
     <Card className="hud-border overflow-hidden bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay">
       <CardHeader className="pb-2">
-        <div className="flex items-center justify-between border-b border-[var(--primary)]/20 pb-2 mb-2">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5">
-              <CardTitle className="text-sm sm:text-base font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
-                {title}
-              </CardTitle>
-              <HelpTooltip content="Mostra onde seu dinheiro está sendo gasto, separado por tipo (alimentação, transporte, etc)." />
-            </div>
-            <div className="flex items-center gap-1 rounded-md border border-[var(--primary)]/20 bg-[var(--background)]/60 p-0.5">
+        <div className="flex items-center justify-between border-b border-[var(--primary)]/20 pb-2 mb-2 gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <CardTitle className="text-xs sm:text-sm md:text-base font-display font-bold uppercase tracking-wider text-[var(--muted-foreground)] truncate">
+              {title}
+            </CardTitle>
+            <HelpTooltip content="Mostra onde seu dinheiro está sendo gasto, separado por tipo (alimentação, transporte, etc)." className="shrink-0" />
+          </div>
+          
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <div className="flex items-center gap-0.5 rounded-md border border-[var(--primary)]/20 bg-[var(--background)]/60 p-0.5">
               <button
                 onClick={() => setChartType("bar")}
                 className={cn(
-                  "flex items-center gap-1 rounded px-2 py-0.5 text-xs font-medium transition-all",
+                  "flex items-center gap-1 rounded px-1.5 py-1 text-xs font-medium transition-all",
                   chartType === "bar"
                     ? "bg-[var(--primary)]/20 text-[var(--primary)] border border-[var(--primary)]/40 shadow-[0_0_8px_var(--primary)]"
                     : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                 )}
                 title="Exibe o gráfico em barras para comparar visualmente o valor de cada categoria lado a lado."
+                aria-label="Gráfico em Barras"
               >
                 <BarChart2 className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Barras</span>
+                <span className="hidden xl:inline text-[11px]">Barras</span>
               </button>
               <button
                 onClick={() => setChartType("pie")}
                 className={cn(
-                  "flex items-center gap-1 rounded px-2 py-0.5 text-xs font-medium transition-all",
+                  "flex items-center gap-1 rounded px-1.5 py-1 text-xs font-medium transition-all",
                   chartType === "pie"
                     ? "bg-[var(--primary)]/20 text-[var(--primary)] border border-[var(--primary)]/40 shadow-[0_0_8px_var(--primary)]"
                     : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                 )}
                 title="Exibe o gráfico em rosca para ver a proporção percentual de cada categoria."
+                aria-label="Gráfico em Rosca"
               >
                 <PieIcon className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Rosca</span>
+                <span className="hidden xl:inline text-[11px]">Rosca</span>
               </button>
             </div>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-sm sm:text-base font-sans font-bold text-[var(--destructive)] text-glow-red">
-              {formatCurrency(total)}
-            </span>
-            <HelpTooltip content="Valor total de todas as despesas mostradas no gráfico." />
+
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm sm:text-base font-sans font-bold text-[var(--destructive)] text-glow-red whitespace-nowrap">
+                {formatCurrency(total)}
+              </span>
+              <HelpTooltip content="Valor total de todas as despesas mostradas no gráfico." className="shrink-0" />
+            </div>
           </div>
         </div>
       </CardHeader>

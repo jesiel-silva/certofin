@@ -115,14 +115,14 @@ export function KpiCards({
             `delay-${(index + 1) * 100}`
           )}
         >
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <div className="flex items-center gap-1.5">
-              <CardTitle className="text-sm sm:text-base font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
+          <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <CardTitle className="text-xs sm:text-sm font-display font-bold uppercase tracking-wider text-[var(--muted-foreground)] truncate">
                 {card.title}
               </CardTitle>
-              <Tooltip content={card.tooltip} />
+              <Tooltip content={card.tooltip} className="shrink-0" />
             </div>
-            <div className={cn("rounded-none p-2 border border-[currentColor]/30 bg-[currentColor]/10 transition-all duration-300", card.bg, card.iconGlow)}>
+            <div className={cn("rounded-none p-2 border border-[currentColor]/30 bg-[currentColor]/10 transition-all duration-300 shrink-0", card.bg, card.iconGlow)}>
               <card.icon className={cn("h-4 w-4 sm:h-5 sm:w-5", card.color)} />
             </div>
           </CardHeader>
@@ -136,11 +136,11 @@ export function KpiCards({
               </p>
             )}
             {card.pending && (
-              <div className="mt-1 flex items-center gap-1">
-                <p className="text-sm sm:text-base text-[var(--muted-foreground)] font-sans opacity-80">
+              <div className="mt-1.5 flex items-center gap-2">
+                <p className="text-xs sm:text-sm text-[var(--muted-foreground)] font-sans opacity-85">
                   {card.pending}
                 </p>
-                {card.pendingTooltip && <Tooltip content={card.pendingTooltip} />}
+                {card.pendingTooltip && <Tooltip content={card.pendingTooltip} className="shrink-0" />}
               </div>
             )}
           </CardContent>

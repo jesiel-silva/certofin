@@ -87,11 +87,11 @@ export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
     <Card className="hud-border overflow-hidden bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay">
       <CardHeader className="pb-2">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-[var(--primary)]/20 pb-2 mb-2 gap-2">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2 min-w-0">
             <CardTitle className="text-sm sm:text-base font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
               EVOLUÇÃO DO SALDO
             </CardTitle>
-            <HelpTooltip content="Mostra como seu saldo (o que sobrou) foi mudando mês a mês, tanto pessoal quanto do negócio." />
+            <HelpTooltip content="Mostra como seu saldo (o que sobrou) foi mudando mês a mês, tanto pessoal quanto do negócio." className="shrink-0" />
           </div>
           <div className="flex gap-4">
             <div className="text-right">

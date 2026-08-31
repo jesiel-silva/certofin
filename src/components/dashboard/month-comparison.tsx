@@ -64,9 +64,12 @@ export function MonthComparison({ data, userPlan = "free" }: MonthComparisonProp
     <Card className="hud-border overflow-hidden bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay">
       <CardHeader className="pb-2">
         <div className="border-b border-[var(--primary)]/20 pb-2 mb-2">
-          <CardTitle className="text-sm sm:text-base font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
-            COMPARAÇÃO COM MÊS ANTERIOR
-          </CardTitle>
+          <div className="flex items-center gap-2">
+            <CardTitle className="text-sm sm:text-base font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
+              COMPARAÇÃO COM MÊS ANTERIOR
+            </CardTitle>
+            <Tooltip content="Compara o que você ganhou e gastou entre o mês passado e o mês atual, para ver se melhorou ou piorou." className="shrink-0" />
+          </div>
           <p className="text-sm sm:text-base font-sans text-[var(--muted-foreground)] mt-1">
             {previousMonthLabel} <ArrowRight className="inline h-3 w-3" /> {currentMonthLabel}
           </p>
@@ -76,11 +79,11 @@ export function MonthComparison({ data, userPlan = "free" }: MonthComparisonProp
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Pessoal */}
           <div className="rounded-lg border border-[var(--success)]/20 bg-[var(--success)]/5 p-4">
-            <div className="flex items-center gap-1.5">
-              <p className="text-sm sm:text-base font-bold uppercase tracking-widest text-[var(--success)] mb-3">
+            <div className="flex items-center gap-2 mb-3">
+              <p className="text-sm sm:text-base font-bold uppercase tracking-widest text-[var(--success)]">
                 PESSOAL
               </p>
-              <Tooltip content="Dados só da sua vida pessoal." />
+              <Tooltip content="Dados só da sua vida pessoal." className="shrink-0" />
             </div>
             
             <div className="space-y-3">
@@ -116,11 +119,11 @@ export function MonthComparison({ data, userPlan = "free" }: MonthComparisonProp
 
           {/* Negócio */}
           <div className="rounded-lg border border-[var(--primary)]/20 bg-[var(--primary)]/5 p-4">
-            <div className="flex items-center gap-1.5">
-              <p className="text-sm sm:text-base font-bold uppercase tracking-widest text-[var(--primary)] mb-3">
+            <div className="flex items-center gap-2 mb-3">
+              <p className="text-sm sm:text-base font-bold uppercase tracking-widest text-[var(--primary)]">
                 NEGÓCIO
               </p>
-              <Tooltip content="Dados só do seu negócio." />
+              <Tooltip content="Dados só do seu negócio." className="shrink-0" />
             </div>
             
             <div className="space-y-3">
