@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Logo } from "@/components/ui/logo";
 import {
   BarChart3,
@@ -89,7 +90,7 @@ export default function HomePage() {
       <header className="sticky top-0 z-50 border-b border-[var(--primary)]/30 bg-[#020617]/90 backdrop-blur-md transition-all">
         <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
           <Link href="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
-            <Logo size="sm" />
+            <Logo size="md" />
           </Link>
           <div className="flex items-center gap-4">
             <nav className="hidden items-center gap-2 md:flex">
@@ -141,38 +142,21 @@ export default function HomePage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[var(--primary)]/5 blur-[150px] pointer-events-none" />
 
         {/* Logo Watermark */}
-        <div className="absolute inset-0 pointer-events-none select-none" style={{ zIndex: 0 }}>
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-[10%] flex items-center justify-center">
-            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-[600px] w-[600px] animate-watermark-pulse">
-            <defs>
-              <linearGradient id="wm-left-wing" x1="15" y1="45" x2="35" y2="65" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stopColor="#0073BC" />
-                <stop offset="100%" stopColor="#054388" />
-              </linearGradient>
-              <linearGradient id="wm-bottom-fold" x1="20" y1="70" x2="45" y2="55" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stopColor="#031F44" />
-                <stop offset="100%" stopColor="#005A9C" />
-              </linearGradient>
-              <linearGradient id="wm-arrow" x1="30" y1="80" x2="90" y2="20" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stopColor="#054388" />
-                <stop offset="35%" stopColor="#0073BC" />
-                <stop offset="70%" stopColor="#00A0E3" />
-                <stop offset="100%" stopColor="#009B9E" />
-              </linearGradient>
-              <filter id="wm-glow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="1.5" result="blur" />
-                <feFlood floodColor="#00ffcc" floodOpacity="0.3" result="color" />
-                <feComposite in="color" in2="blur" operator="in" result="shadow" />
-                <feMerge>
-                  <feMergeNode in="shadow" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-            <path d="M 12 55 L 26 69 L 38 57 L 24 43 Z" fill="url(#wm-left-wing)" filter="url(#wm-glow)" />
-            <path d="M 26 69 L 41 84 L 53 72 L 38 57 Z" fill="url(#wm-bottom-fold)" filter="url(#wm-glow)" />
-            <path d="M 33 76 L 73 36 L 68 31 L 90 22 L 90 44 L 85 39 L 45 79 Z" fill="url(#wm-arrow)" filter="url(#wm-glow)" />
-          </svg>
+        <div className="absolute inset-0 pointer-events-none select-none overflow-hidden" style={{ zIndex: 0 }}>
+          <div className="absolute top-[20%] left-1/2 -translate-x-1/2 -translate-y-1/2">
+            {/* Logo image */}
+            <div className="relative h-[900px] w-[900px] animate-watermark-pulse"
+              style={{ opacity: 0.14 }}
+            >
+              <Image
+                src="/stripe-logo-transp.png"
+                alt=""
+                fill
+                sizes="900px"
+                className="object-contain"
+                priority
+              />
+            </div>
           </div>
         </div>
         
@@ -645,7 +629,7 @@ export default function HomePage() {
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <Link href="/" className="flex items-center">
-                <Logo size="sm" />
+                <Logo size="md" />
               </Link>
               <p className="mt-4 text-xs font-sans uppercase tracking-widest leading-normal text-[var(--muted-foreground)]">
                 A ferramenta mais simples e inteligente para separar as contas pessoais e corporativas de empreendedores individuais.

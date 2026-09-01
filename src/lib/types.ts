@@ -9,6 +9,11 @@ export interface Profile {
   email: string;
   avatar_url: string | null;
   subscription_status: "free" | "pro";
+  stripe_customer_id?: string | null;
+  stripe_subscription_id?: string | null;
+  stripe_price_id?: string | null;
+  current_period_end?: string | null;
+  cancel_at_period_end?: boolean | null;
   trial_ends_at: string | null;
   trial_used_at: string | null;
   created_at: string;

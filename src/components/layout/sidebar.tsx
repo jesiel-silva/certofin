@@ -83,10 +83,10 @@ export function Sidebar({ open, onClose }: SidebarProps) {
   const content = (
     <div className="flex h-full flex-col bg-[#020617]/95 backdrop-blur-md scanline-overlay">
       {/* Logo */}
-      <div className="px-5 py-5 border-b border-[var(--primary)]/30">
+      <div className="px-4 py-[0.1rem] border-b border-[var(--primary)]/30 flex justify-center">
         <Link href="/personal/dashboard" className="flex items-center group" onClick={onClose}>
           <div className="group-hover:drop-shadow-[0_0_12px_var(--primary)] transition-all">
-            <Logo size="sm" showSubtitle={false} textClassName="text-2xl" />
+            <Logo size="xl" showSubtitle={false} textClassName="text-5xl" />
           </div>
         </Link>
       </div>

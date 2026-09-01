@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -91,37 +92,17 @@ export default function SignupPage() {
 
         {/* Logo Watermark */}
         <div className="absolute inset-0 pointer-events-none select-none" style={{ zIndex: 0 }}>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center opacity-[0.07]">
-            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-[700px] w-[700px]">
-              <defs>
-                <linearGradient id="signup-wm-left-wing" x1="15" y1="45" x2="35" y2="65" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stopColor="#0073BC" />
-                  <stop offset="100%" stopColor="#054388" />
-                </linearGradient>
-                <linearGradient id="signup-wm-bottom-fold" x1="20" y1="70" x2="45" y2="55" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stopColor="#031F44" />
-                  <stop offset="100%" stopColor="#005A9C" />
-                </linearGradient>
-                <linearGradient id="signup-wm-arrow" x1="30" y1="80" x2="90" y2="20" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stopColor="#054388" />
-                  <stop offset="35%" stopColor="#0073BC" />
-                  <stop offset="70%" stopColor="#00A0E3" />
-                  <stop offset="100%" stopColor="#009B9E" />
-                </linearGradient>
-                <filter id="signup-wm-glow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="1.5" result="blur" />
-                  <feFlood floodColor="#00ffcc" floodOpacity="0.3" result="color" />
-                  <feComposite in="color" in2="blur" operator="in" result="shadow" />
-                  <feMerge>
-                    <feMergeNode in="shadow" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
-              <path d="M 12 55 L 26 69 L 38 57 L 24 43 Z" fill="url(#signup-wm-left-wing)" filter="url(#signup-wm-glow)" />
-              <path d="M 26 69 L 41 84 L 53 72 L 38 57 Z" fill="url(#signup-wm-bottom-fold)" filter="url(#signup-wm-glow)" />
-              <path d="M 33 76 L 73 36 L 68 31 L 90 22 L 90 44 L 85 39 L 45 79 Z" fill="url(#signup-wm-arrow)" filter="url(#signup-wm-glow)" />
-            </svg>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            <div className="relative h-[600px] w-[600px]" style={{ opacity: 0.13 }}>
+              <Image
+                src="/stripe-logo-transp.png"
+                alt=""
+                fill
+                sizes="600px"
+                className="object-contain"
+                priority
+              />
+            </div>
           </div>
         </div>
 
@@ -129,7 +110,6 @@ export default function SignupPage() {
         <div className="relative z-10">
           <Link href="/" className="mb-12 inline-flex items-center">
             <Logo size="lg" showText={false} />
-            <span className="ml-3 text-2xl font-bold text-white">CertoFin</span>
           </Link>
 
           <h1 className="mb-6 text-4xl font-bold leading-tight text-white xl:text-5xl">

@@ -1,15 +1,16 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { CheckCircle, XCircle, Crown, Lock } from "lucide-react";
+import { CheckCircle, XCircle, Crown, Lock, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface PricingCardsProps {
   currentPlan: "free" | "pro";
+  loading?: boolean;
   onSelectPlan?: (plan: "free" | "pro") => void;
 }
 
-export function PricingCards({ currentPlan, onSelectPlan }: PricingCardsProps) {
+export function PricingCards({ currentPlan, loading = false, onSelectPlan }: PricingCardsProps) {
   const plans = [
     {
       id: "free" as const,
@@ -132,15 +133,15 @@ export function PricingCards({ currentPlan, onSelectPlan }: PricingCardsProps) {
           <Button
             variant={plan.isRecommended ? "default" : "outline"}
             className="w-full"
-            disabled={currentPlan === plan.id}
+            disabled={currentPlan === plan.id || (plan.id === "pro" && loading)}
             onClick={() => onSelectPlan?.(plan.id)}
           >
             {currentPlan === plan.id ? (
               "Plano Atual"
             ) : plan.id === "pro" ? (
-              <span className="flex items-center gap-2">
-                Assinar Pro
-                <Lock className="h-3 w-3" />
+              <span className="flex items-center justify-center gap-2">
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-3.5 w-3.5" />}
+                {loading ? "Redirecionando..." : "Assinar Pro"}
               </span>
             ) : (
               plan.buttonLabel
