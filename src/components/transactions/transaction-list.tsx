@@ -587,23 +587,24 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
         if (profile) userName = profile.full_name || userData.user.email || "";
       }
       
-      // Converter SVG logo para imagem
-      const svgLogo = `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M 12 55 L 26 69 L 38 57 L 24 43 Z" fill="#054388"/>
-        <path d="M 26 69 L 41 84 L 53 72 L 38 57 Z" fill="#031F44"/>
-        <path d="M 33 76 L 73 36 L 68 31 L 90 22 L 90 44 L 85 39 L 45 79 Z" fill="#009B9E"/>
-      </svg>`;
-      const svgBlob = new Blob([svgLogo], { type: "image/svg+xml" });
-      const svgUrl = URL.createObjectURL(svgBlob);
-      const img = new Image();
-      await new Promise((resolve) => { img.onload = resolve; img.src = svgUrl; });
+      // Carregar a imagem da NOVA logo oficial (/stripe-logo-transp.png)
+      const logoImg = new Image();
+      logoImg.src = "/stripe-logo-transp.png";
+      await new Promise((resolve) => {
+        logoImg.onload = resolve;
+        logoImg.onerror = resolve;
+      });
+
       const canvas = document.createElement("canvas");
-      canvas.width = 200;
-      canvas.height = 200;
-      const ctx = canvas.getContext("2d")!;
-      ctx.drawImage(img, 0, 0, 200, 200);
+      const imgW = logoImg.naturalWidth || 400;
+      const imgH = logoImg.naturalHeight || 400;
+      canvas.width = imgW;
+      canvas.height = imgH;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.drawImage(logoImg, 0, 0, imgW, imgH);
+      }
       const logoDataUrl = canvas.toDataURL("image/png");
-      URL.revokeObjectURL(svgUrl);
 
       const [year, monthNum] = monthFilter.split("-");
       const monthLabel = new Intl.DateTimeFormat("pt-BR", {
@@ -613,26 +614,24 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
 
       const doc = new jsPDF();
 
-      // Header com logo real
-      doc.addImage(logoDataUrl, "PNG", 14, 8, 12, 12);
-      doc.setTextColor(5, 67, 136);
-      doc.setFontSize(16);
-      doc.setFont("helvetica", "bold");
-      doc.text("CERTOFIN", 28, 15);
-      doc.setFontSize(8);
-      doc.setFont("helvetica", "normal");
-      doc.setTextColor(0, 155, 158);
-      doc.text("Soluções Financeiras", 28, 20);
-      doc.setTextColor(100, 100, 100);
-      doc.setFontSize(9);
-      doc.text(`Relatório ${fixedScope === "business" ? "Negócio" : "Pessoal"} • ${userName}`, 14, 28);
-      doc.text(`Período: ${monthLabel}`, 14, 33);
-      doc.text(`Gerado em: ${new Date().toLocaleString("pt-BR")}`, 14, 38);
+      // Header com a NOVA logo transparente oficial (32mm x 32mm)
+      doc.addImage(logoDataUrl, "PNG", 14, 6, 32, 32);
 
-      // Line separator
+      // Detalhes do relatório alinhados à direita
+      doc.setTextColor(100, 100, 100);
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "bold");
+      doc.text(`${userName}`, 196, 14, { align: "right" });
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.text(`Relatório ${fixedScope === "business" ? "Negócio" : "Pessoal"}`, 196, 20, { align: "right" });
+      doc.text(`Período: ${monthLabel}`, 196, 25, { align: "right" });
+      doc.text(`Gerado em: ${new Date().toLocaleString("pt-BR")}`, 196, 30, { align: "right" });
+
+      // Linha divisória
       doc.setDrawColor(0, 155, 158);
-      doc.setLineWidth(0.5);
-      doc.line(14, 41, 196, 41);
+      doc.setLineWidth(0.6);
+      doc.line(14, 40, 196, 40);
 
       const incomeTxs = txs.filter((t) => t.type === "income");
       const expenseTxs = txs.filter((t) => t.type === "expense");
@@ -650,16 +649,16 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
       doc.setTextColor(0, 0, 0);
       doc.setFontSize(11);
       doc.setFont("helvetica", "bold");
-      doc.text("1. VISÃO GERAL DO MÊS", 14, 45);
+      doc.text("1. VISÃO GERAL DO MÊS", 14, 44);
 
       doc.setFontSize(9);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(100, 100, 100);
-      doc.text(`Receitas Recebidas: R$ ${totalIncome.toFixed(2)} (${paidIncome.length} lançamentos)`, 14, 52);
-      doc.text(`Despesas Pagas: R$ ${totalExpense.toFixed(2)} (${paidExpense.length} lançamentos)`, 14, 58);
+      doc.text(`Receitas Recebidas: R$ ${totalIncome.toFixed(2)} (${paidIncome.length} lançamentos)`, 14, 51);
+      doc.text(`Despesas Pagas: R$ ${totalExpense.toFixed(2)} (${paidExpense.length} lançamentos)`, 14, 57);
       doc.setTextColor(balance >= 0 ? 16 : 239, balance >= 0 ? 185 : 68, balance >= 0 ? 129 : 68);
       doc.setFont("helvetica", "bold");
-      doc.text(`Saldo do Período: R$ ${balance.toFixed(2)} (${balance >= 0 ? "Positivo" : "Negativo"})`, 14, 64);
+      doc.text(`Saldo do Período: R$ ${balance.toFixed(2)} (${balance >= 0 ? "Positivo" : "Negativo"})`, 14, 63);
 
       // 2. Indicadores-Chave
       doc.setTextColor(0, 0, 0);
@@ -790,22 +789,34 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
     try {
       const txs = allTransactions.length > 0 ? allTransactions : await fetchAllTransactions();
 
-      const headers = ["Data", "Descrição", "Categoria", "Tipo", "Escopo", "Status", "Valor"];
+      const headers = ["Data", "Descrição", "Categoria", "Tipo", "Escopo", "Status", "Valor (R$)"];
+
+      const formatCsvCell = (val: string | number) => {
+        const str = String(val ?? "");
+        if (str.includes(";") || str.includes('"') || str.includes("\n") || str.includes("\r")) {
+          return `"${str.replace(/"/g, '""')}"`;
+        }
+        return str;
+      };
+
       const rows = txs.map((t) => [
-        formatDate(t.transaction_date),
-        `${t.description || "Sem descrição"}${t.is_recurring ? " (Recorrente)" : ""}`,
-        t.categories?.name || "Sem categoria",
-        t.type === "income" ? "Receita" : "Despesa",
-        t.scope === "business" ? "Negócio" : "Pessoal",
-        t.status === "paid" ? "Pago" : "Pendente",
-        t.amount.toFixed(2),
+        formatCsvCell(formatDate(t.transaction_date)),
+        formatCsvCell(`${t.description || "Sem descrição"}${t.is_recurring ? " (Recorrente)" : ""}`),
+        formatCsvCell(t.categories?.name || "Sem categoria"),
+        formatCsvCell(t.type === "income" ? "Receita" : "Despesa"),
+        formatCsvCell(t.scope === "business" ? "Negócio" : "Pessoal"),
+        formatCsvCell(t.status === "paid" ? "Pago" : "Pendente"),
+        formatCsvCell(t.amount.toFixed(2).replace(".", ",")),
       ]);
 
-      // CSV limpo: vírgula como separador, sem aspas, valor como número
-      const csvContent = [
-        headers.join(","),
-        ...rows.map((row) => row.join(","))
-      ].join("\r\n");
+      // Adiciona o BOM (\uFEFF) para garantir caracteres acentuados corretos no Excel
+      // Usa ponto-e-vírgula (;) como separador para abrir diretamente em colunas no Excel em português
+      const csvContent =
+        "\uFEFF" +
+        [
+          headers.map(formatCsvCell).join(";"),
+          ...rows.map((row) => row.join(";")),
+        ].join("\r\n");
 
       const blob = new Blob([csvContent], {
         type: "text/csv;charset=utf-8;",

@@ -49,3 +49,8 @@ export function getMonthRange(monthStr: string): { start: string; end: string } 
   const end = `${year}-${month}-${String(lastDay).padStart(2, "0")}`;
   return { start, end };
 }
+
+export function cleanNotes(notes?: string | null): string {
+  if (!notes) return "";
+  return notes.replace(/\[auto_recurring:[^\]]+\]\s*/g, "").trim();
+}

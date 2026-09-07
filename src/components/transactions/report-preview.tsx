@@ -135,19 +135,9 @@ export function ReportPreview({
       <div className="relative w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--background)] shadow-2xl">
         {/* Header Profissional */}
         <div className="border-b border-[var(--border)] bg-gradient-to-r from-[var(--primary)]/5 to-transparent px-8 py-5">
-          <div className="flex items-start justify-between">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--primary)]/10">
-                <BarChart3 className="h-6 w-6 text-[var(--primary)]" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-[var(--foreground)] tracking-tight">
-                  CERTOFIN
-                </h1>
-                <p className="text-sm font-medium text-[var(--muted-foreground)] uppercase tracking-widest">
-                  Relatório Financeiro • {scope === "business" ? "Negócio" : "Pessoal"}
-                </p>
-              </div>
+              <Logo size="md" showText={false} />
             </div>
             <div className="flex items-center gap-3">
               {isFree ? (
@@ -193,12 +183,12 @@ export function ReportPreview({
           ) : (
             <>
               {/* Cabeçalho do Relatório */}
-              <div className="mb-8 flex items-center justify-between border-b border-[var(--border)] pb-6">
-                <Logo size="sm" showSubtitle />
-                <div className="text-right">
-                  <p className="text-base font-semibold text-[var(--foreground)]">{userName}</p>
-                  <p className="text-base text-[var(--muted-foreground)]">Relatório {scope === "business" ? "Negócio" : "Pessoal"}</p>
-                  <p className="text-base text-[var(--muted-foreground)]">{monthLabel}</p>
+              <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-[var(--border)] pb-6 gap-4">
+                <Logo size="lg" showText={false} />
+                <div className="text-left sm:text-right">
+                  <p className="text-lg font-bold text-[var(--foreground)]">{userName}</p>
+                  <p className="text-base font-semibold text-[var(--primary)]">Relatório {scope === "business" ? "Negócio" : "Pessoal"}</p>
+                  <p className="text-sm text-[var(--muted-foreground)]">{monthLabel}</p>
                 </div>
               </div>
 

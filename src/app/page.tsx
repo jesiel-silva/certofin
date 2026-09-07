@@ -623,15 +623,77 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Security Section */}
+      <section id="seguranca" className="relative border-t border-[var(--primary)]/20 bg-[#050B14] py-24 sm:py-32 overflow-hidden">
+        <div className="absolute inset-0 data-grid opacity-30 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[var(--primary)]/5 to-transparent pointer-events-none" />
+        <div className="relative mx-auto max-w-6xl px-6">
+          <div className="text-center max-w-3xl mx-auto">
+            <div className="mb-4 inline-flex items-center gap-2 border border-[var(--primary)]/30 bg-[var(--primary)]/10 px-4 py-1.5 text-xs font-sans font-bold uppercase tracking-widest text-[var(--primary)]">
+              <Shield className="h-3.5 w-3.5" />
+              <span>PROTEÇÃO DE DADOS</span>
+            </div>
+            <h2 className="text-3xl font-extrabold text-white sm:text-5xl lg:text-6xl leading-tight tracking-tighter" style={{ fontFamily: "var(--font-space-grotesk)" }}>
+              SUAS INFORMAÇÕES <span className="text-[var(--primary)] text-glow-cyan">BEM SEGURAS</span>
+            </h2>
+            <p className="mt-4 text-sm font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
+              A segurança dos seus dados está no centro de tudo o que o CertoFin faz.
+            </p>
+          </div>
+
+          <div className="mt-20 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="group hud-border bg-[#0B1221]/80 p-8 text-center scanline-overlay animate-fade-in-up delay-100">
+              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center border border-[var(--primary)]/30 bg-[var(--primary)]/10 text-[var(--primary)] transition-all group-hover:scale-105 group-hover:shadow-[0_0_15px_var(--primary)]">
+                <Lock className="h-8 w-8" />
+              </div>
+              <h3 className="text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--primary)] text-glow-cyan">Criptografia de ponta</h3>
+              <p className="mt-3 text-sm font-sans leading-relaxed text-[var(--muted-foreground)]">
+                Suas informações são criptografadas com tecnologia de ponta, no mesmo nível de segurança usada pelos bancos.
+              </p>
+            </div>
+
+            <div className="group hud-border bg-[#0B1221]/80 p-8 text-center scanline-overlay animate-fade-in-up delay-200">
+              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center border border-[var(--success)]/30 bg-[var(--success)]/10 text-[var(--success)] transition-all group-hover:scale-105 group-hover:shadow-[0_0_15px_var(--success)]">
+                <Eye className="h-8 w-8" />
+              </div>
+              <h3 className="text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--success)] text-glow-green">Só você enxerga seus dados</h3>
+              <p className="mt-3 text-sm font-sans leading-relaxed text-[var(--muted-foreground)]">
+                Nenhuma pessoa, nem mesmo a equipe CertoFin, tem acesso às suas informações financeiras confidenciais.
+              </p>
+            </div>
+
+            <div className="group hud-border bg-[#0B1221]/80 p-8 text-center scanline-overlay animate-fade-in-up delay-300">
+              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center border border-[var(--warning)]/30 bg-[var(--warning)]/10 text-[var(--warning)] transition-all group-hover:scale-105 group-hover:shadow-[0_0_15px_var(--warning)]">
+                <Shield className="h-8 w-8" />
+              </div>
+              <h3 className="text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--warning)] text-glow-yellow">Conexões protegidas</h3>
+              <p className="mt-3 text-sm font-sans leading-relaxed text-[var(--muted-foreground)]">
+                Toda comunicação com o aplicativo é feita de forma segura, seguindo as melhores práticas de proteção do mercado.
+              </p>
+            </div>
+
+            <div className="group hud-border bg-[#0B1221]/80 p-8 text-center scanline-overlay animate-fade-in-up delay-400">
+              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center border border-[var(--primary)]/30 bg-[var(--primary)]/10 text-[var(--primary)] transition-all group-hover:scale-105 group-hover:shadow-[0_0_15px_var(--primary)]">
+                <CheckCircle className="h-8 w-8" />
+              </div>
+              <h3 className="text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--primary)] text-glow-cyan">Sem rastreamento, sem anúncios</h3>
+              <p className="mt-3 text-sm font-sans leading-relaxed text-[var(--muted-foreground)]">
+                Não usamos rastreadores de publicidade nem vendemos seus dados. Apenas cookies essenciais para manter você conectado.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="border-t border-[var(--primary)]/20 bg-[#020617]">
         <div className="mx-auto max-w-6xl px-6 py-10">
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             <div>
-              <Link href="/" className="flex items-center">
+              <Link href="/" className="flex items-center -mt-[66px]">
                 <Logo size="md" />
               </Link>
-              <p className="mt-4 text-xs font-sans uppercase tracking-widest leading-normal text-[var(--muted-foreground)]">
+              <p className="-mt-[48px] text-xs font-sans uppercase tracking-widest leading-normal text-[var(--muted-foreground)]">
                 A ferramenta mais simples e inteligente para separar as contas pessoais e corporativas de empreendedores individuais.
               </p>
             </div>
@@ -640,30 +702,26 @@ export default function HomePage() {
               <ul className="mt-3 space-y-2">
                 <li><Link href="#como-funciona" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Como funciona</Link></li>
                 <li><Link href="#planos" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Preços</Link></li>
-                <li><Link href="/login" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Segurança</Link></li>
+                <li><Link href="#seguranca" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Segurança</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--primary)]">Suporte</h4>
               <ul className="mt-3 space-y-2">
-                <li><Link href="/login" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Central de Ajuda</Link></li>
-                <li><Link href="/login" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Fale Conosco</Link></li>
+                <li><Link href="/contato" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Fale Conosco</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--primary)]">Legal</h4>
               <ul className="mt-3 space-y-2">
-                <li><Link href="/login" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Termos de Uso</Link></li>
-                <li><Link href="/login" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Políticas de Privacidade</Link></li>
+                <li><Link href="/termos" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Termos de Uso</Link></li>
+                <li><Link href="/privacidade" className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">Políticas de Privacidade</Link></li>
               </ul>
             </div>
           </div>
-          <div className="mt-8 border-t border-[var(--primary)]/20 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)]">
+          <div className="mt-8 border-t border-[var(--primary)]/20 pt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <p className="text-center text-xs font-sans uppercase tracking-widest text-[var(--muted-foreground)]">
               &copy; {new Date().getFullYear()} CertoFin. Todos os direitos reservados.
-            </p>
-            <p className="text-xs font-sans uppercase tracking-widest text-[var(--primary)] font-bold text-glow-cyan pulse-dot">
-              SYS.STATUS = [ OPERATIONAL ]
             </p>
           </div>
         </div>

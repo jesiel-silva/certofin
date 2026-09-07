@@ -14,7 +14,6 @@ import {
   Crown,
   Settings,
   User,
-  Bell,
   HelpCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -93,119 +92,99 @@ export function Sidebar({ open, onClose }: SidebarProps) {
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-3 py-4 custom-scrollbar">
-        {/* ═══════ DASHBOARD ═══════ */}
+        {/* ═══════ MENU PRINCIPAL ═══════ */}
         <div className="mb-4">
-          <Link
-            href="/personal/dashboard"
-            onClick={onClose}
-            className={cn(
-              "group relative flex items-center gap-3 rounded-none px-3 py-2.5 text-xs uppercase tracking-widest font-bold transition-all duration-300",
-              isActive("/personal/dashboard")
-                ? "bg-[var(--primary)]/10 text-[var(--primary)] dark:text-glow-cyan border border-[var(--primary)]/30"
-                : "text-[var(--muted-foreground)] hover:bg-[var(--primary)]/5 hover:text-[var(--foreground)] border border-transparent hover:border-[var(--border)]"
-            )}
-          >
-            {isActive("/personal/dashboard") && (
-              <>
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--primary)] glow-cyan" />
-                <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-[var(--primary)]" />
-                <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-[var(--primary)]" />
-              </>
-            )}
-            <LayoutDashboard className={cn("h-4 w-4", isActive("/personal/dashboard") ? "text-[var(--primary)] drop-shadow-[0_0_5px_var(--primary)]" : "")} />
-            DASHBOARD
-            <span className={cn(
-              "ml-auto rounded-full px-2 py-0.5 text-[9px] font-mono font-bold",
-              userPlan === "pro"
-                ? "bg-[var(--warning)]/20 text-[var(--warning)] border border-[var(--warning)]/40 text-glow-yellow"
-                : isTrial
-                ? "bg-[var(--success)]/20 text-[var(--success)] border border-[var(--success)]/40 text-glow-green"
-                : "bg-[var(--muted)]/20 text-[var(--muted-foreground)] border border-[var(--border)] text-glow-gray"
-            )}>
-              {userPlan === "pro" ? "PRO" : isTrial ? "TRIAL" : "FREE"}
+          <div className="flex items-center gap-2 px-3 py-2 border-b border-[var(--primary)]/20 mb-2">
+            <span className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--muted-foreground)]/70">
+              MENU PRINCIPAL
             </span>
-          </Link>
-        </div>
+          </div>
+          <div className="space-y-1">
+            <Link
+              href="/personal/dashboard"
+              onClick={onClose}
+              aria-current={isActive("/personal/dashboard") ? "page" : undefined}
+              className={cn(
+                "group relative flex items-center gap-3 rounded-none px-3 py-2.5 text-xs uppercase tracking-widest font-bold transition-all duration-300",
+                isActive("/personal/dashboard")
+                  ? "bg-[var(--primary)]/10 text-[var(--primary)] dark:text-glow-cyan border border-[var(--primary)]/30"
+                  : "text-[var(--muted-foreground)] hover:bg-[var(--primary)]/5 hover:text-[var(--foreground)] border border-transparent hover:border-[var(--border)]"
+              )}
+            >
+              {isActive("/personal/dashboard") && (
+                <>
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--primary)] glow-cyan" />
+                  <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-[var(--primary)]" />
+                  <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-[var(--primary)]" />
+                </>
+              )}
+              <LayoutDashboard className={cn("h-4 w-4", isActive("/personal/dashboard") ? "text-[var(--primary)] drop-shadow-[0_0_5px_var(--primary)]" : "")} />
+              DASHBOARD
+              <span className={cn(
+                "ml-auto rounded-full px-2 py-0.5 text-[9px] font-mono font-bold",
+                userPlan === "pro"
+                  ? "bg-[var(--primary)]/20 text-[var(--primary)] border border-[var(--primary)]/40 text-glow-cyan"
+                  : isTrial
+                  ? "border border-[var(--primary)]/40 text-[var(--primary)]/80"
+                  : "bg-[var(--muted)]/20 text-[var(--muted-foreground)] border border-[var(--border)]"
+              )}>
+                {userPlan === "pro" ? "PRO" : isTrial ? "TRIAL" : "FREE"}
+              </span>
+            </Link>
 
-        {/* ═══════ NOTIFICAÇÕES ═══════ */}
-        <div className="mb-4">
-          <Link
-            href="/personal/notifications"
-            onClick={onClose}
-            className={cn(
-              "group relative flex items-center gap-3 rounded-none px-3 py-2.5 text-xs uppercase tracking-widest font-bold transition-all duration-300",
-              isActive("/personal/notifications")
-                ? "bg-[var(--destructive)]/10 text-[var(--destructive)] border border-[var(--destructive)]/30"
-                : "text-[var(--destructive)]/70 transition-all hover:bg-[var(--destructive)]/10 hover:text-[var(--destructive)] border border-transparent hover:border-[var(--destructive)]/50 hover:shadow-[0_0_8px_var(--destructive)]"
-            )}
-          >
-            {isActive("/personal/notifications") && (
-              <>
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--destructive)]" />
-                <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-[var(--destructive)]" />
-                <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-[var(--destructive)]" />
-              </>
-            )}
-            <Bell className="h-4 w-4" />
-            NOTIFICAÇÕES
-          </Link>
-        </div>
+            <Link
+              href="/personal/settings"
+              onClick={onClose}
+              aria-current={isActive("/personal/settings") ? "page" : undefined}
+              className={cn(
+                "group relative flex items-center gap-3 rounded-none px-3 py-2.5 text-xs uppercase tracking-widest font-bold transition-all duration-300",
+                isActive("/personal/settings")
+                  ? "bg-[var(--primary)]/10 text-[var(--primary)] dark:text-glow-cyan border border-[var(--primary)]/30"
+                  : "text-[var(--muted-foreground)] hover:bg-[var(--primary)]/5 hover:text-[var(--foreground)] border border-transparent hover:border-[var(--border)]"
+              )}
+            >
+              {isActive("/personal/settings") && (
+                <>
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--primary)] glow-cyan" />
+                  <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-[var(--primary)]" />
+                  <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-[var(--primary)]" />
+                </>
+              )}
+              <Settings className={cn("h-4 w-4", isActive("/personal/settings") ? "text-[var(--primary)] drop-shadow-[0_0_5px_var(--primary)]" : "")} />
+              AJUSTES
+            </Link>
 
-        {/* ═══════ AJUSTES ═══════ */}
-        <div className="mb-4">
-          <Link
-            href="/personal/settings"
-            onClick={onClose}
-            className={cn(
-              "group relative flex items-center gap-3 rounded-none px-3 py-2.5 text-xs uppercase tracking-widest font-bold transition-all duration-300",
-              isActive("/personal/settings")
-                ? "bg-[var(--primary)]/10 text-[var(--primary)] dark:text-glow-cyan border border-[var(--primary)]/30"
-                : "text-[var(--muted-foreground)] hover:bg-[var(--primary)]/5 hover:text-[var(--foreground)] border border-transparent hover:border-[var(--border)]"
-            )}
-          >
-            {isActive("/personal/settings") && (
-              <>
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--primary)] glow-cyan" />
-                <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-[var(--primary)]" />
-                <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-[var(--primary)]" />
-              </>
-            )}
-            <Settings className="h-4 w-4" />
-            AJUSTES
-          </Link>
-        </div>
-
-        {/* ═══════ SUPORTE ═══════ */}
-        <div className="mb-4">
-          <Link
-            href="/personal/ajuda"
-            onClick={onClose}
-            className={cn(
-              "group relative flex items-center gap-3 rounded-none px-3 py-2.5 text-xs uppercase tracking-widest font-bold transition-all duration-300",
-              isActive("/personal/ajuda")
-                ? "bg-[var(--success)]/10 text-[var(--success)] dark:text-glow-green border border-[var(--success)]/30"
-                : "text-[var(--success)]/70 hover:bg-[var(--success)]/5 hover:text-[var(--success)] border border-transparent hover:border-[var(--success)]/30"
-            )}
-          >
-            {isActive("/personal/ajuda") && (
-              <>
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--success)] glow-green" />
-                <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-[var(--success)]" />
-                <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-[var(--success)]" />
-              </>
-            )}
-            <HelpCircle className={cn("h-4 w-4", isActive("/personal/ajuda") ? "text-[var(--success)] drop-shadow-[0_0_5px_var(--success)]" : "")} />
-            AJUDA
-          </Link>
+            <Link
+              href="/personal/ajuda"
+              onClick={onClose}
+              aria-current={isActive("/personal/ajuda") ? "page" : undefined}
+              className={cn(
+                "group relative flex items-center gap-3 rounded-none px-3 py-2.5 text-xs uppercase tracking-widest font-bold transition-all duration-300",
+                isActive("/personal/ajuda")
+                  ? "bg-[var(--primary)]/10 text-[var(--primary)] dark:text-glow-cyan border border-[var(--primary)]/30"
+                  : "text-[var(--muted-foreground)] hover:bg-[var(--primary)]/5 hover:text-[var(--foreground)] border border-transparent hover:border-[var(--border)]"
+              )}
+            >
+              {isActive("/personal/ajuda") && (
+                <>
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--primary)] glow-cyan" />
+                  <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-[var(--primary)]" />
+                  <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-[var(--primary)]" />
+                </>
+              )}
+              <HelpCircle className={cn("h-4 w-4", isActive("/personal/ajuda") ? "text-[var(--primary)] drop-shadow-[0_0_5px_var(--primary)]" : "")} />
+              AJUDA
+            </Link>
+          </div>
         </div>
 
         {/* ═══════ PESSOAL ═══════ */}
-        <div className="mb-4">
-          <div className="flex items-center gap-2 px-3 py-2 border-b border-[var(--success)]/20 mb-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded bg-[var(--success)]/10 border border-[var(--success)]/30">
-              <Home className="h-4 w-4 text-[var(--success)] drop-shadow-[0_0_2px_var(--success)]" />
+        <div className="mb-4 border-t border-[var(--primary)]/10 pt-2">
+          <div className="flex items-center gap-2 px-3 py-2 border-b border-[var(--primary)]/20 mb-2">
+            <div className="flex h-6 w-6 items-center justify-center rounded bg-[var(--primary)]/10 border border-[var(--primary)]/30">
+              <Home className="h-4 w-4 text-[var(--primary)]" />
             </div>
-            <span className="text-xs font-mono font-bold uppercase tracking-widest text-[var(--success)]/80">
+            <span className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--primary)]/80">
               [ PESSOAL ]
             </span>
           </div>
@@ -217,17 +196,18 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                   key={item.href}
                   href={item.href}
                   onClick={onClose}
+                  aria-current={active ? "page" : undefined}
                   className={cn(
-                    "group relative flex items-center gap-3 px-3 py-2.5 text-xs font-mono transition-all duration-200 uppercase",
+                    "group relative flex items-center gap-3 px-3 py-2.5 text-xs font-sans font-bold uppercase tracking-widest transition-all duration-200",
                     active
-                      ? "bg-[var(--success)]/10 text-[var(--success)] border border-[var(--success)]/30"
-                      : "text-[var(--muted-foreground)] hover:bg-[var(--success)]/5 hover:text-[var(--foreground)] border border-transparent"
+                      ? "bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/30"
+                      : "text-[var(--muted-foreground)] hover:bg-[var(--primary)]/5 hover:text-[var(--foreground)] border border-transparent"
                   )}
                 >
                   {active && (
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--success)] glow-green" />
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--primary)] glow-cyan" />
                   )}
-                  <item.icon className={cn("h-4 w-4", active ? "text-[var(--success)] drop-shadow-[0_0_5px_var(--success)]" : "text-[var(--muted-foreground)] group-hover:text-[var(--foreground)]")} />
+                  <item.icon className={cn("h-4 w-4", active ? "text-[var(--primary)] drop-shadow-[0_0_5px_var(--primary)]" : "text-[var(--muted-foreground)] group-hover:text-[var(--foreground)]")} />
                   {item.label}
                 </Link>
               );
@@ -235,7 +215,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             <Link
               href="/personal/transactions/new"
               onClick={onClose}
-              className="group flex items-center gap-3 border border-dashed border-[var(--success)]/40 px-3 py-2.5 text-xs font-mono uppercase tracking-widest text-[var(--success)]/80 transition-all duration-200 hover:border-[var(--success)] hover:bg-[var(--success)]/10 hover:text-[var(--success)] mt-1"
+              className="group flex items-center justify-center gap-2 border border-[var(--primary)] bg-[var(--primary)] px-3 py-2.5 text-xs font-sans font-bold uppercase tracking-widest text-[#020617] transition-all duration-200 hover:bg-[var(--primary)]/90 hover:shadow-[0_0_15px_var(--primary)] mt-1"
             >
               <Plus className="h-4 w-4" />
               REGISTRAR LANÇAMENTO
@@ -244,12 +224,12 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         </div>
 
         {/* ═══════ NEGÓCIO ═══════ */}
-        <div>
+        <div className="py-2 border-t border-[var(--primary)]/10">
           <div className="flex items-center gap-2 px-3 py-2 border-b border-[var(--primary)]/20 mb-2">
             <div className="flex h-6 w-6 items-center justify-center rounded bg-[var(--primary)]/10 border border-[var(--primary)]/30">
-              <Briefcase className="h-4 w-4 text-[var(--primary)] drop-shadow-[0_0_2px_var(--primary)]" />
+              <Briefcase className="h-4 w-4 text-[var(--primary)]" />
             </div>
-            <span className="text-xs font-mono font-bold uppercase tracking-widest text-[var(--primary)]/80">
+            <span className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--primary)]/80">
               [ NEGÓCIO ]
             </span>
           </div>
@@ -263,8 +243,9 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                     key={item.href}
                     href={item.href}
                     onClick={onClose}
+                    aria-current={active ? "page" : undefined}
                     className={cn(
-                      "group relative flex items-center gap-3 px-3 py-2.5 text-xs font-mono transition-all duration-200 uppercase",
+                      "group relative flex items-center gap-3 px-3 py-2.5 text-xs font-sans font-bold uppercase tracking-widest transition-all duration-200",
                       active
                         ? "bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/30"
                         : "text-[var(--muted-foreground)] hover:bg-[var(--primary)]/5 hover:text-[var(--foreground)] border border-transparent"
@@ -281,24 +262,24 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               <Link
                 href="/business/transactions/new"
                 onClick={onClose}
-                className="group flex items-center gap-3 border border-dashed border-[var(--primary)]/40 px-3 py-2.5 text-xs font-mono uppercase tracking-widest text-[var(--primary)]/80 transition-all duration-200 hover:border-[var(--primary)] hover:bg-[var(--primary)]/10 hover:text-[var(--primary)] mt-1"
+                className="group flex items-center justify-center gap-2 border border-[var(--primary)] bg-[var(--primary)] px-3 py-2.5 text-xs font-sans font-bold uppercase tracking-widest text-[#020617] transition-all duration-200 hover:bg-[var(--primary)]/90 hover:shadow-[0_0_15px_var(--primary)] mt-1"
               >
-              <Plus className="h-4 w-4" />
-              REGISTRAR LANÇAMENTO
-            </Link>
+                <Plus className="h-4 w-4" />
+                REGISTRAR LANÇAMENTO
+              </Link>
             </div>
           ) : (
             <Link
               href="/personal/planos"
               onClick={onClose}
-              className="mx-1 mt-1 flex items-center gap-3 border border-[var(--warning)]/30 bg-gradient-to-r from-[var(--warning)]/10 to-transparent px-3 py-2.5 text-xs font-mono uppercase transition-all duration-200 hover:border-[var(--warning)] hover:from-[var(--warning)]/20"
+              className="mx-1 mt-1 flex items-center gap-3 border border-[var(--warning)]/40 bg-[var(--warning)]/5 px-3 py-2.5 transition-all duration-200 hover:border-[var(--warning)] hover:bg-[var(--warning)]/10 hover:shadow-[0_0_10px_var(--warning)]"
             >
-              <div className="flex h-6 w-6 items-center justify-center bg-[var(--warning)]/20 border border-[var(--warning)]/40 shadow-[0_0_5px_var(--warning)]">
+              <div className="flex h-6 w-6 items-center justify-center border border-[var(--warning)]/40 bg-[var(--warning)]/15">
                 <Crown className="h-3 w-3 text-[var(--warning)]" />
               </div>
               <div className="flex-1">
-                <p className="font-bold text-[var(--warning)]">ATIVAR NEGÓCIO</p>
-                <p className="text-[10px] text-[var(--warning)]/70 tracking-widest">Requer Plano Pro</p>
+                <p className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--warning)]">ATIVAR NEGÓCIO</p>
+                <p className="text-[10px] font-mono text-[var(--warning)]/70 tracking-widest">Requer Plano Pro</p>
               </div>
             </Link>
           )}

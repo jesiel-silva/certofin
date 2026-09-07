@@ -24,7 +24,7 @@ import {
 import type { Category, Transaction } from "@/lib/types";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { formatMonthYear } from "@/lib/utils";
+import { formatMonthYear, cleanNotes } from "@/lib/utils";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { UpgradeModal } from "@/components/ui/upgrade-modal";
 import { usePlanLimits } from "@/lib/hooks/use-plan-limits";
@@ -61,7 +61,7 @@ export function TransactionForm({
   const [transactionDate, setTransactionDate] = useState(initialData?.transaction_date || new Date().toISOString().split("T")[0]);
   const [frequency, setFrequency] = useState<Transaction["frequency"]>(initialData?.frequency || "one_time");
   const [dueDay, setDueDay] = useState(initialData?.due_day?.toString() || "1");
-  const [notes, setNotes] = useState(initialData?.notes || "");
+  const [notes, setNotes] = useState(cleanNotes(initialData?.notes));
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -334,6 +334,7 @@ export function TransactionForm({
 
       // Create a new non-recurring transaction for next month
       const nextMonthDate = `${nextMonth}-${String(targetDay).padStart(2, "0")}`;
+      const cleanUserNotes = cleanNotes(initialData.notes);
       await supabase.from("transactions").insert({
         user_id: initialData.user_id,
         description: initialData.description,
@@ -344,7 +345,7 @@ export function TransactionForm({
         category_id: initialData.category_id,
         transaction_date: nextMonthDate,
         status: "pending",
-        notes: `[auto_recurring:${initialData.id}]${initialData.notes ? " " + initialData.notes : ""}`,
+        notes: `[auto_recurring:${initialData.id}]${cleanUserNotes ? " " + cleanUserNotes : ""}`,
         installment_current: null,
         installment_total: null,
         parent_transaction_id: null,
@@ -399,6 +400,10 @@ export function TransactionForm({
 
     setLoading(true);
 
+    const tagMatch = initialData?.notes?.match(/\[auto_recurring:[^\]]+\]/);
+    const tagPrefix = tagMatch ? `${tagMatch[0]} ` : "";
+    const finalNotes = (tagPrefix + notes.trim()).trim();
+
     const baseData = {
       user_id: (await supabase.auth.getUser()).data.user!.id,
       description,
@@ -409,7 +414,7 @@ export function TransactionForm({
       category_id: categoryId || null,
       transaction_date: transactionDate,
       status: (initialData?.status || "pending") as "pending" | "paid",
-      notes,
+      notes: finalNotes,
       installment_current: null,
       installment_total: null,
       parent_transaction_id: null,
