@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { PricingCards } from "@/components/pricing/pricing-cards";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,6 +29,7 @@ function PlanosContent() {
   const [activatingTrial, setActivatingTrial] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [actionMessage, setActionMessage] = useState<{
     type: "success" | "error" | "info";
@@ -37,40 +38,87 @@ function PlanosContent() {
 
   const supabase = createClient();
 
+  const fetchProfile = useCallback(async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      const { data } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      setProfile(data as Profile);
+    }
+    setLoading(false);
+  }, [supabase]);
+
   useEffect(() => {
-    if (checkoutStatus === "success") {
+    const handleCheckoutResult = async () => {
+      const sessionId = searchParams.get("session_id");
+
+      if (checkoutStatus === "cancelled") {
+        setActionMessage({
+          type: "info",
+          text: "O processo de checkout foi cancelado. Você pode assinar o plano Pro quando desejar.",
+        });
+        return;
+      }
+
+      if (checkoutStatus !== "success") return;
+
+      if (!sessionId) {
+        setActionMessage({
+          type: "success",
+          text: "🎉 Pagamento processado com sucesso! Sua conta Pro foi ativada.",
+        });
+        fetchProfile();
+        return;
+      }
+
       setActionMessage({
         type: "success",
-        text: "🎉 Pagamento processado com sucesso! Sua conta Pro foi ativada.",
+        text: "✅ Pagamento confirmado! Ativando sua conta Pro...",
       });
-    } else if (checkoutStatus === "cancelled") {
-      setActionMessage({
-        type: "info",
-        text: "O processo de checkout foi cancelado. Você pode assinar o plano Pro quando desejar.",
-      });
-    }
-  }, [checkoutStatus]);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      try {
+        const res = await fetch("/api/stripe/sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ session_id: sessionId }),
+        });
+        const data = await res.json();
 
-      if (user) {
-        const { data } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .single();
-
-        setProfile(data as Profile);
+        if (res.ok && data.status === "pro") {
+          setActionMessage({
+            type: "success",
+            text: "🎉 Pagamento processado com sucesso! Sua conta Pro foi ativada.",
+          });
+          fetchProfile();
+        } else {
+          console.error("Falha ao ativar plano via sync:", data);
+          setActionMessage({
+            type: "success",
+            text: "🎉 Pagamento processado com sucesso! Sua conta Pro será ativada em instantes.",
+          });
+        }
+      } catch (err) {
+        console.error("Erro ao confirmar assinatura:", err);
+        setActionMessage({
+          type: "success",
+          text: "🎉 Pagamento processado! Se ainda vir Free em instantes, recarregue a página.",
+        });
       }
-      setLoading(false);
     };
 
+    handleCheckoutResult();
+  }, [checkoutStatus, searchParams, fetchProfile]);
+
+  useEffect(() => {
     fetchProfile();
-  }, [supabase]);
+  }, [fetchProfile]);
 
   const handleSelectPlan = async (plan: "free" | "pro") => {
     if (plan === "pro") {
@@ -103,6 +151,45 @@ function PlanosContent() {
       } finally {
         setCheckoutLoading(false);
       }
+    }
+  };
+
+  const handleSyncSubscription = async () => {
+    setSyncing(true);
+    setActionMessage(null);
+    try {
+      const res = await fetch("/api/stripe/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Falha ao sincronizar assinatura.");
+      }
+
+      if (data.status === "pro") {
+        setActionMessage({
+          type: "success",
+          text: "Sua conta Pro foi ativada com sucesso!",
+        });
+      } else {
+        setActionMessage({
+          type: "info",
+          text: "Nenhuma assinatura ativa encontrada. Se você pagou, verifique se o pagamento foi concluído.",
+        });
+      }
+      fetchProfile();
+    } catch (err: unknown) {
+      console.error("Erro ao sincronizar assinatura:", err);
+      const msg = err instanceof Error ? err.message : "Erro desconhecido";
+      setActionMessage({
+        type: "error",
+        text: `Erro ao sincronizar assinatura: ${msg}`,
+      });
+    } finally {
+      setSyncing(false);
     }
   };
 
@@ -348,6 +435,26 @@ function PlanosContent() {
               </div>
               <p className="mt-2 text-sm text-[var(--muted-foreground)]">
                 Acesso completo a todos os recursos do plano Pro sem precisar de cartão agora
+              </p>
+            </div>
+          )}
+
+          {hasStripeCustomer && !isPro && (
+            <div className="mt-4 text-center">
+              <Button
+                onClick={handleSyncSubscription}
+                disabled={syncing}
+                variant="outline"
+                className="border-[var(--primary)]/40 hover:bg-[var(--primary)]/10"
+              >
+                {syncing ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : null}
+                Já paguei — atualizar meu plano
+              </Button>
+              <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+                Se você já fez o pagamento e ainda vê o plano Free, clique para
+                sincronizar sua assinatura com o sistema.
               </p>
             </div>
           )}
