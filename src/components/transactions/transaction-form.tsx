@@ -61,6 +61,9 @@ export function TransactionForm({
   const [transactionDate, setTransactionDate] = useState(initialData?.transaction_date || new Date().toISOString().split("T")[0]);
   const [frequency, setFrequency] = useState<Transaction["frequency"]>(initialData?.frequency || "one_time");
   const [dueDay, setDueDay] = useState(initialData?.due_day?.toString() || "1");
+  const [paymentStatus, setPaymentStatus] = useState<"pending" | "paid">(
+    initialData?.status || "pending"
+  );
   const [notes, setNotes] = useState(cleanNotes(initialData?.notes));
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
@@ -400,12 +403,19 @@ export function TransactionForm({
 
     setLoading(true);
 
+    const { data: userData } = await supabase.auth.getUser();
+    if (!userData.user) {
+      setError("Usuário não autenticado. Faça login novamente.");
+      setLoading(false);
+      return;
+    }
+
     const tagMatch = initialData?.notes?.match(/\[auto_recurring:[^\]]+\]/);
     const tagPrefix = tagMatch ? `${tagMatch[0]} ` : "";
     const finalNotes = (tagPrefix + notes.trim()).trim();
 
     const baseData = {
-      user_id: (await supabase.auth.getUser()).data.user!.id,
+      user_id: userData.user.id,
       description,
       amount: parseFloat(amount),
       type,
@@ -413,7 +423,7 @@ export function TransactionForm({
       frequency,
       category_id: categoryId || null,
       transaction_date: transactionDate,
-      status: (initialData?.status || "pending") as "pending" | "paid",
+      status: paymentStatus,
       notes: finalNotes,
       installment_current: null,
       installment_total: null,
@@ -686,6 +696,46 @@ export function TransactionForm({
                 onChange={(e) => setTransactionDate(e.target.value)}
                 required
               />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-[var(--foreground)]">
+                Status
+              </label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPaymentStatus("pending")}
+                  className={cn(
+                    "flex-1 rounded-lg border-2 px-3 py-3 text-sm font-medium transition-all",
+                    paymentStatus === "pending"
+                      ? "border-[var(--warning)] bg-[var(--warning)]/10 text-[var(--warning)]"
+                      : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--warning)]/50"
+                  )}
+                >
+                  <div className="flex flex-col items-center gap-1">
+                    <Circle className="h-5 w-5" />
+                    <span>Pendente</span>
+                    <span className="text-xs opacity-70">{type === "income" ? "A receber" : "A pagar"}</span>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPaymentStatus("paid")}
+                  className={cn(
+                    "flex-1 rounded-lg border-2 px-3 py-3 text-sm font-medium transition-all",
+                    paymentStatus === "paid"
+                      ? "border-[var(--success)] bg-[var(--success)]/10 text-[var(--success)]"
+                      : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--success)]/50"
+                  )}
+                >
+                  <div className="flex flex-col items-center gap-1">
+                    <Check className="h-5 w-5" />
+                    <span>{type === "income" ? "Recebido" : "Pago"}</span>
+                    <span className="text-xs opacity-70">{type === "income" ? "Já entrou" : "Já saiu"}</span>
+                  </div>
+                </button>
+              </div>
             </div>
 
             <div>
