@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { TransactionWithCategory } from "@/lib/types";
-import { X, Download, AlertTriangle, TrendingUp, TrendingDown, Clock, CheckCircle2, BarChart3, Lock, Crown, Info, Sparkles } from "lucide-react";
+import { X, Download, AlertTriangle, TrendingUp, TrendingDown, Clock, CheckCircle2, BarChart3, Lock, Crown, Info, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
 import { createClient } from "@/lib/supabase/client";
@@ -200,6 +200,20 @@ export function ReportPreview({
 
   const incomeByDate = groupByDate(incomeTransactions);
   const expenseByDate = groupByDate(expenseTransactions);
+
+  // Paginação do detalhamento (10 itens por página)
+  const PAGE_SIZE = 10;
+  const [incomePage, setIncomePage] = useState(1);
+  const [expensePage, setExpensePage] = useState(1);
+
+  const incomeRowsFlat = incomeByDate.flatMap(([, txs]) => txs);
+  const expenseRowsFlat = expenseByDate.flatMap(([, txs]) => txs);
+  const incomeTotalPages = Math.max(1, Math.ceil(incomeRowsFlat.length / PAGE_SIZE));
+  const expenseTotalPages = Math.max(1, Math.ceil(expenseRowsFlat.length / PAGE_SIZE));
+  const safeIncomePage = Math.min(incomePage, incomeTotalPages);
+  const safeExpensePage = Math.min(expensePage, expenseTotalPages);
+  const paginatedIncome = incomeRowsFlat.slice((safeIncomePage - 1) * PAGE_SIZE, safeIncomePage * PAGE_SIZE);
+  const paginatedExpense = expenseRowsFlat.slice((safeExpensePage - 1) * PAGE_SIZE, safeExpensePage * PAGE_SIZE);
 
   const now = new Date();
   const generatedAt = now.toLocaleString("pt-BR", {
@@ -472,45 +486,48 @@ export function ReportPreview({
                     <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--success)]/10 text-xs font-bold text-[var(--success)]">4</span>
                     Detalhamento — Receitas
                   </h2>
-                  <div className="rounded-xl border border-[var(--border)] overflow-x-auto">
-                    <table className="w-full text-sm whitespace-nowrap">
-                      <thead>
-                        <tr className="border-b border-[var(--border)] bg-[var(--accent)]/50">
-                          <th className="px-2 sm:px-4 py-2 text-left text-xs font-semibold text-[var(--muted-foreground)]">Data</th>
-                          <th className="px-2 sm:px-4 py-2 text-left text-xs font-semibold text-[var(--muted-foreground)]">Descrição</th>
-                          <th className="px-2 sm:px-4 py-2 text-left text-xs font-semibold text-[var(--muted-foreground)]">Categoria</th>
-                          <th className="px-2 sm:px-4 py-2 text-center text-xs font-semibold text-[var(--muted-foreground)]">Status</th>
-                          <th className="px-2 sm:px-4 py-2 text-right text-xs font-semibold text-[var(--muted-foreground)]">Valor</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {incomeByDate.map(([date, txs]) =>
-                          txs.map((t) => (
-                            <tr key={t.id} className="border-b border-[var(--border)] last:border-b-0 hover:bg-[var(--accent)]/30">
-                              <td className="px-2 sm:px-4 py-3 text-sm sm:text-base text-[var(--muted-foreground)]">
-                                {formatDate(date)}
-                              </td>
-                              <td className="px-2 sm:px-4 py-3 font-medium text-sm sm:text-base text-[var(--foreground)]">{t.description || "Sem descrição"}{t.is_recurring ? " (Recorrente)" : ""}</td>
-                              <td className="px-2 sm:px-4 py-3 text-sm sm:text-base text-[var(--muted-foreground)]">{t.categories?.name || "—"}</td>
-                              <td className="px-2 sm:px-4 py-3 text-center">
-                                <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs sm:text-sm font-medium ${t.status === "paid" ? "bg-[var(--success)]/10 text-[var(--success)]" : "bg-[var(--warning)]/10 text-[var(--warning)]"}`}>
-                                  {t.status === "paid" ? "Pago" : "Pendente"}
-                                </span>
-                              </td>
-                              <td className="px-2 sm:px-4 py-3 text-right font-semibold text-sm sm:text-base text-[var(--success)]">
-                                +{formatCurrency(t.amount)}
-                              </td>
-                            </tr>
-                          ))
-                        )}
-                      </tbody>
-                      <tfoot>
-                        <tr className="bg-[var(--accent)]/50">
-                          <td colSpan={4} className="px-4 py-2 text-xs font-semibold text-[var(--muted-foreground)]">TOTAL RECEITAS</td>
-                          <td className="px-4 py-2 text-right text-sm font-bold text-[var(--success)]">{formatCurrency(totalIncome)}</td>
-                        </tr>
-                      </tfoot>
-                    </table>
+                  <div className="rounded-xl border border-[var(--border)] overflow-hidden">
+                    <ul className="divide-y divide-[var(--border)]">
+                      {paginatedIncome.map((t) => (
+                        <li key={t.id} className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 px-3 sm:px-4 py-3 hover:bg-[var(--accent)]/30">
+                          <div className="flex min-w-0 flex-1 items-center gap-3">
+                            <div className="min-w-0 flex-1">
+                              <p className="font-medium text-sm sm:text-base text-[var(--foreground)] break-words">{t.description || "Sem descrição"}{t.is_recurring ? " (Recorrente)" : ""}</p>
+                              <p className="text-xs sm:text-sm text-[var(--muted-foreground)]">{formatDate(t.transaction_date)} • {t.categories?.name || "—"}</p>
+                            </div>
+                          </div>
+                          <div className="flex shrink-0 items-center justify-between sm:justify-end gap-3">
+                            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${t.status === "paid" ? "bg-[var(--success)]/10 text-[var(--success)]" : "bg-[var(--warning)]/10 text-[var(--warning)]"}`}>
+                              {t.status === "paid" ? "Pago" : "Pendente"}
+                            </span>
+                            <span className="font-semibold text-sm sm:text-base text-[var(--success)]">+{formatCurrency(t.amount)}</span>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="flex items-center justify-between gap-2 border-t border-[var(--border)] bg-[var(--accent)]/50 px-3 sm:px-4 py-2">
+                      <button
+                        onClick={() => setIncomePage((p) => Math.max(1, p - 1))}
+                        disabled={incomePage <= 1}
+                        className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm font-medium text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-colors disabled:opacity-40 disabled:pointer-events-none"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                        Anterior
+                      </button>
+                      <span className="text-xs sm:text-sm text-[var(--muted-foreground)]">Página {incomePage} de {incomeTotalPages}</span>
+                      <button
+                        onClick={() => setIncomePage((p) => Math.min(incomeTotalPages, p + 1))}
+                        disabled={incomePage >= incomeTotalPages}
+                        className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm font-medium text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-colors disabled:opacity-40 disabled:pointer-events-none"
+                      >
+                        Próximo
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between border-t border-[var(--border)] bg-[var(--accent)]/50 px-3 sm:px-4 py-2">
+                      <span className="text-xs font-semibold text-[var(--muted-foreground)]">TOTAL RECEITAS</span>
+                      <span className="text-sm font-bold text-[var(--success)]">{formatCurrency(totalIncome)}</span>
+                    </div>
                   </div>
                 </section>
               )}
@@ -522,45 +539,48 @@ export function ReportPreview({
                     <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--destructive)]/10 text-xs font-bold text-[var(--destructive)]">5</span>
                     Detalhamento — Despesas
                   </h2>
-                  <div className="rounded-xl border border-[var(--border)] overflow-x-auto">
-                    <table className="w-full text-sm whitespace-nowrap">
-                      <thead>
-                        <tr className="border-b border-[var(--border)] bg-[var(--accent)]/50">
-                          <th className="px-2 sm:px-4 py-2 text-left text-xs font-semibold text-[var(--muted-foreground)]">Data</th>
-                          <th className="px-2 sm:px-4 py-2 text-left text-xs font-semibold text-[var(--muted-foreground)]">Descrição</th>
-                          <th className="px-2 sm:px-4 py-2 text-left text-xs font-semibold text-[var(--muted-foreground)]">Categoria</th>
-                          <th className="px-2 sm:px-4 py-2 text-center text-xs font-semibold text-[var(--muted-foreground)]">Status</th>
-                          <th className="px-2 sm:px-4 py-2 text-right text-xs font-semibold text-[var(--muted-foreground)]">Valor</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {expenseByDate.map(([date, txs]) =>
-                          txs.map((t) => (
-                            <tr key={t.id} className="border-b border-[var(--border)] last:border-b-0 hover:bg-[var(--accent)]/30">
-                              <td className="px-2 sm:px-4 py-3 text-sm sm:text-base text-[var(--muted-foreground)]">
-                                {formatDate(date)}
-                              </td>
-                              <td className="px-2 sm:px-4 py-3 font-medium text-sm sm:text-base text-[var(--foreground)]">{t.description || "Sem descrição"}{t.is_recurring ? " (Recorrente)" : ""}</td>
-                              <td className="px-2 sm:px-4 py-3 text-sm sm:text-base text-[var(--muted-foreground)]">{t.categories?.name || "—"}</td>
-                              <td className="px-2 sm:px-4 py-3 text-center">
-                                <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs sm:text-sm font-medium ${t.status === "paid" ? "bg-[var(--success)]/10 text-[var(--success)]" : "bg-[var(--warning)]/10 text-[var(--warning)]"}`}>
-                                  {t.status === "paid" ? "Pago" : "Pendente"}
-                                </span>
-                              </td>
-                              <td className="px-2 sm:px-4 py-3 text-right font-semibold text-sm sm:text-base text-[var(--destructive)]">
-                                -{formatCurrency(t.amount)}
-                              </td>
-                            </tr>
-                          ))
-                        )}
-                      </tbody>
-                      <tfoot>
-                        <tr className="bg-[var(--accent)]/50">
-                          <td colSpan={4} className="px-4 py-2 text-xs font-semibold text-[var(--muted-foreground)]">TOTAL DESPESAS</td>
-                          <td className="px-4 py-2 text-right text-sm font-bold text-[var(--destructive)]">{formatCurrency(totalExpense)}</td>
-                        </tr>
-                      </tfoot>
-                    </table>
+                  <div className="rounded-xl border border-[var(--border)] overflow-hidden">
+                    <ul className="divide-y divide-[var(--border)]">
+                      {paginatedExpense.map((t) => (
+                        <li key={t.id} className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 px-3 sm:px-4 py-3 hover:bg-[var(--accent)]/30">
+                          <div className="flex min-w-0 flex-1 items-center gap-3">
+                            <div className="min-w-0 flex-1">
+                              <p className="font-medium text-sm sm:text-base text-[var(--foreground)] break-words">{t.description || "Sem descrição"}{t.is_recurring ? " (Recorrente)" : ""}</p>
+                              <p className="text-xs sm:text-sm text-[var(--muted-foreground)]">{formatDate(t.transaction_date)} • {t.categories?.name || "—"}</p>
+                            </div>
+                          </div>
+                          <div className="flex shrink-0 items-center justify-between sm:justify-end gap-3">
+                            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${t.status === "paid" ? "bg-[var(--success)]/10 text-[var(--success)]" : "bg-[var(--warning)]/10 text-[var(--warning)]"}`}>
+                              {t.status === "paid" ? "Pago" : "Pendente"}
+                            </span>
+                            <span className="font-semibold text-sm sm:text-base text-[var(--destructive)]">-{formatCurrency(t.amount)}</span>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="flex items-center justify-between gap-2 border-t border-[var(--border)] bg-[var(--accent)]/50 px-3 sm:px-4 py-2">
+                      <button
+                        onClick={() => setExpensePage((p) => Math.max(1, p - 1))}
+                        disabled={expensePage <= 1}
+                        className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm font-medium text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-colors disabled:opacity-40 disabled:pointer-events-none"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                        Anterior
+                      </button>
+                      <span className="text-xs sm:text-sm text-[var(--muted-foreground)]">Página {expensePage} de {expenseTotalPages}</span>
+                      <button
+                        onClick={() => setExpensePage((p) => Math.min(expenseTotalPages, p + 1))}
+                        disabled={expensePage >= expenseTotalPages}
+                        className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm font-medium text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-colors disabled:opacity-40 disabled:pointer-events-none"
+                      >
+                        Próximo
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between border-t border-[var(--border)] bg-[var(--accent)]/50 px-3 sm:px-4 py-2">
+                      <span className="text-xs font-semibold text-[var(--muted-foreground)]">TOTAL DESPESAS</span>
+                      <span className="text-sm font-bold text-[var(--destructive)]">{formatCurrency(totalExpense)}</span>
+                    </div>
                   </div>
                 </section>
               )}
