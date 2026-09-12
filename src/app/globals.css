@@ -257,6 +257,10 @@ body {
     opacity: 0;
   }
 
+  .animate-slide-in-left {
+    animation: slideInLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
   .animate-glow-breathing {
     animation: glowBreathing 3s ease-in-out infinite;
   }

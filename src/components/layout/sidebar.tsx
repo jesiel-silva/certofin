@@ -80,20 +80,20 @@ export function Sidebar({ open, onClose }: SidebarProps) {
     : userEmail[0]?.toUpperCase() || "U";
 
   const content = (
-    <div className="flex h-full flex-col bg-[#020617]/95 backdrop-blur-md scanline-overlay">
+    <div className="flex flex-col h-full min-h-0 bg-[#020617]/95 backdrop-blur-md scanline-overlay">
       {/* Logo */}
-      <div className="px-4 py-[0.1rem] border-b border-[var(--primary)]/30 flex justify-center">
+      <div className="px-4 py-1 border-b border-[var(--primary)]/30 flex justify-center shrink-0">
         <Link href="/personal/dashboard" className="flex items-center group" onClick={onClose}>
           <div className="group-hover:drop-shadow-[0_0_12px_var(--primary)] transition-all">
-            <Logo size="xl" showSubtitle={false} textClassName="text-5xl" />
+            <Logo size="sm" showSubtitle={false} />
           </div>
         </Link>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto px-3 py-4 custom-scrollbar">
+      <nav className="flex-1 min-h-0 overflow-y-auto px-3 py-2 custom-scrollbar">
         {/* ═══════ MENU PRINCIPAL ═══════ */}
-        <div className="mb-4">
+        <div className="mb-2">
           <div className="flex items-center gap-2 px-3 py-2 border-b border-[var(--primary)]/20 mb-2">
             <span className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--muted-foreground)]/70">
               MENU PRINCIPAL
@@ -179,7 +179,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         </div>
 
         {/* ═══════ PESSOAL ═══════ */}
-        <div className="mb-4 border-t border-[var(--primary)]/10 pt-2">
+        <div className="mb-2 border-t border-[var(--primary)]/10 pt-2">
           <div className="flex items-center gap-2 px-3 py-2 border-b border-[var(--primary)]/20 mb-2">
             <div className="flex h-6 w-6 items-center justify-center rounded bg-[var(--primary)]/10 border border-[var(--primary)]/30">
               <Home className="h-4 w-4 text-[var(--primary)]" />
@@ -287,7 +287,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       </nav>
 
       {/* ═══════ BOTTOM ═══════ */}
-      <div className="border-t border-[var(--primary)]/30 p-3 bg-[#0B1221]/50 backdrop-blur-sm">
+      <div className="border-t border-[var(--primary)]/30 p-3 bg-[#0B1221]/50 backdrop-blur-sm shrink-0">
         <div className="flex items-center gap-3 px-2 py-2 hud-border border-[var(--primary)]/20">
           <Link
             href="/personal/settings"
@@ -334,11 +334,11 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             className="fixed inset-0 bg-black/85 backdrop-blur-md animate-fade-in"
             onClick={onClose}
           />
-          <aside className="fixed inset-y-0 left-0 z-50 w-64 shadow-[2px_0_25px_rgba(0,255,204,0.2)] border-r border-[var(--primary)]/30 animate-slide-in-left">
-            <div className="absolute -right-10 top-2 z-10">
+          <aside className="fixed inset-0 z-50 w-full bg-[#020617] shadow-[2px_0_25px_rgba(0,255,204,0.2)] animate-slide-in-left flex flex-col overflow-hidden">
+            <div className="absolute right-4 top-3 z-10">
               <button
                 onClick={onClose}
-                className="p-2 text-[var(--primary)] border border-[var(--primary)]/50 bg-[#0B1221]/95 backdrop-blur-md hover:bg-[var(--primary)]/20 hover:shadow-[0_0_15px_var(--primary)] transition-all animate-border-flicker"
+                className="p-2 text-[var(--primary)] border border-[var(--primary)]/50 bg-[#0B1221]/95 backdrop-blur-md hover:bg-[var(--primary)]/20 hover:shadow-[0_0_15px_var(--primary)] transition-all"
               >
                 <X className="h-5 w-5" />
               </button>

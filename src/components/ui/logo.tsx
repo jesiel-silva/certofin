@@ -43,7 +43,7 @@ export function Logo({
 
   return (
     <div className={cn("inline-flex items-center gap-3 select-none", className)}>
-      <div className={cn("relative shrink-0", iconSizes[size], imageClassName)}>
+      <div className={cn("relative shrink-0", imageClassName ?? iconSizes[size])}>
         <Image
           src="/stripe-logo-transp.png"
           alt="CertoFin Logo"

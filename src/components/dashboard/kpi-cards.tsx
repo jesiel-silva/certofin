@@ -106,12 +106,12 @@ export function KpiCards({
   }
 
   return (
-    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
       {cards.map((card, index) => (
         <Card
           key={card.title}
           className={cn(
-            "hud-border overflow-hidden bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay animate-fade-in-up",
+            "hud-border bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay animate-fade-in-up min-w-0",
             `delay-${(index + 1) * 100}`
           )}
         >

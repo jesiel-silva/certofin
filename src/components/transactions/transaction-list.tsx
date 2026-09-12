@@ -21,6 +21,7 @@ import {
   Pause,
   Play,
   FileSpreadsheet,
+  MoreVertical,
 } from "lucide-react";
 import { formatCurrency, formatDate, getCurrentMonth } from "@/lib/utils";
 import type { TransactionWithCategory } from "@/lib/types";
@@ -66,6 +67,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
   const [exportingPdf, setExportingPdf] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   const fetchTransactions = useCallback(async () => {
     setLoading(true);
@@ -1029,27 +1031,10 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="truncate text-base font-medium">
-                        {t.description || "Sem descrição"}
-                      </p>
-                      <span
-                        className={cn(
-                          "inline-flex items-center rounded-full px-2 py-0.5 text-sm font-medium",
-                          t.scope === "business"
-                            ? "bg-[var(--business)]/10 text-[var(--business)]"
-                            : "bg-[var(--personal)]/10 text-[var(--personal)]"
-                        )}
-                      >
-                        {t.scope === "business" ? "Negócio" : "Pessoal"}
-                      </span>
-                      {t.is_recurring && (
-                        <span className="inline-flex items-center rounded-full bg-[var(--primary)]/10 px-2 py-0.5 text-sm font-medium text-[var(--primary)]">
-                          Recorrente
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-sm text-[var(--muted-foreground)]">
+                    <p className="line-clamp-2 text-base font-medium">
+                      {t.description || "Sem descrição"}
+                    </p>
+                    <p className="mt-0.5 text-sm text-[var(--muted-foreground)]">
                       {formatDate(t.transaction_date)}
                       {t.categories?.name && (
                         <>
@@ -1066,6 +1051,23 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
                       )}
                       {t.is_recurring && t.due_day && ` • Dia ${t.due_day}`}
                     </p>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                      <span
+                        className={cn(
+                          "inline-flex items-center rounded-full px-2 py-0.5 text-sm font-medium",
+                          t.scope === "business"
+                            ? "bg-[var(--business)]/10 text-[var(--business)]"
+                            : "bg-[var(--personal)]/10 text-[var(--personal)]"
+                        )}
+                      >
+                        {t.scope === "business" ? "Negócio" : "Pessoal"}
+                      </span>
+                      {t.is_recurring && (
+                        <span className="inline-flex items-center rounded-full bg-[var(--primary)]/10 px-2 py-0.5 text-sm font-medium text-[var(--primary)]">
+                          Recorrente
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="text-right">
                     <p
@@ -1079,7 +1081,102 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
                       {t.type === "income" ? "+" : "-"}
                       {formatCurrency(t.amount)}
                     </p>
-                    <div className="mt-1 flex items-center justify-end gap-1">
+
+                    <div className="relative mt-1 sm:hidden">
+                      <div className="flex items-center justify-end">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenMenuId(openMenuId === t.id ? null : t.id);
+                          }}
+                          className="inline-flex items-center justify-center rounded p-1 text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:text-[var(--foreground)] transition-colors"
+                          title="Mais ações"
+                        >
+                          <MoreVertical className="h-4 w-4" />
+                        </button>
+                      </div>
+                      {openMenuId === t.id && (
+                        <>
+                          <div
+                            className="fixed inset-0 z-40"
+                            onClick={() => setOpenMenuId(null)}
+                          />
+                          <div className="absolute right-0 top-full z-50 mt-1 w-44 overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--card)] py-1 shadow-lg">
+                            {t.is_recurring && !t.recurring_active ? (
+                              <button
+                                onClick={() => {
+                                  pauseRecurring(t.id);
+                                  setOpenMenuId(null);
+                                }}
+                                className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-[var(--foreground)] hover:bg-[var(--accent)]"
+                              >
+                                <Play className="h-4 w-4" />
+                                Ativar recorrência
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => {
+                                  toggleStatus(t.id, t.status);
+                                  setOpenMenuId(null);
+                                }}
+                                className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-[var(--foreground)] hover:bg-[var(--accent)]"
+                              >
+                                {t.status === "paid" ? (
+                                  <>
+                                    <Circle className="h-4 w-4" />
+                                    Marcar como pendente
+                                  </>
+                                ) : (
+                                  <>
+                                    <Check className="h-4 w-4" />
+                                    {t.type === "income"
+                                      ? "Marcar como recebido"
+                                      : "Marcar como pago"}
+                                  </>
+                                )}
+                              </button>
+                            )}
+                            {t.is_recurring && t.recurring_active && (
+                              <button
+                                onClick={() => {
+                                  pauseRecurring(t.id);
+                                  setOpenMenuId(null);
+                                }}
+                                className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-[var(--foreground)] hover:bg-[var(--accent)]"
+                              >
+                                <Pause className="h-4 w-4" />
+                                Pausar recorrência
+                              </button>
+                            )}
+                            <Link
+                              href={
+                                t.scope === "business"
+                                  ? `/business/transactions/${t.template_id || t.id}/edit`
+                                  : `/personal/transactions/${t.template_id || t.id}/edit`
+                              }
+                              onClick={() => setOpenMenuId(null)}
+                              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-[var(--foreground)] hover:bg-[var(--accent)]"
+                            >
+                              <Pencil className="h-4 w-4" />
+                              Editar
+                            </Link>
+                            <button
+                              onClick={() => {
+                                setDeleteId(t.id);
+                                setOpenMenuId(null);
+                              }}
+                              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-[var(--destructive)] hover:bg-[var(--destructive)]/10"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              Excluir
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+
+                    <div className="mt-1 hidden items-center justify-end gap-1 sm:flex">
                       {t.is_recurring && t.recurring_active ? (
                         <>
                           <button

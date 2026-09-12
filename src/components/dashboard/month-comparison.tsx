@@ -14,7 +14,7 @@ interface MonthComparisonProps {
 export function MonthComparison({ data, userPlan = "free" }: MonthComparisonProps) {
   if (userPlan === "free") {
     return (
-      <Card className="hud-border overflow-hidden bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay opacity-60">
+      <Card className="hud-border bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay opacity-60 min-w-0">
         <CardHeader className="pb-2">
           <div className="border-b border-[var(--primary)]/20 pb-2 mb-2">
             <div className="flex items-center gap-1.5">
@@ -61,7 +61,7 @@ export function MonthComparison({ data, userPlan = "free" }: MonthComparisonProp
   const previousMonthLabel = getMonthLabel(previousMonth.month);
 
   return (
-    <Card className="hud-border overflow-hidden bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay">
+    <Card className="hud-border bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay min-w-0">
       <CardHeader className="pb-2">
         <div className="border-b border-[var(--primary)]/20 pb-2 mb-2">
           <div className="flex items-center gap-2">

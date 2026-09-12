@@ -25,7 +25,7 @@ interface MonthlyChartProps {
 export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
   if (userPlan === "free") {
     return (
-      <Card className="hud-border overflow-hidden bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay opacity-60">
+      <Card className="hud-border bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay opacity-60 min-w-0">
         <CardHeader>
           <CardTitle className="text-sm sm:text-base font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
             EVOLUÇÃO DO SALDO
@@ -50,7 +50,7 @@ export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
 
   if (!data.length) {
     return (
-      <Card className="hud-border overflow-hidden bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay">
+      <Card className="hud-border bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay min-w-0">
         <CardHeader>
           <CardTitle className="text-sm sm:text-base font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
             EVOLUÇÃO DO SALDO
@@ -84,7 +84,7 @@ export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
   const currentTotalBalance = currentPersonalBalance + currentBusinessBalance;
 
   return (
-    <Card className="hud-border overflow-hidden bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay">
+    <Card className="hud-border bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay min-w-0">
       <CardHeader className="pb-2">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-[var(--primary)]/20 pb-2 mb-2 gap-2">
           <div className="flex items-center gap-2 min-w-0">

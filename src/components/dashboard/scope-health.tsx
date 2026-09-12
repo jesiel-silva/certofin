@@ -23,7 +23,7 @@ export function ScopeHealth({
 
   return (
     <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
-      <Card className="hud-border overflow-hidden bg-[#0B1221]/80 backdrop-blur-sm transition-all hover:border-[var(--primary)]/50 hover:shadow-[0_0_20px_rgba(0,255,204,0.1)] scanline-overlay">
+      <Card className="hud-border bg-[#0B1221]/80 backdrop-blur-sm transition-all hover:border-[var(--primary)]/50 hover:shadow-[0_0_20px_rgba(0,255,204,0.1)] scanline-overlay">
         <CardHeader className="flex flex-row items-center gap-3 pb-2 border-b border-[var(--primary)]/20 mb-3">
           <div className="rounded-none bg-[var(--primary)]/10 p-2 border border-[var(--primary)]/30 glow-cyan">
             <Briefcase className="h-4 w-4 text-[var(--primary)]" />
@@ -67,7 +67,7 @@ export function ScopeHealth({
         </CardContent>
       </Card>
 
-      <Card className="hud-border overflow-hidden bg-[#0B1221]/80 backdrop-blur-sm transition-all hover:border-[var(--personal)]/50 hover:shadow-[0_0_20px_rgba(5,67,136,0.15)] scanline-overlay">
+      <Card className="hud-border bg-[#0B1221]/80 backdrop-blur-sm transition-all hover:border-[var(--personal)]/50 hover:shadow-[0_0_20px_rgba(5,67,136,0.15)] scanline-overlay">
         <CardHeader className="flex flex-row items-center gap-3 pb-2 border-b border-[var(--personal)]/20 mb-3">
           <div className="rounded-none bg-[var(--personal)]/10 p-2 border border-[var(--personal)]/30 shadow-[0_0_12px_rgba(5,67,136,0.4)]">
             <Home className="h-4 w-4 text-[var(--personal)]" />

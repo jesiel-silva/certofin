@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { TransactionWithCategory } from "@/lib/types";
-import { X, Download, AlertTriangle, TrendingUp, TrendingDown, Clock, CheckCircle2, BarChart3, Lock, Crown } from "lucide-react";
+import { X, Download, AlertTriangle, TrendingUp, TrendingDown, Clock, CheckCircle2, BarChart3, Lock, Crown, Info, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
 import { createClient } from "@/lib/supabase/client";
@@ -37,6 +37,7 @@ export function ReportPreview({
 }: ReportPreviewProps) {
   const supabase = createClient();
   const [userName, setUserName] = useState("");
+  const [prevMonthData, setPrevMonthData] = useState<{ income: number; expense: number; savings: number } | null>(null);
   const [year, monthNum] = month.split("-");
   const monthLabel = new Intl.DateTimeFormat("pt-BR", {
     month: "long",
@@ -57,6 +58,85 @@ export function ReportPreview({
     };
     fetchUser();
   }, [supabase]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchPrevMonth = async () => {
+      const prevDate = new Date(parseInt(year), parseInt(monthNum) - 2, 1);
+      const prevYear = prevDate.getFullYear();
+      const prevMonth = prevDate.getMonth() + 1;
+      const prevMonthKey = `${prevYear}-${String(prevMonth).padStart(2, "0")}`;
+      const prevStart = `${prevMonthKey}-01`;
+      const prevLastDay = new Date(prevYear, prevMonth, 0).getDate();
+      const prevEnd = `${prevMonthKey}-${String(prevLastDay).padStart(2, "0")}`;
+
+      let regularQuery = supabase
+        .from("transactions")
+        .select("*, categories(*)")
+        .gte("transaction_date", prevStart)
+        .lte("transaction_date", prevEnd)
+        .eq("is_recurring", false);
+
+      if (scope === "personal" || scope === "business") {
+        regularQuery = regularQuery.eq("scope", scope);
+      }
+      const { data: regularData } = await regularQuery;
+
+      let recurringQuery = supabase
+        .from("transactions")
+        .select("*, categories(*)")
+        .eq("is_recurring", true);
+
+      if (scope === "personal" || scope === "business") {
+        recurringQuery = recurringQuery.eq("scope", scope);
+      }
+      const { data: recurringTemplates } = await recurringQuery;
+
+      const prevTxs: TransactionWithCategory[] = ((regularData as TransactionWithCategory[]) || []).map((t) => ({
+        ...t,
+        amount: Number(t.amount),
+      }));
+
+      if (recurringTemplates) {
+        for (const template of recurringTemplates) {
+          const dueDay = template.due_day || 1;
+          if (dueDay > prevLastDay) continue;
+          if (template.transaction_date?.substring(0, 7) !== prevMonthKey) continue;
+
+          let virtualStatus: "pending" | "paid" = "pending";
+          if (template.last_paid_date && template.last_paid_date.substring(0, 7) >= prevMonthKey) {
+            virtualStatus = "paid";
+          }
+
+          prevTxs.push({
+            ...template,
+            id: `virtual_${template.id}_${prevYear}_${prevMonth}`,
+            transaction_date: template.transaction_date,
+            is_recurring: true,
+            recurring_active: template.recurring_active,
+            status: virtualStatus,
+            template_id: template.id,
+            amount: Number(template.amount),
+          });
+        }
+      }
+
+      const prevIncome = prevTxs
+        .filter((t) => t.type === "income" && t.status === "paid")
+        .reduce((sum, t) => sum + t.amount, 0);
+      const prevExpense = prevTxs
+        .filter((t) => t.type === "expense" && t.status === "paid")
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      if (!cancelled) {
+        setPrevMonthData({ income: prevIncome, expense: prevExpense, savings: prevIncome - prevExpense });
+      }
+    };
+    fetchPrevMonth();
+    return () => {
+      cancelled = true;
+    };
+  }, [supabase, scope, year, monthNum]);
 
   const incomeTransactions = transactions.filter((t) => t.type === "income");
   const expenseTransactions = transactions.filter((t) => t.type === "expense");
@@ -130,16 +210,39 @@ export function ReportPreview({
     minute: "2-digit",
   });
 
+  // Resumo executivo (com comparação vs mês anterior)
+  const prevLabel = prevMonthData
+    ? new Intl.DateTimeFormat("pt-BR", { month: "long" }).format(new Date(parseInt(year), parseInt(monthNum) - 2))
+    : "";
+  const summaryText = (() => {
+    const prevSavings = prevMonthData?.savings;
+    const diffPct = prevSavings !== undefined && prevSavings !== 0 ? ((balance - prevSavings) / Math.abs(prevSavings)) * 100 : null;
+    let comparePhrase = "";
+    if (prevLabel && diffPct !== null) {
+      if (diffPct > 0) comparePhrase = `${Math.abs(diffPct).toFixed(0)}% a mais que em ${prevLabel}`;
+      else if (diffPct < 0) comparePhrase = `${Math.abs(diffPct).toFixed(0)}% a menos que em ${prevLabel}`;
+      else comparePhrase = `o mesmo que em ${prevLabel}`;
+    }
+
+    if (balance > 0) {
+      return `Você economizou ${formatCurrency(balance)} neste mês${comparePhrase ? `, ${comparePhrase}` : ""}.`;
+    }
+    if (balance < 0) {
+      return `Seu saldo ficou negativo em ${formatCurrency(Math.abs(balance))} neste mês${comparePhrase ? `, ${comparePhrase}` : ""}.`;
+    }
+    return `Seu saldo ficou equilibrado neste mês, sem sobras nem déficits${comparePhrase ? ` (${comparePhrase})` : ""}.`;
+  })();
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div className="relative w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--background)] shadow-2xl">
         {/* Header Profissional */}
-        <div className="border-b border-[var(--border)] bg-gradient-to-r from-[var(--primary)]/5 to-transparent px-8 py-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Logo size="md" showText={false} />
-            </div>
+        <div className="border-b border-[var(--border)] bg-gradient-to-r from-[var(--primary)]/5 to-transparent px-4 py-2 sm:px-8 sm:py-3">
+          <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-3">
+              <Logo size="sm" showText={false} imageClassName="h-28 w-28" />
+            </div>
+            <div className="flex items-center gap-2 sm:gap-3">
               {isFree ? (
                 <Link
                   href="/personal/planos"
@@ -167,15 +270,15 @@ export function ReportPreview({
               </button>
             </div>
           </div>
-          <div className="mt-4 flex items-center gap-6 text-base text-[var(--muted-foreground)]">
-            <span>Período: <strong className="text-[var(--foreground)]">{monthLabel}</strong></span>
-            <span>Gerado em: <strong className="text-[var(--foreground)]">{generatedAt}</strong></span>
-            <span>ID: <strong className="text-[var(--foreground)]">{crypto.randomUUID().slice(0, 8).toUpperCase()}</strong></span>
+          <div className="mt-2 flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-6 text-sm sm:text-base text-[var(--muted-foreground)]">
+            <span className="truncate">Período: <strong className="text-[var(--foreground)]">{monthLabel}</strong></span>
+            <span className="hidden sm:inline">Gerado em: <strong className="text-[var(--foreground)]">{generatedAt}</strong></span>
+            <span className="hidden md:inline">ID: <strong className="text-[var(--foreground)]">{crypto.randomUUID().slice(0, 8).toUpperCase()}</strong></span>
           </div>
         </div>
 
         {/* Content */}
-        <div className="overflow-y-auto p-8" style={{ maxHeight: "calc(90vh - 180px)" }}>
+        <div className="overflow-y-auto p-4 sm:p-8" style={{ maxHeight: "calc(90vh - 160px)" }}>
           {transactions.length === 0 ? (
             <div className="py-16 text-center text-[var(--muted-foreground)]">
               <p className="text-xl">Nenhum lançamento encontrado para este período.</p>
@@ -183,58 +286,47 @@ export function ReportPreview({
           ) : (
             <>
               {/* Cabeçalho do Relatório */}
-              <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-[var(--border)] pb-6 gap-4">
-                <Logo size="lg" showText={false} />
-                <div className="text-left sm:text-right">
-                  <p className="text-lg font-bold text-[var(--foreground)]">{userName}</p>
-                  <p className="text-base font-semibold text-[var(--primary)]">Relatório {scope === "business" ? "Negócio" : "Pessoal"}</p>
-                  <p className="text-sm text-[var(--muted-foreground)]">{monthLabel}</p>
+              <div className="mb-4 border-b border-[var(--border)] pb-3">
+                <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center">
+                  <span className="text-base font-bold text-[var(--foreground)]">{userName}</span>
+                  <span className="text-[var(--muted-foreground)]">•</span>
+                  <span className="text-sm font-semibold text-[var(--primary)]">Relatório {scope === "business" ? "Negócio" : "Pessoal"}</span>
+                  <span className="text-[var(--muted-foreground)]">•</span>
+                  <span className="text-xs text-[var(--muted-foreground)]">{monthLabel}</span>
                 </div>
               </div>
 
-              {/* 1. VISÃO GERAL DO MÊS */}
+              {/* Resumo Executivo */}
+              <div className="mb-8 overflow-hidden rounded-xl border border-[var(--primary)]/20 bg-gradient-to-r from-[var(--primary)]/10 to-transparent p-4 sm:p-5">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--primary)]/10">
+                    <Sparkles className="h-5 w-5 text-[var(--primary)]" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-[var(--primary)]">Resumo Executivo</p>
+                    <p className="mt-1 text-base sm:text-lg leading-snug font-semibold text-[var(--foreground)]">
+                      {summaryText}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 1. INDICADORES CHAVE */}
               <section className="mb-8">
                 <h2 className="mb-4 flex items-center gap-2 text-base font-bold text-[var(--foreground)] uppercase tracking-wider border-b border-[var(--border)] pb-2">
                   <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--primary)]/10 text-xs font-bold text-[var(--primary)]">1</span>
-                  Visão Geral do Mês
-                </h2>
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                  <MetricCard
-                    label="Receitas Recebidas"
-                    value={formatCurrency(totalIncome)}
-                    sub={`${paidIncome.length} lançamentos`}
-                    color="success"
-                  />
-                  <MetricCard
-                    label="Despesas Pagas"
-                    value={formatCurrency(totalExpense)}
-                    sub={`${paidExpense.length} lançamentos`}
-                    color="destructive"
-                  />
-                  <MetricCard
-                    label="Saldo do Período"
-                    value={formatCurrency(balance)}
-                    sub={balance >= 0 ? "Positivo" : "Negativo"}
-                    color={balance >= 0 ? "success" : "destructive"}
-                  />
-                </div>
-              </section>
-
-              {/* 2. INDICADORES CHAVE */}
-              <section className="mb-8">
-                <h2 className="mb-4 flex items-center gap-2 text-base font-bold text-[var(--foreground)] uppercase tracking-wider border-b border-[var(--border)] pb-2">
-                  <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--primary)]/10 text-xs font-bold text-[var(--primary)]">2</span>
                   INDICADORES IMPORTANTES
                   {isFree && <Lock className="h-3 w-3 text-[var(--warning)] ml-1" />}
                 </h2>
                 <div className={isFree ? "blur-sm pointer-events-none select-none" : ""}>
-                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   <IndicatorCard
                     icon={<TrendingUp className="h-4 w-4" />}
                     label="Maior Receita"
                     value={formatCurrency(highestIncome ? highestIncome.amount : 0)}
                     detail={highestIncome?.description || "Nenhuma receita paga"}
                     color="success"
+                    tooltip="Maior valor recebido no mês. Considera apenas lançamentos com status pago."
                   />
                   <IndicatorCard
                     icon={<TrendingDown className="h-4 w-4" />}
@@ -242,6 +334,7 @@ export function ReportPreview({
                     value={formatCurrency(highestExpense ? highestExpense.amount : 0)}
                     detail={highestExpense?.description || "Nenhuma despesa paga"}
                     color="destructive"
+                    tooltip="Maior despesa paga no mês. Ajuda a identificar onde o dinheiro mais saiu."
                   />
                   <IndicatorCard
                     icon={<BarChart3 className="h-4 w-4" />}
@@ -249,27 +342,7 @@ export function ReportPreview({
                     value={formatCurrency(avgTicket)}
                     detail={paidExpense.length > 0 ? `${paidExpense.length} pagas` : "Nenhuma paga"}
                     color="primary"
-                  />
-                  <IndicatorCard
-                    icon={<Clock className="h-4 w-4" />}
-                    label="Pendente (Receber)"
-                    value={formatCurrency(totalPendingIncome)}
-                    detail={pendingIncome.length > 0 ? `${pendingIncome.length} itens` : "Nenhum pendente"}
-                    color="warning"
-                  />
-                  <IndicatorCard
-                    icon={<AlertTriangle className="h-4 w-4" />}
-                    label="Pendente (Pagar)"
-                    value={formatCurrency(totalPendingExpense)}
-                    detail={pendingExpense.length > 0 ? `${pendingExpense.length} itens` : "Nenhum pendente"}
-                    color="warning"
-                  />
-                  <IndicatorCard
-                    icon={<CheckCircle2 className="h-4 w-4" />}
-                    label="Dias com Gastos"
-                    value={`${daysWithExpenses} dias`}
-                    detail={daysWithExpenses > 0 ? "Atividade" : "Sem atividade"}
-                    color="primary"
+                    tooltip="Total pago em despesas ÷ número de despesas pagas. Mostra seu ticket médio de consumo."
                   />
                 </div>
                 </div>
@@ -287,18 +360,12 @@ export function ReportPreview({
                 )}
               </section>
 
-              {/* Divisor com Logo */}
               <div className={isFree ? "blur-sm pointer-events-none select-none" : ""}>
-              <div className="my-6 flex items-center gap-4 border-t border-[var(--border)] pt-6">
-                <Logo size="sm" showSubtitle={false} />
-                <div className="flex-1 border-t border-dashed border-[var(--border)]" />
-              </div>
-
-              {/* 3. CATEGORIAS COM MAIS GASTOS */}
+              {/* 2. CATEGORIAS COM MAIS GASTOS */}
               {topCategories.length > 0 && (
                 <section className="mb-8">
                   <h2 className="mb-4 flex items-center gap-2 text-base font-bold text-[var(--foreground)] uppercase tracking-wider border-b border-[var(--border)] pb-2">
-                    <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--primary)]/10 text-xs font-bold text-[var(--primary)]">3</span>
+                    <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--primary)]/10 text-xs font-bold text-[var(--primary)]">2</span>
                     Categorias com Mais Gastos
                   </h2>
                   <div className="space-y-3">
@@ -341,10 +408,10 @@ export function ReportPreview({
               {/* 4. STATUS DOS LANÇAMENTOS */}
               <section className="mb-8">
                 <h2 className="mb-4 flex items-center gap-2 text-base font-bold text-[var(--foreground)] uppercase tracking-wider border-b border-[var(--border)] pb-2">
-                  <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--primary)]/10 text-xs font-bold text-[var(--primary)]">4</span>
-                  Status dos Lançamentos
+<span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--primary)]/10 text-xs font-bold text-[var(--primary)]">3</span>
+                    Status dos Lançamentos
                 </h2>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="rounded-lg border border-[var(--border)] p-4">
                     <h3 className="mb-3 text-xs font-semibold text-[var(--success)] uppercase tracking-wider">
                       Receitas
@@ -402,35 +469,35 @@ export function ReportPreview({
               {incomeByDate.length > 0 && (
                 <section className="mb-8">
                   <h2 className="mb-4 flex items-center gap-2 text-base font-bold text-[var(--foreground)] uppercase tracking-wider border-b border-[var(--border)] pb-2">
-                    <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--success)]/10 text-xs font-bold text-[var(--success)]">5</span>
+                    <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--success)]/10 text-xs font-bold text-[var(--success)]">4</span>
                     Detalhamento — Receitas
                   </h2>
-                  <div className="rounded-xl border border-[var(--border)] overflow-hidden">
-                    <table className="w-full text-sm">
+                  <div className="rounded-xl border border-[var(--border)] overflow-x-auto">
+                    <table className="w-full text-sm whitespace-nowrap">
                       <thead>
                         <tr className="border-b border-[var(--border)] bg-[var(--accent)]/50">
-                          <th className="px-4 py-2 text-left text-xs font-semibold text-[var(--muted-foreground)]">Data</th>
-                          <th className="px-4 py-2 text-left text-xs font-semibold text-[var(--muted-foreground)]">Descrição</th>
-                          <th className="px-4 py-2 text-left text-xs font-semibold text-[var(--muted-foreground)]">Categoria</th>
-                          <th className="px-4 py-2 text-center text-xs font-semibold text-[var(--muted-foreground)]">Status</th>
-                          <th className="px-4 py-2 text-right text-xs font-semibold text-[var(--muted-foreground)]">Valor</th>
+                          <th className="px-2 sm:px-4 py-2 text-left text-xs font-semibold text-[var(--muted-foreground)]">Data</th>
+                          <th className="px-2 sm:px-4 py-2 text-left text-xs font-semibold text-[var(--muted-foreground)]">Descrição</th>
+                          <th className="px-2 sm:px-4 py-2 text-left text-xs font-semibold text-[var(--muted-foreground)]">Categoria</th>
+                          <th className="px-2 sm:px-4 py-2 text-center text-xs font-semibold text-[var(--muted-foreground)]">Status</th>
+                          <th className="px-2 sm:px-4 py-2 text-right text-xs font-semibold text-[var(--muted-foreground)]">Valor</th>
                         </tr>
                       </thead>
                       <tbody>
                         {incomeByDate.map(([date, txs]) =>
                           txs.map((t) => (
                             <tr key={t.id} className="border-b border-[var(--border)] last:border-b-0 hover:bg-[var(--accent)]/30">
-                              <td className="px-4 py-3 text-base text-[var(--muted-foreground)]">
+                              <td className="px-2 sm:px-4 py-3 text-sm sm:text-base text-[var(--muted-foreground)]">
                                 {formatDate(date)}
                               </td>
-                              <td className="px-4 py-3 font-medium text-[var(--foreground)]">{t.description || "Sem descrição"}{t.is_recurring ? " (Recorrente)" : ""}</td>
-                              <td className="px-4 py-3 text-[var(--muted-foreground)]">{t.categories?.name || "—"}</td>
-                              <td className="px-4 py-3 text-center">
-                                <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-sm font-medium ${t.status === "paid" ? "bg-[var(--success)]/10 text-[var(--success)]" : "bg-[var(--warning)]/10 text-[var(--warning)]"}`}>
+                              <td className="px-2 sm:px-4 py-3 font-medium text-sm sm:text-base text-[var(--foreground)]">{t.description || "Sem descrição"}{t.is_recurring ? " (Recorrente)" : ""}</td>
+                              <td className="px-2 sm:px-4 py-3 text-sm sm:text-base text-[var(--muted-foreground)]">{t.categories?.name || "—"}</td>
+                              <td className="px-2 sm:px-4 py-3 text-center">
+                                <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs sm:text-sm font-medium ${t.status === "paid" ? "bg-[var(--success)]/10 text-[var(--success)]" : "bg-[var(--warning)]/10 text-[var(--warning)]"}`}>
                                   {t.status === "paid" ? "Pago" : "Pendente"}
                                 </span>
                               </td>
-                              <td className="px-4 py-3 text-right font-semibold text-[var(--success)]">
+                              <td className="px-2 sm:px-4 py-3 text-right font-semibold text-sm sm:text-base text-[var(--success)]">
                                 +{formatCurrency(t.amount)}
                               </td>
                             </tr>
@@ -452,35 +519,35 @@ export function ReportPreview({
               {expenseByDate.length > 0 && (
                 <section className="mb-8">
                   <h2 className="mb-4 flex items-center gap-2 text-base font-bold text-[var(--foreground)] uppercase tracking-wider border-b border-[var(--border)] pb-2">
-                    <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--destructive)]/10 text-xs font-bold text-[var(--destructive)]">6</span>
+                    <span className="flex h-5 w-5 items-center justify-center rounded bg-[var(--destructive)]/10 text-xs font-bold text-[var(--destructive)]">5</span>
                     Detalhamento — Despesas
                   </h2>
-                  <div className="rounded-xl border border-[var(--border)] overflow-hidden">
-                    <table className="w-full text-sm">
+                  <div className="rounded-xl border border-[var(--border)] overflow-x-auto">
+                    <table className="w-full text-sm whitespace-nowrap">
                       <thead>
                         <tr className="border-b border-[var(--border)] bg-[var(--accent)]/50">
-                          <th className="px-4 py-2 text-left text-xs font-semibold text-[var(--muted-foreground)]">Data</th>
-                          <th className="px-4 py-2 text-left text-xs font-semibold text-[var(--muted-foreground)]">Descrição</th>
-                          <th className="px-4 py-2 text-left text-xs font-semibold text-[var(--muted-foreground)]">Categoria</th>
-                          <th className="px-4 py-2 text-center text-xs font-semibold text-[var(--muted-foreground)]">Status</th>
-                          <th className="px-4 py-2 text-right text-xs font-semibold text-[var(--muted-foreground)]">Valor</th>
+                          <th className="px-2 sm:px-4 py-2 text-left text-xs font-semibold text-[var(--muted-foreground)]">Data</th>
+                          <th className="px-2 sm:px-4 py-2 text-left text-xs font-semibold text-[var(--muted-foreground)]">Descrição</th>
+                          <th className="px-2 sm:px-4 py-2 text-left text-xs font-semibold text-[var(--muted-foreground)]">Categoria</th>
+                          <th className="px-2 sm:px-4 py-2 text-center text-xs font-semibold text-[var(--muted-foreground)]">Status</th>
+                          <th className="px-2 sm:px-4 py-2 text-right text-xs font-semibold text-[var(--muted-foreground)]">Valor</th>
                         </tr>
                       </thead>
                       <tbody>
                         {expenseByDate.map(([date, txs]) =>
                           txs.map((t) => (
                             <tr key={t.id} className="border-b border-[var(--border)] last:border-b-0 hover:bg-[var(--accent)]/30">
-                              <td className="px-4 py-3 text-base text-[var(--muted-foreground)]">
+                              <td className="px-2 sm:px-4 py-3 text-sm sm:text-base text-[var(--muted-foreground)]">
                                 {formatDate(date)}
                               </td>
-                              <td className="px-4 py-3 font-medium text-[var(--foreground)]">{t.description || "Sem descrição"}{t.is_recurring ? " (Recorrente)" : ""}</td>
-                              <td className="px-4 py-3 text-[var(--muted-foreground)]">{t.categories?.name || "—"}</td>
-                              <td className="px-4 py-3 text-center">
-                                <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-sm font-medium ${t.status === "paid" ? "bg-[var(--success)]/10 text-[var(--success)]" : "bg-[var(--warning)]/10 text-[var(--warning)]"}`}>
+                              <td className="px-2 sm:px-4 py-3 font-medium text-sm sm:text-base text-[var(--foreground)]">{t.description || "Sem descrição"}{t.is_recurring ? " (Recorrente)" : ""}</td>
+                              <td className="px-2 sm:px-4 py-3 text-sm sm:text-base text-[var(--muted-foreground)]">{t.categories?.name || "—"}</td>
+                              <td className="px-2 sm:px-4 py-3 text-center">
+                                <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs sm:text-sm font-medium ${t.status === "paid" ? "bg-[var(--success)]/10 text-[var(--success)]" : "bg-[var(--warning)]/10 text-[var(--warning)]"}`}>
                                   {t.status === "paid" ? "Pago" : "Pendente"}
                                 </span>
                               </td>
-                              <td className="px-4 py-3 text-right font-semibold text-[var(--destructive)]">
+                              <td className="px-2 sm:px-4 py-3 text-right font-semibold text-sm sm:text-base text-[var(--destructive)]">
                                 -{formatCurrency(t.amount)}
                               </td>
                             </tr>
@@ -529,19 +596,7 @@ export function ReportPreview({
 
               {/* FOOTER */}
               <section className="border-t border-[var(--border)] pt-4">
-                <div className="flex items-center justify-between text-base text-[var(--muted-foreground)]">
-                  <div className="flex items-center gap-4">
-                    <span>CertoFin v1.0</span>
-                    <span>•</span>
-                    <span>{transactions.length} lançamentos analisados</span>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span>Gerado automaticamente</span>
-                    <span>•</span>
-                    <span>{generatedAt}</span>
-                  </div>
-                </div>
-                <p className="mt-2 text-center text-xs text-[var(--muted-foreground)]/60">
+                <p className="text-center text-xs text-[var(--muted-foreground)]/60">
                   Este relatório é gerado automaticamente e não substitui consultoria financeira profissional.
                 </p>
               </section>
@@ -554,29 +609,7 @@ export function ReportPreview({
 }
 
 // Sub-componentes auxiliares
-function MetricCard({ label, value, sub, color }: { label: string; value: string; sub: string; color: string }) {
-  const colorClasses: Record<string, string> = {
-    success: "border-[var(--success)]/20 bg-[var(--success)]/5",
-    destructive: "border-[var(--destructive)]/20 bg-[var(--destructive)]/5",
-    primary: "border-[var(--primary)]/20 bg-[var(--primary)]/5",
-  };
-
-  const textColors: Record<string, string> = {
-    success: "text-[var(--success)]",
-    destructive: "text-[var(--destructive)]",
-    primary: "text-[var(--primary)]",
-  };
-
-  return (
-    <div className={`rounded-xl border p-6 ${colorClasses[color] || colorClasses.primary}`}>
-      <p className={`text-base font-medium ${textColors[color] || textColors.primary}`}>{label}</p>
-      <p className={`mt-2 text-3xl font-bold ${textColors[color] || textColors.primary}`}>{value}</p>
-      <p className="mt-1 text-base text-[var(--muted-foreground)]">{sub}</p>
-    </div>
-  );
-}
-
-function IndicatorCard({ icon, label, value, detail, color }: { icon: React.ReactNode; label: string; value: string; detail: string; color: string }) {
+function IndicatorCard({ icon, label, value, detail, color, tooltip }: { icon: React.ReactNode; label: string; value: string; detail: string; color: string; tooltip?: string }) {
   const colorClasses: Record<string, string> = {
     success: "border-[var(--success)]/20 bg-[var(--success)]/5 text-[var(--success)]",
     destructive: "border-[var(--destructive)]/20 bg-[var(--destructive)]/5 text-[var(--destructive)]",
@@ -585,10 +618,21 @@ function IndicatorCard({ icon, label, value, detail, color }: { icon: React.Reac
   };
 
   return (
-    <div className={`rounded-lg border p-3 ${colorClasses[color] || colorClasses.primary}`}>
+    <div className={`relative rounded-lg border p-3 ${colorClasses[color] || colorClasses.primary}`}>
       <div className="flex items-center gap-2 mb-2">
         {icon}
         <span className="text-sm font-medium text-[var(--muted-foreground)]">{label}</span>
+        {tooltip && (
+          <span className="group/info relative inline-flex items-center">
+            <Info className="h-3.5 w-3.5 text-[var(--muted-foreground)]/70 cursor-help" />
+            <span
+              role="tooltip"
+              className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-1.5 w-52 -translate-x-1/2 rounded-lg border border-[var(--border)] bg-[var(--background)] p-2 text-xs leading-snug text-[var(--muted-foreground)] opacity-0 shadow-xl transition-opacity duration-150 group-hover/info:opacity-100 group-focus-within/info:opacity-100"
+            >
+              {tooltip}
+            </span>
+          </span>
+        )}
       </div>
       <p className="text-lg font-bold text-[var(--foreground)]">{value}</p>
       <p className="text-base text-[var(--muted-foreground)]">{detail}</p>
