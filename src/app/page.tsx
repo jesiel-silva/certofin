@@ -145,14 +145,14 @@ export default function HomePage() {
         <div className="absolute inset-0 pointer-events-none select-none overflow-hidden" style={{ zIndex: 0 }}>
           <div className="absolute top-[20%] left-1/2 -translate-x-1/2 -translate-y-1/2">
             {/* Logo image */}
-            <div className="relative h-[900px] w-[900px] animate-watermark-pulse"
+            <div className="relative h-[900px] w-[900px] max-w-[90vw] max-h-[90vw] animate-watermark-pulse"
               style={{ opacity: 0.14 }}
             >
               <Image
                 src="/stripe-logo-transp.png"
                 alt=""
                 fill
-                sizes="900px"
+                sizes="(max-width: 768px) 90vw, 900px"
                 className="object-contain"
                 priority
               />
