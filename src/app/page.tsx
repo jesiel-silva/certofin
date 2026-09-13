@@ -143,7 +143,7 @@ export default function HomePage() {
 
         {/* Logo Watermark */}
         <div className="absolute inset-0 pointer-events-none select-none overflow-hidden" style={{ zIndex: 0 }}>
-          <div className="absolute top-[5%] sm:top-[20%] left-1/2 -translate-x-1/2 -translate-y-1/2">
+          <div className="absolute top-[12%] sm:top-[20%] left-1/2 -translate-x-1/2 -translate-y-1/2">
             {/* Logo image */}
             <div className="relative h-[1200px] w-[1200px] max-w-[95vw] max-h-[95vw] animate-watermark-pulse"
               style={{ opacity: 0.14 }}
