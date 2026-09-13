@@ -344,7 +344,7 @@ export default function HomePage() {
               FEITO PARA FACILITAR A <span className="text-[var(--primary)] text-glow-cyan">SUA VIDA</span>
             </h2>
             <p className="mt-4 text-sm font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
-              Simplificamos o controle do seu dinheiro. Sem planilhas complexas, sem perda de tempo.
+              Enquanto sua planilha fica parada, suas contas vencem. O CertoFin lembra você antes. Planilha é coisa do passado.
             </p>
           </div>
           
@@ -510,13 +510,13 @@ export default function HomePage() {
                     <CheckCircle className="h-4 w-4 text-[var(--success)] shrink-0 mt-0.5" />
                     <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--muted-foreground)]">Agendamento de contas fixas</span>
                   </li>
-                  <li className="flex items-start gap-3 opacity-40">
-                    <Lock className="h-4 w-4 text-[var(--destructive)] shrink-0 mt-0.5" />
-                    <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--destructive)] line-through">Separação de negócio/pessoal</span>
+                  <li className="flex items-start gap-3">
+                    <Lock className="h-4 w-4 text-[var(--muted-foreground)] shrink-0 mt-0.5" />
+                    <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--muted-foreground)] line-through decoration-[var(--destructive)]">Separação de negócio/pessoal</span>
                   </li>
-                  <li className="flex items-start gap-3 opacity-40">
-                    <Lock className="h-4 w-4 text-[var(--destructive)] shrink-0 mt-0.5" />
-                    <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--destructive)] line-through">Lançamentos parcelados</span>
+                  <li className="flex items-start gap-3">
+                    <Lock className="h-4 w-4 text-[var(--muted-foreground)] shrink-0 mt-0.5" />
+                    <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--muted-foreground)] line-through decoration-[var(--destructive)]">Lançamentos parcelados</span>
                   </li>
                 </ul>
               </div>
