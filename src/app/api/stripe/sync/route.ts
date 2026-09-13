@@ -38,6 +38,14 @@ export async function POST(req: NextRequest) {
         );
       }
 
+      const sessionOwner = session.metadata?.supabase_user_id;
+      if (sessionOwner && sessionOwner !== user.id) {
+        return NextResponse.json(
+          { error: "Você não possui permissão para sincronizar esta sessão." },
+          { status: 403 }
+        );
+      }
+
       customerId = session.customer as string;
     } else {
       const { data: profile } = await supabase

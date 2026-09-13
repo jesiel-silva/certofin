@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getStripe, STRIPE_CONFIG } from "@/lib/stripe/server";
 
 export async function POST(req: NextRequest) {
@@ -48,8 +49,9 @@ export async function POST(req: NextRequest) {
 
       customerId = customer.id;
 
-      // Salva o customer_id no perfil do usuário
-      await supabase
+      // Salva o customer_id no perfil do usuário usando admin (evita trigger RLS)
+      const supabaseAdmin = createAdminClient();
+      await supabaseAdmin
         .from("profiles")
         .update({ stripe_customer_id: customerId })
         .eq("id", user.id);

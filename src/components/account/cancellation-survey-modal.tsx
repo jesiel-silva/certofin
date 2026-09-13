@@ -106,16 +106,13 @@ export function CancellationSurveyModal({
 
       // 2. Executar ação correspondente
       if (actionType === "cancel_subscription") {
-        // Reverter perfil para plano grátis
-        const { error: updateErr } = await supabase
-          .from("profiles")
-          .update({
-            subscription_status: "free",
-            trial_ends_at: new Date().toISOString(), // encerrar trial se ativo
-          })
-          .eq("id", user.id);
+        // Cancelar assinatura no Stripe via API (mantém acesso até fim do período)
+        const res = await fetch("/api/stripe/cancel", { method: "POST" });
 
-        if (updateErr) throw updateErr;
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.error || "Falha ao cancelar a assinatura.");
+        }
 
         setLoading(false);
         if (onSuccess) onSuccess();
@@ -123,6 +120,13 @@ export function CancellationSurveyModal({
         window.location.reload();
       } else {
         // Excluir conta
+        try {
+          // Cancelar assinatura Stripe antes de remover os dados (best-effort)
+          await fetch("/api/stripe/cancel", { method: "POST" });
+        } catch {
+          // Se falhar, o webhook/deleção natural já trata depois
+        }
+
         try {
           await supabase.rpc("delete_user_account", { target_user_id: user.id });
         } catch {

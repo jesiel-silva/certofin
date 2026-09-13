@@ -18,11 +18,18 @@ export default function UpdatePasswordPage() {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [hasSession, setHasSession] = useState(false);
+  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setHasSession(!!session);
+    let active = true;
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!active) return;
+      setHasSession(!!user);
+      setChecking(false);
     });
+    return () => {
+      active = false;
+    };
   }, [supabase]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -53,6 +60,14 @@ export default function UpdatePasswordPage() {
     setLoading(false);
     setTimeout(() => router.push("/login"), 3000);
   };
+
+  if (checking) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-[var(--muted-foreground)]">Verificando link...</p>
+      </div>
+    );
+  }
 
   if (!hasSession) {
     return (
