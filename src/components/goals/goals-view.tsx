@@ -65,9 +65,7 @@ export function GoalsView() {
     }
   }, [supabase]);
 
-  useEffect(() => {
-    fetchGoals();
-  }, [fetchGoals]);
+  useEffect(() => { queueMicrotask(() => { fetchGoals(); }); }, [fetchGoals]);
 
   // Extrai categorias criadas pelo próprio usuário nas metas existentes
   const customCategories = useMemo(() => {

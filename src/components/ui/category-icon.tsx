@@ -69,9 +69,9 @@ interface CategoryIconProps {
 }
 
 export function CategoryIcon({ icon, color, className }: CategoryIconProps) {
-  const Icon = getCategoryIcon(icon);
+  const IconComponent = (icon && categoryIconMap[icon]) || Tag;
   return (
-    <Icon
+    <IconComponent
       className={className}
       style={color ? { color } : undefined}
     />

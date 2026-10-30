@@ -116,9 +116,7 @@ function PlanosContent() {
     handleCheckoutResult();
   }, [checkoutStatus, searchParams, fetchProfile]);
 
-  useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+  useEffect(() => { queueMicrotask(() => { fetchProfile(); }); }, [fetchProfile]);
 
   const handleSelectPlan = async (plan: "free" | "pro") => {
     if (plan === "pro") {

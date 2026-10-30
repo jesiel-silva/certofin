@@ -16,15 +16,18 @@ import {
 } from "recharts";
 import { Tooltip as HelpTooltip } from "@/components/ui/tooltip";
 
-function renderBarTopLabel(props: any) {
-  const { x, y, width, value, payload } = props;
-  if (!payload || value === undefined || value === null) return null;
-  const item = payload as CategorySummary;
+function renderBarTopLabel(props: { x?: string | number; y?: string | number; width?: string | number; value?: string | number; payload?: unknown }) {
+  const { x = 0, y = 0, width = 0, value, payload } = props;
+  const item = payload as CategorySummary | undefined;
+  if (!item || value === undefined || value === null) return null;
   const percentageStr = `${item.percentage.toFixed(0)}%`;
-  const formattedVal = formatCurrency(value);
+  const formattedVal = formatCurrency(Number(value));
+  const numX = Number(x) || 0;
+  const numY = Number(y) || 0;
+  const numW = Number(width) || 0;
 
   return (
-    <g transform={`translate(${x + width / 2}, ${y - 6})`}>
+    <g transform={`translate(${numX + numW / 2}, ${numY - 6})`}>
       <text
         x={0}
         y={-14}
@@ -54,11 +57,11 @@ function renderBarTopLabel(props: any) {
 }
 import { formatCurrency } from "@/lib/utils";
 import type { CategorySummary } from "@/lib/types";
-import { BarChart2, PieChart as PieIcon, Wallet, TrendingDown, TrendingUp } from "lucide-react";
+import { BarChart2, PieChart as PieIcon, TrendingDown, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-function getTypeLabel(item: CategorySummary): string {
-  const arr = (item as any)._typeArr as string[] | undefined;
+function getTypeLabel(item: CategorySummary & { _typeArr?: string[] }): string {
+  const arr = item._typeArr;
   if (arr && arr.length === 2) return "Despesa & Receita";
   if (item.type === "expense") return "Despesa";
   if (item.type === "income") return "Receita";
