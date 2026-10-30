@@ -7,9 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
 import type { Goal } from "@/lib/types";
 import { GOAL_ICON_MAP } from "@/components/goals/goal-constants";
-import { Target, ArrowRight, Plus, Sparkles } from "lucide-react";
+import { Target, ArrowRight, Plus, Crown, Lock } from "lucide-react";
 
-export function GoalsWidget() {
+interface GoalsWidgetProps {
+  userPlan?: "free" | "pro" | "trial";
+}
+
+export function GoalsWidget({ userPlan = "free" }: GoalsWidgetProps) {
   const supabase = createClient();
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,6 +48,48 @@ export function GoalsWidget() {
 
   if (loading) return null;
 
+  // Se o usuário for Free (sem trial), exibe o widget com CTA de desbloqueio Pro
+  if (userPlan === "free") {
+    return (
+      <Card className="hud-border bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay min-w-0">
+        <CardHeader className="pb-3 border-b border-[var(--primary)]/20">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Target className="h-5 w-5 text-[var(--primary)]" />
+              <CardTitle className="text-sm sm:text-base font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
+                METAS & OBJETIVOS
+              </CardTitle>
+            </div>
+            <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded border border-[var(--primary)]/40 bg-[var(--primary)]/20 text-[var(--primary)] flex items-center gap-1">
+              <Crown className="h-3 w-3" />
+              PRO
+            </span>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 py-2">
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-white flex items-center gap-1.5">
+                <Lock className="h-4 w-4 text-[var(--primary)]" />
+                Defina metas financeiras e acompanhe sua evolução
+              </p>
+              <p className="text-xs text-[var(--muted-foreground)]">
+                Exclusivo para assinantes Pro: crie reservas de emergência, metas de viagem, investimentos e visualize barras de progresso em tempo real.
+              </p>
+            </div>
+            <Link
+              href="/personal/planos"
+              className="shrink-0 inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider px-3.5 py-2 rounded-lg bg-[var(--primary)] text-black hover:bg-[var(--primary)]/90 transition-all shadow-[0_0_15px_rgba(0,255,204,0.3)]"
+            >
+              <Crown className="h-3.5 w-3.5" />
+              Desbloquear no Pro
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="hud-border bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay min-w-0">
       <CardHeader className="pb-3 border-b border-[var(--primary)]/20">
@@ -58,21 +104,24 @@ export function GoalsWidget() {
             href="/personal/goals"
             className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--primary)] hover:underline flex items-center gap-1 group"
           >
-            <span>Ver todas</span>
-            <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+            Ver todas
+            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
           </Link>
         </div>
       </CardHeader>
 
       <CardContent className="pt-4">
         {goals.length === 0 ? (
-          <div className="text-center py-6 space-y-3">
-            <p className="text-xs sm:text-sm text-[var(--muted-foreground)]">
-              Você ainda não tem metas cadastradas. Comece a poupar com um objetivo em mente!
-            </p>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 py-2 text-center sm:text-left">
+            <div>
+              <p className="text-sm font-semibold text-white">Nenhuma meta cadastrada ainda</p>
+              <p className="text-xs text-[var(--muted-foreground)]">
+                Defina sua reserva de emergência, viagem dos sonhos ou compras planejadas.
+              </p>
+            </div>
             <Link
               href="/personal/goals"
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded text-xs font-bold uppercase tracking-wider text-[#020617] bg-[var(--primary)] hover:bg-[var(--primary)]/90 hover:shadow-[0_0_12px_var(--primary)] transition-all"
+              className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider px-3 py-1.5 rounded border border-[var(--primary)]/40 bg-[var(--primary)]/10 text-[var(--primary)] hover:bg-[var(--primary)]/20 transition-all"
             >
               <Plus className="h-3.5 w-3.5" />
               Criar Meta

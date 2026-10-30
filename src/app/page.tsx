@@ -518,6 +518,10 @@ export default function HomePage() {
                     <Lock className="h-4 w-4 text-[var(--muted-foreground)] shrink-0 mt-0.5" />
                     <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--muted-foreground)] line-through decoration-[var(--destructive)]">Exportação em PDF e CSV</span>
                   </li>
+                  <li className="flex items-start gap-3">
+                    <Lock className="h-4 w-4 text-[var(--muted-foreground)] shrink-0 mt-0.5" />
+                    <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--muted-foreground)] line-through decoration-[var(--destructive)]">Metas e objetivos financeiros</span>
+                  </li>
                 </ul>
               </div>
               <Link
@@ -561,7 +565,7 @@ export default function HomePage() {
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--primary)] shrink-0 mt-0.5" />
-                    <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--muted-foreground)]">Lançamentos parcelados</span>
+                    <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--primary)] font-semibold text-glow-cyan">Metas financeiras com evolução no dashboard</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--primary)] shrink-0 mt-0.5" />

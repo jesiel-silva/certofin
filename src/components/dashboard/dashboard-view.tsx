@@ -369,7 +369,7 @@ export function DashboardView() {
           </div>
 
           <div className="min-w-0 overflow-hidden">
-            <GoalsWidget />
+            <GoalsWidget userPlan={userPlan} />
           </div>
 
           <div className="min-w-0 overflow-hidden">

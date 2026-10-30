@@ -6,6 +6,8 @@ import type { Goal } from "@/lib/types";
 import { GoalCard } from "./goal-card";
 import { GoalModal } from "./goal-modal";
 import { GoalProgressModal } from "./goal-progress-modal";
+import { UpgradeModal } from "@/components/ui/upgrade-modal";
+import { Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
@@ -29,11 +31,29 @@ export function GoalsView() {
 
   const [progressModalOpen, setProgressModalOpen] = useState(false);
   const [goalForProgress, setGoalForProgress] = useState<Goal | null>(null);
+  const [userPlan, setUserPlan] = useState<"free" | "pro" | "trial">("free");
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
 
   const fetchGoals = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
+
+      const { data: userData } = await supabase.auth.getUser();
+      if (userData.user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("subscription_status, trial_ends_at")
+          .eq("id", userData.user.id)
+          .single();
+        if (profile) {
+          const isPro = profile.subscription_status === "pro";
+          const isTrial = profile.trial_ends_at
+            ? new Date(profile.trial_ends_at) > new Date()
+            : false;
+          setUserPlan(isPro ? "pro" : isTrial ? "trial" : "free");
+        }
+      }
 
       const { data, error: err } = await supabase
         .from("goals")
@@ -145,6 +165,10 @@ export function GoalsView() {
   };
 
   const openCreateModal = () => {
+    if (userPlan === "free") {
+      setUpgradeModalOpen(true);
+      return;
+    }
     setSelectedGoal(null);
     setModalOpen(true);
   };
@@ -190,6 +214,35 @@ export function GoalsView() {
       {error && (
         <div className="p-4 rounded-xl border border-[var(--destructive)]/30 bg-[var(--destructive)]/10 text-sm text-[var(--destructive)]">
           {error}
+        </div>
+      )}
+
+      {userPlan === "free" && (
+        <div className="hud-border bg-gradient-to-r from-[var(--primary)]/10 via-[#0B1221] to-[var(--primary)]/5 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-[var(--primary)]/20 border border-[var(--primary)]/40 flex items-center justify-center shrink-0">
+              <Crown className="h-5 w-5 text-[var(--primary)] drop-shadow-[0_0_8px_var(--primary)]" />
+            </div>
+            <div>
+              <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                Recurso Exclusivo do Plano Pro
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-[var(--primary)]/30 bg-[var(--primary)]/20 text-[var(--primary)] font-bold">
+                  PRO
+                </span>
+              </h3>
+              <p className="text-xs sm:text-sm text-[var(--muted-foreground)]">
+                Assine o plano Pro para criar metas ilimitadas, cadastrar categorias personalizadas e acompanhar seu progresso no dashboard.
+              </p>
+            </div>
+          </div>
+          <Button
+            onClick={() => setUpgradeModalOpen(true)}
+            size="sm"
+            className="shrink-0 gap-1.5 font-bold"
+          >
+            <Crown className="h-3.5 w-3.5" />
+            Desbloquear Metas
+          </Button>
         </div>
       )}
 
@@ -297,6 +350,12 @@ export function GoalsView() {
         onClose={() => setProgressModalOpen(false)}
         goal={goalForProgress}
         onUpdateAmount={handleUpdateAmount}
+      />
+
+      <UpgradeModal
+        open={upgradeModalOpen}
+        onClose={() => setUpgradeModalOpen(false)}
+        feature="goals"
       />
     </div>
   );
