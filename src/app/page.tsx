@@ -22,10 +22,10 @@ import {
 
 const features = [
   {
-    icon: Split,
-    title: "Dinheiro separado",
+    icon: Wallet,
+    title: "Controle simples e direto",
     description:
-      "Não misture o dinheiro da sua empresa com o seu. O app separa tudo sozinho pra você nunca mais se perder.",
+      "Organize receitas e despesas com poucos cliques. O app cuida dos cálculos para você nunca mais se perder.",
     bgColor: "bg-[#054388]/10 dark:bg-[#054388]/20",
     accentColor: "bg-[#054388]",
   },
@@ -64,14 +64,14 @@ const steps = [
   },
   {
     step: "2",
-    title: "Anote o que entra e o que sai",
-    description: "Coloque se é do trabalho ou pessoal. O app guarda tudo pra você.",
+    title: "Anote seus ganhos e despesas",
+    description: "Registre suas entradas, contas do dia a dia e compras parceladas com total facilidade.",
     icon: Wallet,
   },
   {
     step: "3",
-    title: "Saiba quanto tá sobrando",
-    description: "Veja na tela quanto você lucrou e quanto sobrou pra você.",
+    title: "Saiba exatamente quanto sobra",
+    description: "Veja na tela o seu saldo real atualizado e saiba quanto sobrou para você economizar ou investir.",
     icon: TrendingUp,
   },
 ];
@@ -168,15 +168,15 @@ export default function HomePage() {
             </div>
             
             <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-7xl leading-tight" style={{ fontFamily: "var(--font-space-grotesk)" }}>
-              Pare de misturar o dinheiro
+              Tenha controle total
               <span className="block mt-2 bg-gradient-to-r from-[var(--primary)] via-cyan-400 to-[var(--success)] bg-clip-text text-transparent text-glow-cyan">
-                da empresa com o seu
+                das suas finanças pessoais
               </span>
             </h1>
             
             <p className="mt-8 text-lg leading-relaxed text-[var(--muted-foreground)] sm:text-xl lg:text-2xl max-w-2xl mx-auto">
-              Separe o que é do negócio do que é pessoal de um jeito automático e simples.
-              Saiba exatamente quanto lucrou e quanto sobrou pra gastar com você.
+              Organize seus ganhos e gastos de um jeito automático e simples.
+              Saiba exatamente para onde vai seu dinheiro e quanto sobra no final do mês.
             </p>
             
             <div className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
@@ -317,11 +317,11 @@ export default function HomePage() {
                   <div className="flex justify-center gap-4 text-xs font-bold font-sans uppercase tracking-widest">
                     <div className="flex items-center gap-1.5">
                       <div className="h-2 w-2 bg-[var(--primary)] glow-cyan animate-pulse-glow" />
-                      <span className="text-[var(--primary)]">PESSOAL</span>
+                      <span className="text-[var(--primary)]">RECEITAS</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <div className="h-2 w-2 bg-[var(--destructive)] glow-red animate-pulse-glow" style={{ animationDelay: '0.5s' }} />
-                      <span className="text-[var(--destructive)]">NEGÓCIO</span>
+                      <span className="text-[var(--destructive)]">DESPESAS</span>
                     </div>
                   </div>
                 </div>
@@ -462,7 +462,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--warning)] text-glow-yellow">Relatórios Visuais</h3>
               <p className="mt-3 text-sm font-sans leading-relaxed text-[var(--muted-foreground)]">
-                Visualize na hora gráficos fáceis de ler que apontam gargalos de custos e mostram onde seu lucro está.
+                Visualize na hora gráficos fáceis de ler que apontam onde você mais gasta e quanto sobra no final do mês.
               </p>
             </div>
           </div>
@@ -478,7 +478,7 @@ export default function HomePage() {
               PLANOS DE <span className="text-[var(--primary)] text-glow-cyan">ACESSO</span>
             </h2>
             <p className="mt-4 text-sm font-sans uppercase tracking-widest leading-relaxed text-[var(--muted-foreground)]">
-              Comece sem gastar nada e aumente os recursos apenas quando o seu negócio pedir.
+              Comece sem gastar nada e aumente os recursos quando quiser mais previsibilidade.
             </p>
           </div>
           
@@ -512,11 +512,11 @@ export default function HomePage() {
                   </li>
                   <li className="flex items-start gap-3">
                     <Lock className="h-4 w-4 text-[var(--muted-foreground)] shrink-0 mt-0.5" />
-                    <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--muted-foreground)] line-through decoration-[var(--destructive)]">Separação de negócio/pessoal</span>
+                    <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--muted-foreground)] line-through decoration-[var(--destructive)]">Lançamentos parcelados</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Lock className="h-4 w-4 text-[var(--muted-foreground)] shrink-0 mt-0.5" />
-                    <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--muted-foreground)] line-through decoration-[var(--destructive)]">Lançamentos parcelados</span>
+                    <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--muted-foreground)] line-through decoration-[var(--destructive)]">Exportação em PDF e CSV</span>
                   </li>
                 </ul>
               </div>
@@ -540,7 +540,7 @@ export default function HomePage() {
               <div>
                 <div className="mb-6">
                   <h3 className="text-lg sm:text-xl font-sans font-bold uppercase tracking-widest text-[var(--primary)] text-glow-cyan">NÍVEL 2: PRO</h3>
-                  <p className="text-xs sm:text-sm font-sans text-[var(--primary)]">Ideal para autônomos e freelancers</p>
+                  <p className="text-xs sm:text-sm font-sans text-[var(--primary)]">Ideal para quem quer controle financeiro total</p>
                 </div>
                 <div className="mb-8">
                   <div className="flex items-baseline gap-1 font-sans">
@@ -557,7 +557,7 @@ export default function HomePage() {
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--primary)] shrink-0 mt-0.5" />
-                    <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--muted-foreground)]">Negócios e Pessoal separados</span>
+                    <span className="text-xs sm:text-sm uppercase tracking-wider text-[var(--muted-foreground)]">Lançamentos parcelados</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-4 w-4 text-[var(--primary)] shrink-0 mt-0.5" />
@@ -595,7 +595,7 @@ export default function HomePage() {
             PRONTO PARA INICIAR A <span className="text-[var(--primary)] text-glow-cyan">OPERAÇÃO?</span>
           </h2>
           <p className="mt-6 text-sm font-sans uppercase tracking-widest text-[var(--muted-foreground)] max-w-2xl mx-auto">
-            Crie sua conta em 30 segundos. Organize seu caixa e gaste o seu tempo no que realmente importa: crescer o seu negócio.
+            Crie sua conta em 30 segundos. Organize suas finanças e tenha clareza do seu futuro financeiro.
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-xs sm:text-sm font-sans font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
             <div className="flex items-center gap-2">

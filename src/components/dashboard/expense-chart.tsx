@@ -57,14 +57,6 @@ import type { CategorySummary } from "@/lib/types";
 import { BarChart2, PieChart as PieIcon, Wallet, TrendingDown, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-function getScopeLabel(item: CategorySummary): string {
-  const arr = (item as any)._scopeArr as string[] | undefined;
-  if (arr && arr.length === 2) return "Pessoal & Negócio";
-  if (item.scope === "business") return "Negócio";
-  if (item.scope === "personal") return "Pessoal";
-  return "—";
-}
-
 function getTypeLabel(item: CategorySummary): string {
   const arr = (item as any)._typeArr as string[] | undefined;
   if (arr && arr.length === 2) return "Despesa & Receita";
@@ -74,7 +66,6 @@ function getTypeLabel(item: CategorySummary): string {
 }
 
 function ChartTooltipContent({ item }: { item: CategorySummary }) {
-  const scopeLabel = getScopeLabel(item);
   const typeLabel = getTypeLabel(item);
   const isExpense = item.type === "expense" || typeLabel === "Despesa";
   const TypeIcon = isExpense ? TrendingDown : TrendingUp;
@@ -114,12 +105,6 @@ function ChartTooltipContent({ item }: { item: CategorySummary }) {
 
       {/* Divider */}
       <div className="border-t border-white/10 pt-2.5 space-y-1.5">
-        {/* Carteira */}
-        <div className="flex items-center gap-2" title="Mostra se esse gasto é pessoal, do negócio ou dos dois.">
-          <Wallet className="h-3 w-3 text-[var(--primary)] shrink-0" />
-          <span className="text-[10px] text-[var(--muted-foreground)] uppercase tracking-wider">Carteira</span>
-          <span className="ml-auto text-xs font-bold text-[var(--foreground)]">{scopeLabel}</span>
-        </div>
         {/* Tipo */}
         <div className="flex items-center gap-2" title="Mostra se é dinheiro que saiu (despesa) ou que entrou (receita).">
           <TypeIcon className="h-3 w-3 shrink-0" style={{ color: typeColor }} />

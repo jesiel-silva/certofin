@@ -11,14 +11,13 @@ import {
 } from "lucide-react";
 
 interface WelcomeCardProps {
-  scope?: "personal" | "business";
   userName?: string;
   userPlan?: "free" | "pro" | "trial";
 }
 
-export function WelcomeCard({ scope = "personal", userName = "", userPlan = "free" }: WelcomeCardProps) {
-  const prefix = scope === "business" ? "/business" : "/personal";
-  const scopeLabel = scope === "business" ? "do seu negócio" : "pessoais";
+export function WelcomeCard({ userName = "", userPlan = "free" }: WelcomeCardProps) {
+  const prefix = "/personal";
+  const scopeLabel = "pessoais";
   const isPro = userPlan === "pro";
   const isTrial = userPlan === "trial";
 
@@ -78,7 +77,7 @@ export function WelcomeCard({ scope = "personal", userName = "", userPlan = "fre
                     ADICIONAR RECEITA
                   </p>
                   <p className="text-xs sm:text-sm font-mono text-[var(--muted-foreground)] uppercase">
-                    {scope === "business" ? "VENDA, SERVIÇO, CLIENTE..." : "SALÁRIO, FREELANCER, VENDAS..."}
+                    SALÁRIO, FREELANCER, VENDAS...
                   </p>
                 </div>
               </div>
@@ -99,7 +98,7 @@ export function WelcomeCard({ scope = "personal", userName = "", userPlan = "fre
                     ADICIONAR DESPESA
                   </p>
                   <p className="text-xs sm:text-sm font-mono text-[var(--muted-foreground)] uppercase">
-                    {scope === "business" ? "INSUMO, COMBUSTÍVEL, ALUGUEL..." : "CONTA DE LUZ, ALUGUEL, MERCADO..."}
+                    CONTA DE LUZ, ALUGUEL, MERCADO...
                   </p>
                 </div>
               </div>

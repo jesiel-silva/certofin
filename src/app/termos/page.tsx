@@ -63,7 +63,7 @@ export default function TermosPage() {
               </h2>
             </div>
             <p className="text-sm sm:text-base leading-relaxed text-[var(--muted-foreground)]">
-              O <strong>CertoFin</strong> é uma plataforma criada para ajudar autônomos, MEIs e pequenos empreendedores a organizar suas finanças. Nosso objetivo principal é te ajudar a <strong>separar o dinheiro da empresa do dinheiro pessoal</strong> de forma automática, clara e descomplicada.
+              O <strong>CertoFin</strong> é uma plataforma criada para ajudar você a ter controle total das suas finanças pessoais. Nosso objetivo principal é te ajudar a <strong>organizar seus ganhos, controlar seus gastos e planejar seu futuro financeiro</strong> de forma automática, clara e descomplicada.
             </p>
           </section>
 

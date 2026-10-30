@@ -1,21 +1,34 @@
 "use client";
 
+/**
+ * NewTransactionPage
+ * Componente compartilhado usado pelas rotas:
+ *   - /personal/transactions/new
+ *   - /business/transactions/new
+ *
+ * Recebe o scope via prop para evitar duplicacao de codigo entre as duas rotas.
+ */
+
 import { TransactionForm } from "@/components/transactions/transaction-form";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
-function NewBusinessTransactionContent() {
+interface NewTransactionPageProps {
+  scope?: "personal";
+}
+
+function NewTransactionContent({ scope }: NewTransactionPageProps) {
   const searchParams = useSearchParams();
   const initialType = searchParams.get("type") as "income" | "expense" | null;
 
   return (
     <div className="mx-auto max-w-5xl flex justify-center">
-      <TransactionForm mode="create" initialScope="business" initialType={initialType} />
+      <TransactionForm mode="create" initialScope={scope} initialType={initialType} />
     </div>
   );
 }
 
-export default function NewBusinessTransactionPage() {
+export function NewTransactionPage({ scope }: NewTransactionPageProps) {
   return (
     <Suspense
       fallback={
@@ -24,7 +37,7 @@ export default function NewBusinessTransactionPage() {
         </div>
       }
     >
-      <NewBusinessTransactionContent />
+      <NewTransactionContent scope={scope} />
     </Suspense>
   );
 }

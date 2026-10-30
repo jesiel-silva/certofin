@@ -18,8 +18,6 @@ export function UpgradeModal({ open, onClose, feature }: UpgradeModalProps) {
 
   const getFeatureMessage = () => {
     switch (feature) {
-      case "business_scope":
-        return "O escopo Negócio/Trabalho é exclusivo do plano Pro. Com ele você separa as finanças do seu trabalho das pessoais.";
       case "installment":
         return "Lançamentos parcelados são exclusivos do plano Pro. Crie projeções de compras parceladas para meses futuros.";
       case "transaction_limit":
@@ -32,7 +30,7 @@ export function UpgradeModal({ open, onClose, feature }: UpgradeModalProps) {
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogHeader onClose={onClose}>
-        <DialogTitle>Desbloqueie todo o potencial do seu negócio!</DialogTitle>
+        <DialogTitle>Desbloqueie todo o potencial das suas finanças!</DialogTitle>
         <DialogDescription>{getFeatureMessage()}</DialogDescription>
       </DialogHeader>
 
@@ -52,10 +50,6 @@ export function UpgradeModal({ open, onClose, feature }: UpgradeModalProps) {
             <li className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-[var(--success)]" />
               <span className="text-[var(--foreground)]">Lançamentos ilimitados</span>
-            </li>
-            <li className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-[var(--success)]" />
-              <span className="text-[var(--foreground)]">Escopo Negócio e Pessoal</span>
             </li>
             <li className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-[var(--success)]" />

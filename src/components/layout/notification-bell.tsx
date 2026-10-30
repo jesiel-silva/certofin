@@ -22,7 +22,6 @@ const typeColors: Record<string, string> = {
 
 const scopeColors: Record<string, string> = {
   personal: "text-[var(--success)]",
-  business: "text-[var(--primary)]",
 };
 
 import { useRouter } from "next/navigation";
@@ -61,13 +60,12 @@ function NotificationItem({
 
     if (hasTransactionLink) {
       e.preventDefault();
-      const targetScope = notification.scope === "business" ? "business" : "personal";
-      router.push(`/${targetScope}/transactions?highlight=${transactionId}`);
+      router.push(`/personal/transactions?highlight=${transactionId}`);
     }
   };
 
   const targetHref = hasTransactionLink
-    ? `/${notification.scope === "business" ? "business" : "personal"}/transactions?highlight=${transactionId}`
+    ? `/personal/transactions?highlight=${transactionId}`
     : "/personal/notifications";
 
   return (
@@ -89,8 +87,8 @@ function NotificationItem({
           </p>
           {getTrendIcon()}
           {notification.scope && (
-            <span className={cn("text-xs font-mono uppercase px-1 py-0.5 rounded", scopeColors[notification.scope] || "")}>
-              {notification.scope === "business" ? "NEG" : "PESS"}
+            <span className={cn("text-xs font-mono uppercase px-1 py-0.5 rounded", scopeColors.personal)}>
+              PESS
             </span>
           )}
         </div>

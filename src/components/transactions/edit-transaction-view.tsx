@@ -6,7 +6,11 @@ import { createClient } from "@/lib/supabase/client";
 import { TransactionForm } from "@/components/transactions/transaction-form";
 import type { Transaction } from "@/lib/types";
 
-export default function EditBusinessTransactionPage() {
+interface EditTransactionViewProps {
+  scope?: "personal";
+}
+
+export function EditTransactionView({ scope = "personal" }: EditTransactionViewProps) {
   const params = useParams();
   const router = useRouter();
   const supabase = createClient();
@@ -22,7 +26,7 @@ export default function EditBusinessTransactionPage() {
         .single();
 
       if (error || !data) {
-        router.push("/business/transactions");
+        router.push("/personal/transactions");
         return;
       }
 
@@ -31,7 +35,7 @@ export default function EditBusinessTransactionPage() {
     };
 
     fetchTransaction();
-  }, [params.id, supabase, router]);
+  }, [params.id, supabase, router, scope]);
 
   if (loading) {
     return (

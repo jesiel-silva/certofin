@@ -13,28 +13,19 @@ import { Tooltip } from "@/components/ui/tooltip";
 interface KpiCardsProps {
   personalIncome: number;
   personalExpense: number;
-  businessIncome: number;
-  businessExpense: number;
   personalPendingIncome: number;
   personalPendingExpense: number;
-  businessPendingIncome: number;
-  businessPendingExpense: number;
   isEmpty: boolean;
 }
 
 export function KpiCards({
   personalIncome,
   personalExpense,
-  businessIncome,
-  businessExpense,
   personalPendingIncome,
   personalPendingExpense,
-  businessPendingIncome,
-  businessPendingExpense,
   isEmpty,
 }: KpiCardsProps) {
   const personalNet = personalIncome - personalExpense;
-  const businessNet = businessIncome - businessExpense;
 
   const cards = [
     {
@@ -63,32 +54,6 @@ export function KpiCards({
       pending: personalPendingExpense > 0 ? `A pagar - ${formatCurrency(personalPendingExpense)}` : null,
       pendingTooltip: "Contas que ainda não foram pagas. Clique no lançamento para marcar como pago.",
     },
-    {
-      title: "Receita Negócio",
-      tooltip: "Quanto seu negócio ganhou, já tirando os gastos. Se estiver no positivo, seu negócio está lucrando.",
-      value: businessNet,
-      icon: TrendingUp,
-      color: businessNet >= 0 ? "text-[var(--primary)]" : "text-[var(--destructive)]",
-      glowTextClass: businessNet >= 0 ? "text-glow-cyan" : "text-glow-red",
-      bg: businessNet >= 0 ? "bg-[var(--primary)]/10 glow-cyan" : "bg-[var(--destructive)]/10 glow-red",
-      iconGlow: businessNet >= 0 ? "animate-pulse-glow" : "",
-      subtitle: null,
-      pending: businessPendingIncome > 0 ? `A receber - ${formatCurrency(businessPendingIncome)}` : null,
-      pendingTooltip: "Valores que seu negócio ainda não confirmou que recebeu.",
-    },
-    {
-      title: "Gastos Negócio",
-      tooltip: "Tudo o que seu negócio gastou neste período.",
-      value: businessExpense,
-      icon: TrendingDown,
-      color: "text-[var(--warning)]",
-      glowTextClass: "text-glow-yellow",
-      bg: "bg-[var(--warning)]/10 glow-yellow",
-      iconGlow: "animate-pulse-glow",
-      subtitle: null,
-      pending: businessPendingExpense > 0 ? `A pagar - ${formatCurrency(businessPendingExpense)}` : null,
-      pendingTooltip: "Contas do negócio que ainda não foram pagas.",
-    },
   ];
 
   if (isEmpty) {
@@ -106,7 +71,7 @@ export function KpiCards({
   }
 
   return (
-    <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
       {cards.map((card, index) => (
         <Card
           key={card.title}

@@ -6,12 +6,11 @@ import { useState, useEffect } from "react";
 import {
   LayoutDashboard,
   ArrowRightLeft,
+  Target,
   Plus,
   LogOut,
   X,
   Home,
-  Briefcase,
-  Crown,
   Settings,
   User,
   HelpCircle,
@@ -31,7 +30,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
-  const { canUseBusinessScope, isTrial } = usePlanLimits();
+  const { isTrial } = usePlanLimits();
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [userPlan, setUserPlan] = useState<"free" | "pro">("free");
@@ -62,17 +61,14 @@ export function Sidebar({ open, onClose }: SidebarProps) {
 
   const isActive = (href: string) => {
     if (href === "/personal/dashboard") {
-      return pathname === "/personal/dashboard" || pathname === "/business/dashboard";
+      return pathname === "/personal/dashboard";
     }
     return pathname === href || pathname.startsWith(href + "/");
   };
 
   const personalItems = [
     { href: "/personal/transactions", label: "Lançamentos", icon: ArrowRightLeft },
-  ];
-
-  const businessItems = [
-    { href: "/business/transactions", label: "Lançamentos", icon: ArrowRightLeft },
+    { href: "/personal/goals", label: "Metas", icon: Target },
   ];
 
   const initials = userName
@@ -221,68 +217,6 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               REGISTRAR LANÇAMENTO
             </Link>
           </div>
-        </div>
-
-        {/* ═══════ NEGÓCIO ═══════ */}
-        <div className="py-2 border-t border-[var(--primary)]/10">
-          <div className="flex items-center gap-2 px-3 py-2 border-b border-[var(--primary)]/20 mb-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded bg-[var(--primary)]/10 border border-[var(--primary)]/30">
-              <Briefcase className="h-4 w-4 text-[var(--primary)]" />
-            </div>
-            <span className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--primary)]/80">
-              [ NEGÓCIO ]
-            </span>
-          </div>
-
-          {canUseBusinessScope ? (
-            <div className="space-y-1">
-              {businessItems.map((item) => {
-                const active = isActive(item.href);
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={onClose}
-                    aria-current={active ? "page" : undefined}
-                    className={cn(
-                      "group relative flex items-center gap-3 px-3 py-2.5 text-xs font-sans font-bold uppercase tracking-widest transition-all duration-200",
-                      active
-                        ? "bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/30"
-                        : "text-[var(--muted-foreground)] hover:bg-[var(--primary)]/5 hover:text-[var(--foreground)] border border-transparent"
-                    )}
-                  >
-                    {active && (
-                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--primary)] glow-cyan" />
-                    )}
-                    <item.icon className={cn("h-4 w-4", active ? "text-[var(--primary)] drop-shadow-[0_0_5px_var(--primary)]" : "text-[var(--muted-foreground)] group-hover:text-[var(--foreground)]")} />
-                    {item.label}
-                  </Link>
-                );
-              })}
-              <Link
-                href="/business/transactions/new"
-                onClick={onClose}
-                className="group flex items-center justify-center gap-2 border border-[var(--primary)] bg-[var(--primary)] px-3 py-2.5 text-xs font-sans font-bold uppercase tracking-widest text-[#020617] transition-all duration-200 hover:bg-[var(--primary)]/90 hover:shadow-[0_0_15px_var(--primary)] mt-1"
-              >
-                <Plus className="h-4 w-4" />
-                REGISTRAR LANÇAMENTO
-              </Link>
-            </div>
-          ) : (
-            <Link
-              href="/personal/planos"
-              onClick={onClose}
-              className="mx-1 mt-1 flex items-center gap-3 border border-[var(--warning)]/40 bg-[var(--warning)]/5 px-3 py-2.5 transition-all duration-200 hover:border-[var(--warning)] hover:bg-[var(--warning)]/10 hover:shadow-[0_0_10px_var(--warning)]"
-            >
-              <div className="flex h-6 w-6 items-center justify-center border border-[var(--warning)]/40 bg-[var(--warning)]/15">
-                <Crown className="h-3 w-3 text-[var(--warning)]" />
-              </div>
-              <div className="flex-1">
-                <p className="text-xs font-sans font-bold uppercase tracking-widest text-[var(--warning)]">ATIVAR NEGÓCIO</p>
-                <p className="text-[10px] font-mono text-[var(--warning)]/70 tracking-widest">Requer Plano Pro</p>
-              </div>
-            </Link>
-          )}
         </div>
       </nav>
 

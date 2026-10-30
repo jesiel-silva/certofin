@@ -66,8 +66,6 @@ export interface MonthlySummary {
   total_income: number;
   total_expense: number;
   balance: number;
-  business_income: number;
-  business_expense: number;
   personal_income: number;
   personal_expense: number;
 }
@@ -78,7 +76,7 @@ export interface CategorySummary {
   category_color: string;
   total: number;
   percentage: number;
-  scope?: "personal" | "business";
+  scope?: "personal";
   type?: "expense" | "income";
 }
 
@@ -89,3 +87,21 @@ export interface DashboardData {
   expensesByCategory: CategorySummary[];
   monthlyHistory: MonthlySummary[];
 }
+
+export type GoalStatus = "in_progress" | "completed" | "paused";
+
+export interface Goal {
+  id: string;
+  user_id: string;
+  title: string;
+  category: string;
+  target_amount: number;
+  current_amount: number;
+  target_date: string | null;
+  color: string;
+  icon: string;
+  status: GoalStatus;
+  created_at: string;
+  updated_at: string;
+}
+

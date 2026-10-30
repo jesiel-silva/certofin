@@ -11,7 +11,7 @@ import Link from "next/link";
 
 interface ReportPreviewProps {
   transactions: TransactionWithCategory[];
-  scope: "personal" | "business";
+  scope?: "personal";
   month: string;
   onClose: () => void;
   onExport: () => void;
@@ -77,9 +77,9 @@ export function ReportPreview({
         .lte("transaction_date", prevEnd)
         .eq("is_recurring", false);
 
-      if (scope === "personal" || scope === "business") {
-        regularQuery = regularQuery.eq("scope", scope);
-      }
+      regularQuery = regularQuery.eq("scope", "personal");
+
+
       const { data: regularData } = await regularQuery;
 
       let recurringQuery = supabase
@@ -87,9 +87,9 @@ export function ReportPreview({
         .select("*, categories(*)")
         .eq("is_recurring", true);
 
-      if (scope === "personal" || scope === "business") {
-        recurringQuery = recurringQuery.eq("scope", scope);
-      }
+      recurringQuery = recurringQuery.eq("scope", "personal");
+
+
       const { data: recurringTemplates } = await recurringQuery;
 
       const prevTxs: TransactionWithCategory[] = ((regularData as TransactionWithCategory[]) || []).map((t) => ({
@@ -304,7 +304,7 @@ export function ReportPreview({
                 <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center">
                   <span className="text-base font-bold text-[var(--foreground)]">{userName}</span>
                   <span className="text-[var(--muted-foreground)]">•</span>
-                  <span className="text-sm font-semibold text-[var(--primary)]">Relatório {scope === "business" ? "Negócio" : "Pessoal"}</span>
+                  <span className="text-sm font-semibold text-[var(--primary)]">Relatório Pessoal</span>
                   <span className="text-[var(--muted-foreground)]">•</span>
                   <span className="text-xs text-[var(--muted-foreground)]">{monthLabel}</span>
                 </div>

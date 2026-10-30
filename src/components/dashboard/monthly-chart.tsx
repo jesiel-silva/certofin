@@ -65,23 +65,13 @@ export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
     );
   }
 
-  const chartData = data.map((d) => {
-    const personalBalance = d.personal_income - d.personal_expense;
-    const businessBalance = d.business_income - d.business_expense;
-    const totalBalance = personalBalance + businessBalance;
-
-    return {
-      name: getMonthLabel(d.month),
-      "Pessoal": personalBalance,
-      "Negócio": businessBalance,
-      "Total": totalBalance,
-    };
-  });
+  const chartData = data.map((d) => ({
+    name: getMonthLabel(d.month),
+    "Pessoal": d.personal_income - d.personal_expense,
+  }));
 
   const currentMonth = data[data.length - 1];
   const currentPersonalBalance = currentMonth.personal_income - currentMonth.personal_expense;
-  const currentBusinessBalance = currentMonth.business_income - currentMonth.business_expense;
-  const currentTotalBalance = currentPersonalBalance + currentBusinessBalance;
 
   return (
     <Card className="hud-border bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay min-w-0">
@@ -91,25 +81,13 @@ export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
             <CardTitle className="text-sm sm:text-base font-display font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
               EVOLUÇÃO DO SALDO
             </CardTitle>
-            <HelpTooltip content="Mostra como seu saldo (o que sobrou) foi mudando mês a mês, tanto pessoal quanto do negócio." className="shrink-0" />
+            <HelpTooltip content="Mostra como seu saldo (o que sobrou) foi mudando mês a mês." className="shrink-0" />
           </div>
           <div className="flex gap-4">
             <div className="text-right">
-              <p className="text-[10px] sm:text-xs text-[var(--muted-foreground)] uppercase tracking-wider font-sans">Pessoal</p>
+              <p className="text-[10px] sm:text-xs text-[var(--muted-foreground)] uppercase tracking-wider font-sans">Saldo do mês</p>
               <p className={`text-sm sm:text-base font-sans font-bold ${currentPersonalBalance >= 0 ? "text-[var(--success)] text-glow-green" : "text-[var(--destructive)] text-glow-red"}`}>
                 {formatCurrency(currentPersonalBalance)}
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="text-[10px] sm:text-xs text-[var(--muted-foreground)] uppercase tracking-wider font-sans">Negócio</p>
-              <p className={`text-sm sm:text-base font-sans font-bold ${currentBusinessBalance >= 0 ? "text-[var(--primary)] text-glow-cyan" : "text-[var(--destructive)] text-glow-red"}`}>
-                {formatCurrency(currentBusinessBalance)}
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="text-[10px] sm:text-xs text-[var(--muted-foreground)] uppercase tracking-wider font-sans">Total</p>
-              <p className={`text-sm sm:text-base font-sans font-bold ${currentTotalBalance >= 0 ? "text-[var(--warning)] text-glow-yellow" : "text-[var(--destructive)] text-glow-red"}`}>
-                {formatCurrency(currentTotalBalance)}
               </p>
             </div>
           </div>
@@ -148,8 +126,6 @@ export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
               content={({ active, payload, label }) => {
                 if (active && payload && payload.length) {
                   const pessoal = Number(payload.find((p) => p.dataKey === "Pessoal")?.value || 0);
-                  const negocio = Number(payload.find((p) => p.dataKey === "Negócio")?.value || 0);
-                  const total = pessoal + negocio;
 
                   return (
                     <div className="hud-border bg-[#0B1221]/95 p-4 shadow-xl shadow-[var(--primary)]/10 min-w-[200px] backdrop-blur-md">
@@ -158,31 +134,11 @@ export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
                         <div className="flex items-center justify-between gap-4">
                           <span className="flex items-center gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[var(--success)]">
                             <span className="h-2 w-2 rounded-full bg-[var(--success)]" />
-                            Pessoal
+                            Saldo
                           </span>
                           <span className={`text-xs sm:text-sm font-sans font-bold ${pessoal >= 0 ? "text-[var(--success)]" : "text-[var(--destructive)]"}`}>
                             {pessoal >= 0 ? "+" : ""}{formatCurrency(pessoal)}
                           </span>
-                        </div>
-                        <div className="flex items-center justify-between gap-4">
-                          <span className="flex items-center gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[var(--primary)]">
-                            <span className="h-2 w-2 rounded-full bg-[var(--primary)]" />
-                            Negócio
-                          </span>
-                          <span className={`text-xs sm:text-sm font-sans font-bold ${negocio >= 0 ? "text-[var(--primary)]" : "text-[var(--destructive)]"}`}>
-                            {negocio >= 0 ? "+" : ""}{formatCurrency(negocio)}
-                          </span>
-                        </div>
-                        <div className="border-t border-[var(--primary)]/20 pt-2 mt-1">
-                          <div className="flex items-center justify-between gap-4">
-                            <span className="flex items-center gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[var(--warning)]">
-                              <span className="h-2 w-2 rounded-full bg-[var(--warning)]" />
-                              Total
-                            </span>
-                            <span className={`text-xs sm:text-sm font-sans font-bold ${total >= 0 ? "text-[var(--warning)]" : "text-[var(--destructive)]"}`}>
-                              {total >= 0 ? "+" : ""}{formatCurrency(total)}
-                            </span>
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -218,23 +174,6 @@ export function MonthlyChart({ data, userPlan = "free" }: MonthlyChartProps) {
               stroke="var(--success)"
               strokeWidth={2}
               dot={{ fill: "var(--success)", strokeWidth: 0, r: 3 }}
-              activeDot={{ r: 5, strokeWidth: 0 }}
-            />
-            <Line
-              type="monotone"
-              dataKey="Negócio"
-              stroke="var(--primary)"
-              strokeWidth={2}
-              dot={{ fill: "var(--primary)", strokeWidth: 0, r: 3 }}
-              activeDot={{ r: 5, strokeWidth: 0 }}
-            />
-            <Line
-              type="monotone"
-              dataKey="Total"
-              stroke="var(--warning)"
-              strokeWidth={2.5}
-              strokeDasharray="6 3"
-              dot={{ fill: "var(--warning)", strokeWidth: 0, r: 3 }}
               activeDot={{ r: 5, strokeWidth: 0 }}
             />
           </LineChart>

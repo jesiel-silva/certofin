@@ -44,8 +44,14 @@ export async function updateSession(request: NextRequest) {
 
   const isProtectedPage = request.nextUrl.pathname.startsWith("/dashboard") ||
     request.nextUrl.pathname.startsWith("/transactions") ||
-    request.nextUrl.pathname.startsWith("/personal") ||
-    request.nextUrl.pathname.startsWith("/business");
+    request.nextUrl.pathname.startsWith("/personal");
+
+  // Escopo "Negócio" foi removido: redireciona URLs antigas
+  if (request.nextUrl.pathname.startsWith("/business")) {
+    const url = request.nextUrl.clone();
+    url.pathname = user ? "/personal/dashboard" : "/login";
+    return NextResponse.redirect(url);
+  }
 
   if (!user && isProtectedPage) {
     const url = request.nextUrl.clone();

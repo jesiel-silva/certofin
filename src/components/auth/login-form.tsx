@@ -1,16 +1,15 @@
 "use client";
-import Image from "next/image";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, Suspense } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { translateAuthError } from "@/lib/supabase/auth-errors";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/ui/logo";
 import { ArrowRight, TrendingUp, Wallet, PieChart, Mail, AlertCircle, CheckCircle } from "lucide-react";
-
-export const dynamic = "force-dynamic";
 
 function LoginFormContent() {
   const router = useRouter();
@@ -39,20 +38,7 @@ function LoginFormContent() {
     });
 
     if (error) {
-      const msg = error.message?.toLowerCase() || "";
-      const code = error.code?.toLowerCase() || "";
-      
-      if (msg.includes("email not confirmed") || 
-          msg.includes("email_not_confirmed") ||
-          msg.includes("unconfirmed") ||
-          code.includes("email_not_confirmed") ||
-          code.includes("unconfirmed_email")) {
-        setError("Seu e-mail ainda não foi confirmado. Verifique sua caixa de entrada (e spam) e clique no link que enviamos.");
-      } else if (msg === "invalid login credentials" || msg.includes("invalid credentials")) {
-        setError("E-mail ou senha inválidos");
-      } else {
-        setError(error.message);
-      }
+      setError(translateAuthError(error));
       setLoading(false);
       return;
     }
@@ -77,7 +63,7 @@ function LoginFormContent() {
     });
 
     if (error) {
-      setError("Erro ao reenviar: " + error.message);
+      setError("Erro ao reenviar: " + translateAuthError(error));
     } else {
       setSuccess("E-mail de confirmação reenviado! Verifique sua caixa de entrada (e spam).");
     }
@@ -122,8 +108,8 @@ function LoginFormContent() {
           </h1>
 
           <p className="mb-12 max-w-md text-lg text-white/70">
-            Separe o dinheiro do negócio do pessoal. Saiba quanto lucrou e
-            quanto sobrou pra você.
+            Tenha clareza sobre suas contas, acompanhe seus gastos e
+            saiba exatamente quanto sobra no final do mês.
           </p>
 
           <div className="space-y-6">
@@ -141,8 +127,8 @@ function LoginFormContent() {
                 <Wallet className="h-6 w-6 text-white" />
               </div>
               <div>
-                <p className="font-medium text-white">Escopos separados</p>
-                <p className="text-sm text-white/60">Negócio e pessoal organizados</p>
+                <p className="font-medium text-white">Controle de gastos</p>
+                <p className="text-sm text-white/60">Tudo organizado por categorias</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -288,12 +274,16 @@ function LoginFormContent() {
   );
 }
 
-function LoginForm() {
+export function LoginForm() {
   return (
-    <Suspense fallback={<div className="flex min-h-screen items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--primary)] border-t-transparent" /></div>}>
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--primary)] border-t-transparent" />
+        </div>
+      }
+    >
       <LoginFormContent />
     </Suspense>
   );
 }
-
-export { LoginForm };

@@ -9,13 +9,11 @@ export interface PlanInfo {
   trial_ends_at: string | null;
   monthly_transactions: number;
   max_transactions: number;
-  can_use_business: boolean;
   can_use_installment: boolean;
 }
 
 export interface PlanLimits {
   canCreateTransaction: boolean;
-  canUseBusinessScope: boolean;
   canUseInstallment: boolean;
   transactionsRemaining: number;
   isLoading: boolean;
@@ -83,7 +81,6 @@ export function usePlanLimits(): PlanLimits {
           trial_ends_at: profile?.trial_ends_at || null,
           monthly_transactions: count || 0,
           max_transactions: isPro || isTrial ? -1 : 10,
-          can_use_business: isPro || isTrial,
           can_use_installment: isPro || isTrial,
         });
         return;
@@ -98,7 +95,6 @@ export function usePlanLimits(): PlanLimits {
         trial_ends_at: profile?.trial_ends_at || null,
         monthly_transactions: (rpcData.monthly_transactions as number) || 0,
         max_transactions: isPro || isTrial ? -1 : 10,
-        can_use_business: isPro || isTrial,
         can_use_installment: isPro || isTrial,
       });
     } catch (err) {
@@ -128,7 +124,6 @@ export function usePlanLimits(): PlanLimits {
 
   return {
     canCreateTransaction,
-    canUseBusinessScope: planInfo?.can_use_business ?? false,
     canUseInstallment: planInfo?.can_use_installment ?? false,
     transactionsRemaining,
     isLoading,

@@ -14,8 +14,6 @@ import {
   Trash2,
   ArrowDownLeft,
   ArrowUpRight,
-  Home,
-  Briefcase,
   ChevronLeft,
   ChevronRight,
   Check,
@@ -33,7 +31,7 @@ import { categoryIconOptions, getCategoryIcon } from "@/components/ui/category-i
 interface TransactionFormProps {
   initialData?: Transaction;
   mode?: "create" | "edit";
-  initialScope?: "personal" | "business";
+  initialScope?: "personal";
   initialType?: "income" | "expense" | null;
 }
 
@@ -46,14 +44,13 @@ export function TransactionForm({
   const router = useRouter();
   const supabase = createClient();
   const {
-    canUseBusinessScope,
     canUseInstallment,
     transactionsRemaining,
     isLoading: planLoading,
     refresh: refreshPlan,
   } = usePlanLimits();
 
-  const [scope, setScope] = useState<"personal" | "business">(initialData?.scope || initialScope);
+  const [scope] = useState<"personal">("personal");
   const [type, setType] = useState<"income" | "expense">(initialData?.type || (initialType as "income" | "expense") || "expense");
   const [description, setDescription] = useState(initialData?.description || "");
   const [amount, setAmount] = useState(initialData?.amount ? initialData.amount.toFixed(2) : "");
@@ -126,16 +123,6 @@ export function TransactionForm({
     ...categories.map((c) => ({ value: c.id, label: c.name })),
     { value: "__new__", label: "+ Criar nova categoria" },
   ];
-
-  const handleScopeChange = (newScope: "personal" | "business") => {
-    if (newScope === "business" && !canUseBusinessScope) {
-      setUpgradeFeature("business_scope");
-      setShowUpgradeModal(true);
-      return;
-    }
-    setScope(newScope);
-    setCategoryId("");
-  };
 
   const handleTypeChange = (newType: "income" | "expense") => {
     setType(newType);
@@ -414,6 +401,9 @@ export function TransactionForm({
     const tagPrefix = tagMatch ? `${tagMatch[0]} ` : "";
     const finalNotes = (tagPrefix + notes.trim()).trim();
 
+    const isMonthly = frequency === "monthly";
+    const lastPaidDate = isMonthly && paymentStatus === "paid" ? transactionDate : (isMonthly ? null : null);
+
     const baseData = {
       user_id: userData.user.id,
       description,
@@ -429,9 +419,10 @@ export function TransactionForm({
       installment_total: null,
       parent_transaction_id: null,
       due_date: null,
-      due_day: frequency === "monthly" ? parseInt(dueDay) : null,
-      is_recurring: frequency === "monthly",
-      recurring_active: frequency === "monthly" ? true : false,
+      due_day: isMonthly ? parseInt(dueDay) : null,
+      is_recurring: isMonthly,
+      recurring_active: isMonthly ? true : false,
+      last_paid_date: lastPaidDate,
     };
 
     if (mode === "edit" && initialData) {
@@ -446,12 +437,17 @@ export function TransactionForm({
         return;
       }
 
-      const backUrl = scope === "business" ? "/business/transactions" : "/personal/transactions";
+      const backUrl = "/personal/transactions";
       router.push(backUrl);
       return;
     }
 
-    const { error } = await supabase.from("transactions").insert(baseData);
+    const { data: insertedData, error } = await supabase
+      .from("transactions")
+      .insert(baseData)
+      .select("id")
+      .single();
+
     if (error) {
       if (error.message.includes("limite") || error.message.includes("plano")) {
         setUpgradeFeature("transaction_limit");
@@ -462,6 +458,44 @@ export function TransactionForm({
       setError(error.message);
       setLoading(false);
       return;
+    }
+
+    // Se for recorrente e foi salvo como pago na criação, gera a próxima ocorrência para o próximo mês
+    if (isMonthly && paymentStatus === "paid" && insertedData?.id) {
+      try {
+        const [yearStr, monthStr] = transactionDate.split("-");
+        const year = parseInt(yearStr);
+        const month = parseInt(monthStr); // 1-12
+        const dueDayNum = parseInt(dueDay) || 1;
+        const nextDate = new Date(year, month, 1);
+        const nextMonth = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, "0")}`;
+        const lastDayOfNextMonth = new Date(nextDate.getFullYear(), nextDate.getMonth() + 1, 0).getDate();
+        const targetDay = Math.min(dueDayNum, lastDayOfNextMonth);
+        const nextMonthDate = `${nextMonth}-${String(targetDay).padStart(2, "0")}`;
+        const cleanUserNotes = cleanNotes(notes);
+
+        await supabase.from("transactions").insert({
+          user_id: userData.user.id,
+          description,
+          amount: parseFloat(amount),
+          type,
+          scope,
+          frequency: "one_time",
+          category_id: categoryId || null,
+          transaction_date: nextMonthDate,
+          status: "pending",
+          notes: `[auto_recurring:${insertedData.id}]${cleanUserNotes ? " " + cleanUserNotes : ""}`,
+          installment_current: null,
+          installment_total: null,
+          parent_transaction_id: null,
+          due_date: null,
+          due_day: null,
+          is_recurring: false,
+          recurring_active: false,
+        });
+      } catch (recurrenceErr) {
+        console.error("Erro ao gerar próxima ocorrência recorrente:", recurrenceErr);
+      }
     }
 
     await refreshPlan();
@@ -476,7 +510,7 @@ export function TransactionForm({
       // Ignorar erro de notificações
     }
 
-    const backUrl = scope === "business" ? "/business/transactions" : "/personal/transactions";
+    const backUrl = "/personal/transactions";
     router.push(backUrl);
   };
 
@@ -491,7 +525,7 @@ export function TransactionForm({
     }
     setDeleting(false);
     setShowDelete(false);
-    const backUrl = scope === "business" ? "/business/transactions" : "/personal/transactions";
+    const backUrl = "/personal/transactions";
     router.push(backUrl);
   };
 
@@ -505,9 +539,7 @@ export function TransactionForm({
     );
   }
 
-  const backUrl = mode === "edit" && initialData
-    ? (initialData.scope === "business" ? "/business/transactions" : "/personal/transactions")
-    : (scope === "business" ? "/business/transactions" : "/personal/transactions");
+  const backUrl = "/personal/transactions";
 
   return (
     <>
@@ -527,8 +559,7 @@ export function TransactionForm({
                 </CardTitle>
                 {mode === "create" && (
                   <p className="text-sm text-[var(--muted-foreground)] mt-0.5">
-                    {scope === "personal" ? "Pessoal" : "Negócio"} —{" "}
-                    {type === "income" ? "Receita" : "Despesa"}
+                    Pessoal — {type === "income" ? "Receita" : "Despesa"}
                   </p>
                 )}
               </div>
@@ -585,44 +616,7 @@ export function TransactionForm({
               </div>
             )}
 
-            {/* Abas Pessoal / Negócio */}
-            <div>
-               <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleScopeChange("personal")}
-                  className={cn(
-                    "flex-1 flex items-center justify-center gap-2 rounded-lg border-2 px-4 py-3 text-sm font-semibold transition-all",
-                    scope === "personal"
-                      ? "border-[var(--personal)] bg-[var(--personal)]/10 text-[var(--personal)]"
-                      : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--personal)]/50"
-                  )}
-                >
-                  <Home className="h-4 w-4" />
-                  Pessoal
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleScopeChange("business")}
-                  disabled={scope === "personal" || !canUseBusinessScope}
-                  className={cn(
-                    "flex-1 relative flex items-center justify-center gap-2 rounded-lg border-2 px-4 py-3 text-sm font-semibold transition-all",
-                    scope === "business"
-                      ? "border-[var(--business)] bg-[var(--business)]/10 text-[var(--business)]"
-                      : "border-[var(--border)] text-[var(--muted-foreground)] opacity-50 cursor-not-allowed",
-                    !canUseBusinessScope && scope === "personal" && "opacity-30"
-                  )}
-                >
-                  <Briefcase className="h-4 w-4" />
-                  Negócio
-                  {!canUseBusinessScope && (
-                    <span className="rounded bg-[var(--primary)] px-1.5 py-0.5 text-xs font-bold text-white">
-                      Pro
-                    </span>
-                  )}
-                </button>
-              </div>
-            </div>
+
 
             {/* Tipo: Receita / Despesa */}
             <div>
@@ -858,7 +852,7 @@ export function TransactionForm({
               )}
 
               {editingCategory && (
-                <div className="mt-3 rounded-lg border border-[var(--business)]/30 bg-[var(--business)]/5 p-4 space-y-3">
+                <div className="mt-3 rounded-lg border border-[var(--primary)]/30 bg-[var(--primary)]/5 p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium text-[var(--foreground)]">
                       Editar Categoria
@@ -893,8 +887,8 @@ export function TransactionForm({
                             className={cn(
                               "h-8 w-8 rounded-lg border-2 flex items-center justify-center transition-all",
                               editCategoryIcon === icon.value
-                                ? "border-[var(--business)] bg-[var(--business)]/10 text-[var(--business)]"
-                                : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--business)]/50"
+                                ? "border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]"
+                                : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--primary)]/50"
                             )}
                             title={icon.label}
                           >

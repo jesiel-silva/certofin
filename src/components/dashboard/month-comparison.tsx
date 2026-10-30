@@ -9,9 +9,10 @@ import { Tooltip } from "@/components/ui/tooltip";
 interface MonthComparisonProps {
   data: MonthlySummary[];
   userPlan?: "free" | "pro" | "trial";
+  selectedMonth?: string;
 }
 
-export function MonthComparison({ data, userPlan = "free" }: MonthComparisonProps) {
+export function MonthComparison({ data, userPlan = "free", selectedMonth }: MonthComparisonProps) {
   if (userPlan === "free") {
     return (
       <Card className="hud-border bg-[#0B1221]/80 backdrop-blur-sm scanline-overlay opacity-60 min-w-0">
@@ -42,20 +43,37 @@ export function MonthComparison({ data, userPlan = "free" }: MonthComparisonProp
     );
   }
 
-  if (data.length < 2) {
+  const targetMonthStr = selectedMonth || (data.length > 0 ? data[data.length - 1].month : "");
+  if (!targetMonthStr) {
     return null;
   }
 
-  const currentMonth = data[data.length - 1];
-  const previousMonth = data[data.length - 2];
+  const [yearNum, monthNum] = targetMonthStr.split("-").map(Number);
+  const prevDate = new Date(yearNum, monthNum - 2, 1);
+  const prevMonthStr = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, "0")}`;
+
+  const currentMonth = data.find((d) => d.month === targetMonthStr) || {
+    month: targetMonthStr,
+    total_income: 0,
+    total_expense: 0,
+    balance: 0,
+    personal_income: 0,
+    personal_expense: 0,
+  };
+
+  const previousMonth = data.find((d) => d.month === prevMonthStr) || {
+    month: prevMonthStr,
+    total_income: 0,
+    total_expense: 0,
+    balance: 0,
+    personal_income: 0,
+    personal_expense: 0,
+  };
 
   const personalDiff = currentMonth.personal_income - previousMonth.personal_income;
-  const businessDiff = currentMonth.business_income - previousMonth.business_income;
   const personalExpenseDiff = currentMonth.personal_expense - previousMonth.personal_expense;
-  const businessExpenseDiff = currentMonth.business_expense - previousMonth.business_expense;
 
   const hasNoPersonalData = previousMonth.personal_income === 0 && previousMonth.personal_expense === 0;
-  const hasNoBusinessData = previousMonth.business_income === 0 && previousMonth.business_expense === 0;
 
   const currentMonthLabel = getMonthLabel(currentMonth.month);
   const previousMonthLabel = getMonthLabel(previousMonth.month);
@@ -76,17 +94,16 @@ export function MonthComparison({ data, userPlan = "free" }: MonthComparisonProp
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           {/* Pessoal */}
           <div className="rounded-lg border border-[var(--success)]/20 bg-[var(--success)]/5 p-4">
             <div className="flex items-center gap-2 mb-3">
               <p className="text-sm sm:text-base font-bold uppercase tracking-widest text-[var(--success)]">
                 PESSOAL
               </p>
-              <Tooltip content="Dados só da sua vida pessoal." className="shrink-0" />
             </div>
             
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {/* Receita */}
               <div>
                 <p className="text-sm sm:text-base text-[var(--muted-foreground)] mb-1">Receita</p>
@@ -112,46 +129,6 @@ export function MonthComparison({ data, userPlan = "free" }: MonthComparisonProp
                 </div>
                 <p className="text-xs sm:text-sm font-sans text-[var(--muted-foreground)] mt-1">
                   {hasNoPersonalData ? "Sem lançamentos anteriores" : `Mês anterior: ${formatCurrency(previousMonth.personal_expense)}`}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Negócio */}
-          <div className="rounded-lg border border-[var(--primary)]/20 bg-[var(--primary)]/5 p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <p className="text-sm sm:text-base font-bold uppercase tracking-widest text-[var(--primary)]">
-                NEGÓCIO
-              </p>
-              <Tooltip content="Dados só do seu negócio." className="shrink-0" />
-            </div>
-            
-            <div className="space-y-3">
-              {/* Receita */}
-              <div>
-                <p className="text-sm sm:text-base text-[var(--muted-foreground)] mb-1">Receita</p>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-lg sm:text-xl font-sans font-bold text-[var(--foreground)]">
-                    {formatCurrency(currentMonth.business_income)}
-                  </span>
-                  <ComparisonBadge diff={businessDiff} noPreviousData={hasNoBusinessData} />
-                </div>
-                <p className="text-xs sm:text-sm font-sans text-[var(--muted-foreground)] mt-1">
-                  {hasNoBusinessData ? "Sem lançamentos anteriores" : `Mês anterior: ${formatCurrency(previousMonth.business_income)}`}
-                </p>
-              </div>
-
-              {/* Gastos */}
-              <div>
-                <p className="text-sm sm:text-base text-[var(--muted-foreground)] mb-1">Gastos</p>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-lg sm:text-xl font-sans font-bold text-[var(--foreground)]">
-                    {formatCurrency(currentMonth.business_expense)}
-                  </span>
-                  <ComparisonBadge diff={businessExpenseDiff} invertColors noPreviousData={hasNoBusinessData} />
-                </div>
-                <p className="text-xs sm:text-sm font-sans text-[var(--muted-foreground)] mt-1">
-                  {hasNoBusinessData ? "Sem lançamentos anteriores" : `Mês anterior: ${formatCurrency(previousMonth.business_expense)}`}
                 </p>
               </div>
             </div>

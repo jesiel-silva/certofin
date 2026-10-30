@@ -41,7 +41,7 @@ import { useSearchParams } from "next/navigation";
 const ITEMS_PER_PAGE = 15;
 
 interface TransactionListProps {
-  scope?: "personal" | "business";
+  scope?: "personal";
 }
 
 export function TransactionList({ scope: fixedScope }: TransactionListProps) {
@@ -87,7 +87,8 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
       .order("transaction_date", { ascending: false })
       .order("created_at", { ascending: false });
 
-    if (fixedScope) regularQuery = regularQuery.eq("scope", fixedScope);
+    // Escopo sempre pessoal
+    regularQuery = regularQuery.eq("scope", "personal");
     if (typeFilter !== "all") regularQuery = regularQuery.eq("type", typeFilter);
     if (statusFilter !== "all") regularQuery = regularQuery.eq("status", statusFilter);
     if (searchTerm) regularQuery = regularQuery.ilike("description", `%${searchTerm}%`);
@@ -107,7 +108,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
       .select("*, categories(*)")
       .eq("is_recurring", true);
 
-    if (fixedScope) recurringQuery = recurringQuery.eq("scope", fixedScope);
+    recurringQuery = recurringQuery.eq("scope", "personal");
     if (typeFilter !== "all") recurringQuery = recurringQuery.eq("type", typeFilter);
     if (searchTerm) recurringQuery = recurringQuery.ilike("description", `%${searchTerm}%`);
 
@@ -130,8 +131,8 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
             continue;
           }
 
-          // Determine status based on last_paid_date
-          let virtualStatus: "pending" | "paid" = "pending";
+          // Determine status based on template status and last_paid_date
+          let virtualStatus: "pending" | "paid" = template.status === "paid" ? "paid" : "pending";
           if (template.last_paid_date) {
             const paidMonth = template.last_paid_date.substring(0, 7);
             if (paidMonth >= currentMonth) {
@@ -504,7 +505,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
       .eq("is_recurring", false)
       .order("transaction_date", { ascending: true });
 
-    if (fixedScope) query = query.eq("scope", fixedScope);
+    query = query.eq("scope", "personal");
 
     const { data: regularData } = await query;
     const txData = ((regularData as TransactionWithCategory[]) || []).map((t) => ({
@@ -518,7 +519,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
       .select("*, categories(*)")
       .eq("is_recurring", true);
 
-    if (fixedScope) recurringQuery = recurringQuery.eq("scope", fixedScope);
+    recurringQuery = recurringQuery.eq("scope", "personal");
 
     const { data: recurringTemplates } = await recurringQuery;
     const virtualTxs: TransactionWithCategory[] = [];
@@ -626,7 +627,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
       doc.text(`${userName}`, 196, 14, { align: "right" });
       doc.setFontSize(9);
       doc.setFont("helvetica", "normal");
-      doc.text(`Relatório ${fixedScope === "business" ? "Negócio" : "Pessoal"}`, 196, 20, { align: "right" });
+      doc.text(`Relatório Pessoal`, 196, 20, { align: "right" });
       doc.text(`Período: ${monthLabel}`, 196, 25, { align: "right" });
       doc.text(`Gerado em: ${new Date().toLocaleString("pt-BR")}`, 196, 30, { align: "right" });
 
@@ -777,7 +778,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
         currentY + 10
       );
 
-      const fileName = fixedScope === "business" ? "Relatorio Negocio" : "Relatorio Pessoal";
+      const fileName = "Relatorio Pessoal";
       doc.save(`${fileName}-${monthFilter}.pdf`);
     } catch (err) {
       console.error("Erro ao gerar PDF:", err);
@@ -806,7 +807,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
         formatCsvCell(`${t.description || "Sem descrição"}${t.is_recurring ? " (Recorrente)" : ""}`),
         formatCsvCell(t.categories?.name || "Sem categoria"),
         formatCsvCell(t.type === "income" ? "Receita" : "Despesa"),
-        formatCsvCell(t.scope === "business" ? "Negócio" : "Pessoal"),
+        formatCsvCell("Pessoal"),
         formatCsvCell(t.status === "paid" ? "Pago" : "Pendente"),
         formatCsvCell(t.amount.toFixed(2).replace(".", ",")),
       ]);
@@ -853,13 +854,13 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
     return opts;
   })();
 
-  const newUrl = fixedScope === "business" ? "/business/transactions/new" : "/personal/transactions/new";
+  const newUrl = "/personal/transactions/new";
 
   return (
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>Lançamentos {fixedScope === "business" ? "do Negócio" : "Pessoais"}</CardTitle>
+          <CardTitle>Lançamentos Pessoais</CardTitle>
           <div className="flex gap-2">
             <Button
               size="sm"
@@ -1053,14 +1054,9 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
                     </p>
                     <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                       <span
-                        className={cn(
-                          "inline-flex items-center rounded-full px-2 py-0.5 text-sm font-medium",
-                          t.scope === "business"
-                            ? "bg-[var(--business)]/10 text-[var(--business)]"
-                            : "bg-[var(--personal)]/10 text-[var(--personal)]"
-                        )}
+                        className="inline-flex items-center rounded-full px-2 py-0.5 text-sm font-medium bg-[var(--personal)]/10 text-[var(--personal)]"
                       >
-                        {t.scope === "business" ? "Negócio" : "Pessoal"}
+                        Pessoal
                       </span>
                       {t.is_recurring && (
                         <span className="inline-flex items-center rounded-full bg-[var(--primary)]/10 px-2 py-0.5 text-sm font-medium text-[var(--primary)]">
@@ -1150,11 +1146,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
                               </button>
                             )}
                             <Link
-                              href={
-                                t.scope === "business"
-                                  ? `/business/transactions/${t.template_id || t.id}/edit`
-                                  : `/personal/transactions/${t.template_id || t.id}/edit`
-                              }
+                              href={`/personal/transactions/${t.template_id || t.id}/edit`}
                               onClick={() => setOpenMenuId(null)}
                               className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-[var(--foreground)] hover:bg-[var(--accent)]"
                             >
@@ -1242,7 +1234,7 @@ export function TransactionList({ scope: fixedScope }: TransactionListProps) {
                         </button>
                       )}
                       <Link
-                        href={t.scope === "business" ? `/business/transactions/${t.template_id || t.id}/edit` : `/personal/transactions/${t.template_id || t.id}/edit`}
+                        href={`/personal/transactions/${t.template_id || t.id}/edit`}
                         className="rounded p-1 text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:text-[var(--foreground)] transition-colors"
                         title="Editar esse lançamento"
                       >
