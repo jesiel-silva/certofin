@@ -7,7 +7,7 @@ import { GoalCard } from "./goal-card";
 import { GoalModal } from "./goal-modal";
 import { GoalProgressModal } from "./goal-progress-modal";
 import { UpgradeModal } from "@/components/ui/upgrade-modal";
-import { Crown } from "lucide-react";
+import { Crown, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
@@ -206,8 +206,17 @@ export function GoalsView() {
         </div>
 
         <Button onClick={openCreateModal} className="gap-2 shrink-0">
-          <Plus className="h-4 w-4" />
-          Nova Meta
+          {userPlan === "free" ? (
+            <>
+              <Lock className="h-4 w-4 text-black" />
+              <span>Nova Meta (Pro)</span>
+            </>
+          ) : (
+            <>
+              <Plus className="h-4 w-4" />
+              <span>Nova Meta</span>
+            </>
+          )}
         </Button>
       </div>
 
@@ -217,37 +226,10 @@ export function GoalsView() {
         </div>
       )}
 
-      {userPlan === "free" && (
-        <div className="hud-border bg-gradient-to-r from-[var(--primary)]/10 via-[#0B1221] to-[var(--primary)]/5 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-[var(--primary)]/20 border border-[var(--primary)]/40 flex items-center justify-center shrink-0">
-              <Crown className="h-5 w-5 text-[var(--primary)] drop-shadow-[0_0_8px_var(--primary)]" />
-            </div>
-            <div>
-              <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-                Recurso Exclusivo do Plano Pro
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-[var(--primary)]/30 bg-[var(--primary)]/20 text-[var(--primary)] font-bold">
-                  PRO
-                </span>
-              </h3>
-              <p className="text-xs sm:text-sm text-[var(--muted-foreground)]">
-                Assine o plano Pro para criar metas ilimitadas, cadastrar categorias personalizadas e acompanhar seu progresso no dashboard.
-              </p>
-            </div>
-          </div>
-          <Button
-            onClick={() => setUpgradeModalOpen(true)}
-            size="sm"
-            className="shrink-0 gap-1.5 font-bold"
-          >
-            <Crown className="h-3.5 w-3.5" />
-            Desbloquear Metas
-          </Button>
-        </div>
-      )}
+
 
       {/* Indicadores do Topo (Resumo Profissional) */}
-      {goals.length > 0 && (
+      {userPlan !== "free" && goals.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card className="hud-border bg-[#0B1221]/80 backdrop-blur-sm p-4">
             <div className="flex items-center justify-between pb-2">
@@ -301,8 +283,106 @@ export function GoalsView() {
         </div>
       )}
 
-      {/* Grid de Metas */}
-      {goals.length === 0 ? (
+      {/* Conteúdo de Metas */}
+      {userPlan === "free" ? (
+        <Card className="hud-border bg-[#0B1221]/90 backdrop-blur-md text-center py-14 px-6 scanline-overlay relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+            <Target className="w-64 h-64 text-[var(--primary)]" />
+          </div>
+
+          <CardContent className="space-y-6 max-w-xl mx-auto relative z-10">
+            {goals.length > 0 ? (
+              /* Caso 1: Usuário que já teve metas salvas */
+              <>
+                <div className="relative mx-auto w-20 h-20 rounded-2xl border-2 border-[var(--primary)] bg-[var(--primary)]/10 flex items-center justify-center text-[var(--primary)] shadow-[0_0_30px_rgba(0,255,204,0.3)]">
+                  <Lock className="h-9 w-9 text-[var(--primary)]" />
+                  <div className="absolute -top-2 -right-2 bg-[var(--primary)] text-black rounded-full p-1 shadow-md">
+                    <Crown className="h-4 w-4" />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--primary)]/30 bg-[var(--primary)]/10 text-[var(--primary)] text-xs font-mono font-bold uppercase tracking-widest mb-3">
+                    <Crown className="h-3 w-3" />
+                    Recurso do Plano Pro
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                    Acesso às suas Metas Financeiras pausado
+                  </h3>
+                  <p className="text-sm text-[var(--muted-foreground)] mt-2 leading-relaxed">
+                    Você possui <strong className="text-white">{goals.length} {goals.length === 1 ? "meta cadastrada" : "metas cadastradas"}</strong> e todo o seu histórico continua preservado com total segurança. Faça upgrade para o plano Pro para voltar a gerenciar, registrar novos aportes e acompanhar sua evolução no dashboard.
+                  </p>
+                </div>
+
+                <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <Button
+                    onClick={() => setUpgradeModalOpen(true)}
+                    size="lg"
+                    className="w-full sm:w-auto gap-2 font-bold shadow-[0_0_25px_rgba(0,255,204,0.3)]"
+                  >
+                    <Crown className="h-4 w-4" />
+                    Reativar Plano Pro (R$ 9,90/mês)
+                  </Button>
+                </div>
+              </>
+            ) : (
+              /* Caso 2: Usuário novato no plano Free */
+              <>
+                <div className="relative mx-auto w-20 h-20 rounded-2xl border-2 border-[var(--primary)] bg-[var(--primary)]/10 flex items-center justify-center text-[var(--primary)] shadow-[0_0_30px_rgba(0,255,204,0.3)] animate-pulse-glow">
+                  <Target className="h-10 w-10 text-[var(--primary)]" />
+                  <div className="absolute -top-2 -right-2 bg-[var(--primary)] text-black rounded-full p-1 shadow-md">
+                    <Crown className="h-4 w-4" />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--primary)]/30 bg-[var(--primary)]/10 text-[var(--primary)] text-xs font-mono font-bold uppercase tracking-widest mb-3">
+                    <Sparkles className="h-3 w-3" />
+                    Exclusivo no Plano Pro
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                    Defina seus objetivos e conquiste sua liberdade
+                  </h3>
+                  <p className="text-sm text-[var(--muted-foreground)] mt-2 leading-relaxed">
+                    Com as Metas do Plano Pro, você planeja sua reserva de emergência, viagens e conquistas pessoais com acompanhamento visual e barras de progresso interativas no Dashboard.
+                  </p>
+                </div>
+
+                {/* Grid de Benefícios do Recurso */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left pt-2">
+                  <div className="p-3 rounded-lg border border-white/5 bg-white/[0.02] flex items-center gap-2.5">
+                    <CheckCircle2 className="h-4 w-4 text-[var(--primary)] shrink-0" />
+                    <span className="text-xs text-white font-medium">Metas e objetivos ilimitados</span>
+                  </div>
+                  <div className="p-3 rounded-lg border border-white/5 bg-white/[0.02] flex items-center gap-2.5">
+                    <CheckCircle2 className="h-4 w-4 text-[var(--primary)] shrink-0" />
+                    <span className="text-xs text-white font-medium">Crie suas próprias categorias</span>
+                  </div>
+                  <div className="p-3 rounded-lg border border-white/5 bg-white/[0.02] flex items-center gap-2.5">
+                    <CheckCircle2 className="h-4 w-4 text-[var(--primary)] shrink-0" />
+                    <span className="text-xs text-white font-medium">Aporte e resgate em 1 clique</span>
+                  </div>
+                  <div className="p-3 rounded-lg border border-white/5 bg-white/[0.02] flex items-center gap-2.5">
+                    <CheckCircle2 className="h-4 w-4 text-[var(--primary)] shrink-0" />
+                    <span className="text-xs text-white font-medium">Evolução visual no Dashboard</span>
+                  </div>
+                </div>
+
+                <div className="pt-3 flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <Button
+                    onClick={() => setUpgradeModalOpen(true)}
+                    size="lg"
+                    className="w-full sm:w-auto gap-2 font-bold shadow-[0_0_25px_rgba(0,255,204,0.3)]"
+                  >
+                    <Crown className="h-4 w-4" />
+                    Desbloquear com o Plano Pro (R$ 9,90/mês)
+                  </Button>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      ) : goals.length === 0 ? (
         <Card className="hud-border bg-[#0B1221]/80 backdrop-blur-sm text-center py-16 px-4 scanline-overlay">
           <CardContent className="space-y-4 max-w-md mx-auto">
             <div className="h-16 w-16 mx-auto rounded-2xl border border-[var(--primary)]/30 bg-[var(--primary)]/10 flex items-center justify-center text-[var(--primary)] shadow-[0_0_20px_var(--primary)]/20 animate-pulse-glow">
